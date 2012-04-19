@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="config"/>
+	<classpathentry kind="src" path="source/java"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry kind="var" path="ALFRESCO_SDK_400/lib/share/alfresco-share-4.0.0.jar" sourcepath="/ALFRESCO_SDK_400/src/alfresco-share-src.zip"/>
+	<classpathentry kind="var" path="ALFRESCO_SDK_400/lib/server/dependencies/json-simple-1.1.jar"/>
+	<classpathentry kind="var" path="ALFRESCO_SDK_400/lib/server/dependencies/spring-surf/spring-surf-1.0.0.jar" sourcepath="/ALFRESCO_SDK_400"/>
+	<classpathentry kind="var" path="ALFRESCO_SDK_400/lib/server/dependencies/spring-surf/spring-surf-api-1.0.0.jar"/>
+	<classpathentry kind="var" path="ALFRESCO_SDK_400/lib/server/dependencies/spring-surf/spring-surf-core-1.0.0.jar"/>
+	<classpathentry kind="var" path="ALFRESCO_SDK_400/lib/server/dependencies/spring-surf/spring-surf-core-configservice-1.0.0.jar"/>
+	<classpathentry kind="var" path="ALFRESCO_SDK_400/lib/server/alfresco-core-4.0.0.jar" sourcepath="/ALFRESCO_SDK_400/src/alfresco-core-src.zip"/>
+	<classpathentry kind="var" path="ALFRESCO_SDK_400/lib/server/dependencies/spring-surf/spring-webscripts-1.0.0-tests.jar"/>
+	<classpathentry kind="var" path="ALFRESCO_SDK_400/lib/server/dependencies/spring-surf/spring-webscripts-1.0.0.jar"/>
+	<classpathentry kind="var" path="ALFRESCO_SDK_400/lib/server/dependencies/spring-surf/spring-webscripts-api-1.0.0.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

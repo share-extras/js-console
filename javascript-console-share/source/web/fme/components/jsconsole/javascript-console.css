@@ -1,0 +1,150 @@
+/* History Manager */
+#yui-history-iframe {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 1px;
+	height: 1px;
+	visibility: hidden;
+}
+
+.javascript-console {
+	margin: 16px 10px 10px;
+}
+
+.javascript-console .title {
+	font-size: 123.1%;
+	font-weight: bold;
+	padding-bottom: 0.5em;
+}
+
+.javascript-console .jsbox {
+	font-family:"Courier New", Courier, monospace !important;
+	color:black;
+	padding: 0.5em;
+	white-space: pre-wrap;
+}
+
+.javascript-console .templateInputBox {
+	font-family:"Courier New", Courier, monospace !important;
+	color:black;
+	white-space: pre-wrap;
+}
+
+.javascript-console .textOutputBox {
+	font-family:"Courier New", Courier, monospace !important;
+	color:black;
+	padding: 0.5em;
+	white-space: pre-wrap;
+}
+
+.javascript-console .htmlOutputBox {
+	padding: 0.5em;
+}
+
+.javascript-console .htmlOutputBox li {
+	list-style-type: disc;
+	margin-left: 1.5em;
+}
+
+.javascript-console .buttonbar {
+	
+}
+
+.javascript-console .execute-buttonbar {
+	padding-top:0.5em;
+}
+
+.javascript-console .scriptmenu {
+	display:inline;
+	float:right;
+}
+
+.javascript-console .jserror {
+	border:2px solid red;
+	background-color:#FFE0E0;
+}
+
+.javascript-console .header-bar
+{
+   margin-top:0.5em;
+   margin-bottom:0.5em;
+   padding:0.2em;
+   height: 1.2em;
+   background-color: #e3eaec;
+   border-bottom: 2px solid #f0f3f4;
+   font-weight: bold;
+   font-size: 116%;
+}
+
+.javascript-console .executionStats {
+	margin-top:0.5em;
+}
+
+.javascript-console .spinner {
+	display:none;	
+}
+
+.javascript-console .exportButton {
+	margin-top:0.5em;
+	margin-bottom:0.5em;
+}
+    
+
+.javascript-console .CodeMirror 
+{
+	font-size:10pt;
+}
+
+.javascript-console-completions {
+	font-size:10pt;
+	position: absolute;
+	z-index: 10;
+	overflow: hidden;
+	-webkit-box-shadow: 2px 2px 10px rgba(0,0,0,.4);
+	-moz-box-shadow: 2px 2px 10px rgba(0,0,0,.4);
+	box-shadow: 2px 2px 10px rgba(0,0,0,.4);
+}      
+
+.javascript-console-completions select {
+	background: #fafafa;
+	font-size:10pt;
+	outline: none;
+	border: none;
+	padding: 0;
+	margin: 0;
+	font-family: monospace;
+}      
+
+.javascript-console .yui-nav {
+	margin-top: 0.5em;
+}
+
+.javascript-console .yui-navset .yui-content {
+	background-color:white;
+}
+
+
+.javascript-console div.configform {
+    height:250px;
+}
+
+.javascript-console div.configform div.control {
+    padding:0.5em;    
+}
+
+.javascript-console div.configform span.label {
+}
+
+.javascript-console div.configform div.control input, .javascript-console div.control select {
+    position:absolute;
+    left:20em;
+}
+
+.javascript-console .CodeMirror-scroll {
+  overflow: auto;
+  height: 250px;
+  /* This is needed to prevent an IE[67] bug where the scrolled content
+     is visible outside of the scrolling box. */
+  position: relative;
+}
