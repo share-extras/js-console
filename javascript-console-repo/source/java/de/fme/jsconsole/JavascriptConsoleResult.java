@@ -28,6 +28,8 @@ public class JavascriptConsoleResult {
 	private String spaceNodeRef = "";
 	
 	private String spacePath = "";
+	
+	private boolean statusResponseSent = false;
 
 	public void setPrintOutput(List<String> printOutput) {
 		this.printOutput = printOutput;
@@ -61,6 +63,7 @@ public class JavascriptConsoleResult {
 		return spacePath;
 	}
 	
+	
 	public void writeJson(WebScriptResponse response) throws IOException {
 		response.setContentEncoding("UTF-8");
 		response.setContentType(MimetypeMap.MIMETYPE_JSON);
@@ -79,5 +82,13 @@ public class JavascriptConsoleResult {
 			throw new WebScriptException(Status.STATUS_INTERNAL_SERVER_ERROR,
 					"Error writing json response.", e);
 		}
+	}
+
+	public boolean isStatusResponseSent() {
+		return statusResponseSent;
+	}
+
+	public void setStatusResponseSent(boolean statusResponseSent) {
+		this.statusResponseSent = statusResponseSent;
 	}
 }

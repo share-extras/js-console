@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.alfresco.repo.jscript.ScriptNode;
 import org.alfresco.repo.security.authority.script.ScriptGroup;
@@ -34,6 +35,10 @@ public class JavascriptConsoleScriptObject {
 		this.space = space;
 	}	
 	
+	public JavascriptConsoleScriptLogger getLogger() {
+		return new JavascriptConsoleScriptLogger(this);
+	}
+	
 	public void print(Object obj) {
 
 		if (obj != null) {
@@ -58,6 +63,7 @@ public class JavascriptConsoleScriptObject {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	private String formatValue(Object value) {
 		if (value instanceof ScriptNode) {
 			return formatScriptNode((ScriptNode) value);
@@ -71,8 +77,21 @@ public class JavascriptConsoleScriptObject {
 			return formatNodeRef((NodeRef) value);
 		} else if (value instanceof ChildAssociationRef) {
 		    return formatChildAssoc((ChildAssociationRef) value);
+	    } else if (value instanceof Map) {
+	    	return formatMap((Map<String, Object>) value);
 	    }
 		return value.toString();
+	}
+
+	private String formatMap(Map<String, Object> map) {
+		StringBuffer buffer = new StringBuffer();
+		for (Map.Entry<String, Object> entry : map.entrySet()) {
+			buffer.append(formatValue(entry.getKey()));				
+			buffer.append(" : ");
+			buffer.append(formatValue(entry.getValue()));
+			buffer.append("\n");
+		}
+		return buffer.toString();
 	}
 
 	private String formatScriptUser(ScriptUser value) {

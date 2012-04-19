@@ -55,7 +55,7 @@ public class ExecuteWebscript extends AbstractWebScript {
 	private ScriptUtils scriptUtils;
 
 	private TransactionService transactionService;
-
+	
 	private Resource preRollScriptResource;
 
 	private String preRollScript = "";
@@ -93,7 +93,10 @@ public class ExecuteWebscript extends AbstractWebScript {
 		
 		ScriptContent scriptContent = new StringScriptContent(preRollScript + script + "\n" + postRollScript);
 		JavascriptConsoleResult result = runScriptWithTransactionAndAuthentication(request, response, jsreq, scriptContent);
-		result.writeJson(response);
+		
+		if (!result.isStatusResponseSent()) {
+			result.writeJson(response);
+		}
 	}
 
 	private String readScriptFromResource(Resource resource) throws IOException {
@@ -167,7 +170,6 @@ public class ExecuteWebscript extends AbstractWebScript {
 
 			JavascriptConsoleScriptObject javascriptConsole = new JavascriptConsoleScriptObject();
 			scriptModel.put("jsconsole", javascriptConsole);
-			scriptModel.put("logger", new JavascriptConsoleScriptLogger(javascriptConsole));
 
 			if (StringUtils.isNotBlank(spaceNodeRef)) {
 				javascriptConsole.setSpace(scriptUtils.getNodeFromString(spaceNodeRef));
@@ -178,7 +180,6 @@ public class ExecuteWebscript extends AbstractWebScript {
 				} else {
 					javascriptConsole.setSpace((ScriptNode) ch);
 				}
-
 			}
 			scriptModel.put("space", javascriptConsole.getSpace());
 
@@ -207,6 +208,7 @@ public class ExecuteWebscript extends AbstractWebScript {
 			// is a redirect to a status specific template required?
 			if (status.getRedirect()) {
 				sendStatus(req, res, status, cache, format, templateModel);
+				output.setStatusResponseSent(true);
 			} else {
 				// apply location
 				String location = status.getLocation();
@@ -217,8 +219,7 @@ public class ExecuteWebscript extends AbstractWebScript {
 				}
 
 				if (StringUtils.isNotBlank(template)) {
-					TemplateProcessor templateProcessor = getContainer().getTemplateProcessorRegistry().getTemplateProcessorByExtension(
-							"ftl");
+					TemplateProcessor templateProcessor = getContainer().getTemplateProcessorRegistry().getTemplateProcessorByExtension("ftl");
 					StringWriter sw = new StringWriter();
 					templateProcessor.processString(template, templateModel, sw);
 					if (log.isDebugEnabled()) {
@@ -310,7 +311,6 @@ public class ExecuteWebscript extends AbstractWebScript {
 	public void setRhinoScriptProcessor(RhinoScriptProcessor rhinoScriptProcessor) {
 		this.rhinoScriptProcessor = rhinoScriptProcessor;
 	}
-
 
 	private static class StringScriptContent implements ScriptContent {
 		private final String content;

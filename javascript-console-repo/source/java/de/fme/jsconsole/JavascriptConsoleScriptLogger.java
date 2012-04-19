@@ -113,7 +113,6 @@ public final class JavascriptConsoleScriptLogger
         }
     }
     
-    
     public void setLevel(String classname, String level) {
     	Logger log4j = Logger.getLogger(classname);
     	Level logLevel = Level.toLevel(level);

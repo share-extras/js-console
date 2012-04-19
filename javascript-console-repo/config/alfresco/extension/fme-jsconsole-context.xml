@@ -10,33 +10,5 @@
 		<property name="rhinoScriptProcessor" ref="javaScriptProcessor" />
 	</bean>
 
-<!-- 	
-<bean id="slingshotDocLibCustomResponse"
-       parent="baseJavaScriptExtension"
-       class="org.alfresco.repo.jscript.SlingshotDocLibCustomResponse">
-    <property name="extensionName">
-       <value>slingshotDocLib</value>
-    </property>
-    <property name="customResponses">
-      <map>
-         <entry key="vtiServer">
-            <ref bean="doclibCustomVtiServer"/>
-         </entry>
-      </map>
-    </property>
-    </bean>	
-	
-	
-	<bean id="slingshotDocLibCustomResponse" parent="applicationScriptUtils">
- <property name="decoratedProperties">
-    <map merge="true">
-       <entry key="alf:propertyHolder">
-          <ref bean="customDecoratorBean"/>
-       </entry>
-    </map>
- </property>
-</bean>
--->
-	
 </beans>
 

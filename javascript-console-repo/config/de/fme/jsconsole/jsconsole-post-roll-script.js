@@ -1,3 +1,1 @@
-
 jsconsole.setSpace(space);
-
