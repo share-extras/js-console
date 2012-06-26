@@ -778,7 +778,7 @@ if (typeof Fme == "undefined" || !Fme)
             	 this.clearOutput();
             	 this.appendLineArrayToOutput(res.json.printOutput);
             	 this.widgets.templateOutputHtml.innerHTML = res.json.renderedTemplate;
-            	 this.widgets.templateOutputText.innerHTML = YAHOO.lang.escapeHTML(res.json.renderedTemplate);
+            	 this.widgets.templateOutputText.innerHTML = $html(res.json.renderedTemplate);
             		 
                  if (res.json.spaceNodeRef) {
                 	 this.widgets.nodeField.value = res.json.spaceNodeRef;

@@ -1,3 +1,4 @@
+
 Javascript Console Admin Console component for Alfresco Share
 =============================================================
 
@@ -11,21 +12,41 @@ Installation
 ------------
 
 The component has been developed to install on top of an existing Alfresco
-3.4 installation.
+3.4 or 4.0 installation. There are two different version in this archive with
+a specific folder for each of the Alfresco version.
 
-An Ant build script is provided to build a JAR file containing the 
-custom files, which can then be installed into the 'tomcat/shared/lib' folder 
-of your Alfresco installation.
+When you have chosen the correct folder (3.4.x or 4.0.x) for your Alfresco version
+you'll find two jar files within that folder. The javascript-console-repo.jar needs
+to be copied into the Alfresco repository:
 
-To build the JAR file, run the following command from the base project 
-directory.
+  tomcat/webapps/alfresco/WEB-INF/lib/
+  
+The other file javascript-console-share.jar needs to be copied to the 
+corresponding folder in the Share webapp:
 
-    ant clean dist-jar
+  tomcat/webapps/share/WEB-INF/lib/
+  
+The deployment location has changed recently (with Javascript Console 0.5)
+because the Javascript Console now uses Java classes that have to be deployed 
+to these locations and can NOT reside in tomcat/shared/lib anymore.
 
-The command should build a JAR file named javascript-console.jar
-in the 'dist' directory within your project.
 
-To deploy the dashlet files into a local Tomcat instance for testing, you can 
+Building
+--------
+
+To build the individual JAR files, run the following command from the base 
+project directory.
+
+    ant -Dalfresco.sdk.dir=c:\dev\sdks\alfresco-enterprise-sdk-4.0.0 clean dist-jar
+
+The command should build a JAR file named javascript-console-repo.jar or
+javascript-console-share.jar in the 'dist' directory within your project.
+
+There also is the javascript-console-dist which builds both jar files and 
+creates a patched version for Alfresco 3.4.x which does not support all the 
+features of the version for 4.0.x
+
+To deploy the extension files into a local Tomcat instance for testing, you can 
 use the hotcopy-tomcat-jar task. You will need to set the tomcat.home
 property in Ant.
 
@@ -34,8 +55,10 @@ property in Ant.
 Once you have run this you will need to restart Tomcat so that the classpath 
 resources in the JAR file are picked up.
 
+
 Using the component
 -------------------
 
 Log in to Alfresco Share as an admin user and navigate to the Administration
 page. Click 'Javascript Console' in the left hand side navigation.
+

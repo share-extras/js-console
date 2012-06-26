@@ -70,8 +70,8 @@ public class ExecuteWebscript extends AbstractWebScript {
 	public void init(Container container, Description description) {
 		super.init(container, description);
 		try {
-			preRollScript = readScriptFromResource(preRollScriptResource);
-			postRollScript = readScriptFromResource(postRollScriptResource);
+			preRollScript = readScriptFromResource(preRollScriptResource, true);
+			postRollScript = readScriptFromResource(postRollScriptResource, false);
 		} catch (IOException e) {
 			log.error("Could not read base import script.");
 		}
@@ -99,13 +99,18 @@ public class ExecuteWebscript extends AbstractWebScript {
 		}
 	}
 
-	private String readScriptFromResource(Resource resource) throws IOException {
+	private String readScriptFromResource(Resource resource, boolean unwrapLines) throws IOException {
 		@SuppressWarnings("unchecked")
 		List<String> lines = (List<String>) IOUtils.readLines(resource.getInputStream());
 		
 		StringBuffer script = new StringBuffer();
 		for (String line : lines) {
-			script.append(line.replace("\n", ""));
+			if (unwrapLines) {
+				script.append(line.replace("\n", ""));
+			}
+			else {
+				script.append(line);
+			}
 		}
 		return script.toString();
 	}

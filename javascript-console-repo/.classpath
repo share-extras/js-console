@@ -6,7 +6,7 @@
 	<classpathentry kind="var" path="ALFRESCO_SDK_400/lib/server/alfresco-data-model-4.0.0.jar" sourcepath="/ALFRESCO_SDK_400/src/alfresco-datamodel-src.zip"/>
 	<classpathentry kind="var" path="ALFRESCO_SDK_400/lib/server/alfresco-remote-api-4.0.0.jar"/>
 	<classpathentry kind="var" path="ALFRESCO_SDK_400/lib/server/dependencies/spring-surf/spring-surf-core-1.0.0.jar"/>
-	<classpathentry kind="var" path="ALFRESCO_SDK_400/lib/server/dependencies/spring-surf/spring-webscripts-1.0.0.jar"/>
+	<classpathentry kind="var" path="ALFRESCO_SDK_400/lib/server/dependencies/spring-surf/spring-webscripts-1.0.0.jar" sourcepath="/ALFRESCO_SDK_400"/>
 	<classpathentry kind="var" path="ALFRESCO_SDK_400/lib/server/dependencies/commons/commons-lang-2.6.jar"/>
 	<classpathentry kind="var" path="ALFRESCO_SDK_400/lib/server/dependencies/commons/commons-logging-1.1.1.jar"/>
 	<classpathentry kind="var" path="ALFRESCO_SDK_400/lib/server/dependencies/j2ee/servlet.jar"/>
