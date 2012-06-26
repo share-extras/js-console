@@ -1,0 +1,82 @@
+<project basedir="." default="dist" name="Javascript Console Distribution">
+   
+   <property name="jsconsole-version" value="0.5"/>
+   
+   <!-- Clean out the build and distribution directories -->
+   <target name="clean" description="Clean out all build directories">
+      <delete dir="dist" />
+      <delete dir="tmp" />
+   </target>
+   
+   <!-- Create required prerequisite directory structure -->
+   <target name="prepare" description="Create initial build structures">
+      <mkdir dir="dist" />
+      <mkdir dir="dist/3.4.x" />
+      <mkdir dir="dist/4.0.x" />
+   </target>
+   
+   <target name="dist" depends="clean, prepare">
+   	<ant antfile="../javascript-console-repo/project.xml" target="dist-jar" useNativeBasedir="true"/>
+   	<ant antfile="../javascript-console-share/project.xml" target="dist-jar" useNativeBasedir="true"/>
+
+   	<copy todir="dist/4.0.x">
+      <fileset dir="../javascript-console-repo/build/dist">
+      	<include name="*.jar"/>
+      </fileset>
+      <fileset dir="../javascript-console-share/build/dist">
+      	<include name="*.jar"/>
+      </fileset>
+    </copy>
+
+   	<ant antfile="../javascript-console-repo/project.xml" target="dist-amp" useNativeBasedir="true"/>
+   	<ant antfile="../javascript-console-share/project.xml" target="dist-amp" useNativeBasedir="true"/>
+
+   	<copy todir="dist/4.0.x">
+      <fileset dir="../javascript-console-repo/build/dist">
+      	<include name="*.amp"/>
+      </fileset>
+      <fileset dir="../javascript-console-share/build/dist">
+      	<include name="*.amp"/>
+      </fileset>
+    </copy>
+
+
+   	<copy todir="dist/3.4.x">
+      <fileset dir="dist/4.0.x">
+      	<include name="javascript-console-repo*.jar"/>
+      </fileset>
+    </copy>
+
+	<!-- create patched javascript-console-share-0.5.jar to work with 3.4 -->
+	<delete dir="tmp" />	
+	<mkdir dir="tmp"/>
+    <unzip dest="tmp" src="dist/4.0.x/javascript-console-share-${jsconsole-version}.jar"/>
+
+	<!-- delete the share config which adds 4.0 action configuration --> 
+	<delete file="tmp/META-INF/share-config-custom.xml"></delete>
+	
+	<!-- Delete custom evaluator which uses 4.0 surf code -->
+	<delete file="tmp/de/fme/jsconsole/IsAdminEvaluator.class"></delete>
+	
+	<!-- overwrite the share config custom which does not load the evaluator --> 
+   	<copy todir="tmp" overwrite="true">
+ 	    <fileset dir="patch-3.4"/>
+  	</copy>
+  	
+	<zip destfile="dist/3.4.x/javascript-console-share-${jsconsole-version}.jar"> 
+ 	    <fileset dir="tmp"/>
+	</zip> 
+
+   	<copy todir="dist">
+ 	    <fileset dir="docs"/>
+  	</copy>
+
+	<zip destfile="dist/javascript-console-${jsconsole-version}.zip"> 
+ 	    <fileset dir="dist"/>
+	</zip> 
+   
+   </target>
+   
+</project>
+   
+   
