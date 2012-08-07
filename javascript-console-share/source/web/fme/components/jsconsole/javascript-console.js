@@ -164,8 +164,8 @@ if (typeof Fme == "undefined" || !Fme)
               { text : "W3Schools Javascript Reference", url : "http://www.w3schools.com/jsref/default.asp", target:"_blank"},
               { text : "Alfresco 3.4 Javascript API", url : "http://wiki.alfresco.com/wiki/3.4_JavaScript_API", target:"_blank" },
               { text : "Alfresco 3.4 Javascript Services API", url : "http://wiki.alfresco.com/wiki/3.4_JavaScript_Services_API", target:"_blank" },
-              { text : "Alfresco 4.0 Javascript API", url : "http://wiki.alfresco.com/wiki/4.0_JavaScript_API", target:"_blank" },
-              { text : "Alfresco 4.0 Javascript Services API", url : "http://wiki.alfresco.com/wiki/4.0_JavaScript_Services_API", target:"_blank" },
+              { text : "Alfresco 4.0 Javascript API", url : "http://docs.alfresco.com/4.0/topic/com.alfresco.enterprise.doc/references/API-JS-Scripting-API.html", target:"_blank" },
+              { text : "Alfresco 4.0 Javascript Services API", url : "http://docs.alfresco.com/4.0/topic/com.alfresco.enterprise.doc/references/API-JS-Services.html", target:"_blank" },
               { text : "Alfresco Javascript Cookbook", url : "http://wiki.alfresco.com/wiki/JavaScript_API_Cookbook", target:"_blank" }
             ],
             [ 
