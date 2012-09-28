@@ -24,5 +24,10 @@ function findScripts(folder) {
   return scriptlist;
 }
 
-var scriptFolder = search.luceneSearch('PATH:"/app:company_home/app:dictionary/app:scripts"')[0];
-model.scripts = jsonUtils.toJSONString(findScripts(scriptFolder));
+var scriptFolder = search.xpathSearch("/app:company_home/app:dictionary/app:scripts")[0];
+if (scriptFolder) {
+	model.scripts = jsonUtils.toJSONString(findScripts(scriptFolder));
+}
+else {
+	model.scripts = "[]";
+}

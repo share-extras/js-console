@@ -1,7 +1,30 @@
 <project basedir="." default="dist" name="Javascript Console Distribution">
    
-   <property name="jsconsole-version" value="0.5"/>
+   <property name="jsconsole-version" value="0.5.1"/>
    
+	<!-- MAKE AMPS  -->
+	<macrodef name="pack-amp">
+		<attribute name="targetversion"/>
+		<attribute name="project"/>
+		<sequential>
+			<delete dir="tmp" />	
+			<mkdir dir="tmp"/>
+			<copy todir="tmp/lib">
+				<fileset dir="dist/@{targetversion}">
+				   	<include name="javascript-console-@{project}-${jsconsole-version}.jar"/>
+				</fileset>
+			</copy>
+			<copy todir="tmp">
+			    <fileset dir="../javascript-console-@{project}">
+			    	<include name="module.properties"/>
+			    </fileset>
+			 	</copy>
+			<zip destfile="dist/@{targetversion}/javascript-console-@{project}-${jsconsole-version}.amp"> 
+				<fileset dir="tmp"/>
+			</zip>
+		</sequential> 	
+	</macrodef>
+	   
    <!-- Clean out the build and distribution directories -->
    <target name="clean" description="Clean out all build directories">
       <delete dir="dist" />
@@ -27,19 +50,6 @@
       	<include name="*.jar"/>
       </fileset>
     </copy>
-
-   	<ant antfile="../javascript-console-repo/project.xml" target="dist-amp" useNativeBasedir="true"/>
-   	<ant antfile="../javascript-console-share/project.xml" target="dist-amp" useNativeBasedir="true"/>
-
-   	<copy todir="dist/4.0.x">
-      <fileset dir="../javascript-console-repo/build/dist">
-      	<include name="*.amp"/>
-      </fileset>
-      <fileset dir="../javascript-console-share/build/dist">
-      	<include name="*.amp"/>
-      </fileset>
-    </copy>
-
 
    	<copy todir="dist/3.4.x">
       <fileset dir="dist/4.0.x">
@@ -67,6 +77,12 @@
  	    <fileset dir="tmp"/>
 	</zip> 
 
+	<pack-amp targetversion="4.0.x" project="repo"/>
+	<pack-amp targetversion="4.0.x" project="share"/>
+	<pack-amp targetversion="3.4.x" project="repo"/>
+	<pack-amp targetversion="3.4.x" project="share"/>
+
+	<!--  create final distri zip -->
    	<copy todir="dist">
  	    <fileset dir="docs"/>
   	</copy>
@@ -74,7 +90,7 @@
 	<zip destfile="dist/javascript-console-${jsconsole-version}.zip"> 
  	    <fileset dir="dist"/>
 	</zip> 
-   
+
    </target>
    
 </project>

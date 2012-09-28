@@ -117,10 +117,12 @@ if (typeof Fme == "undefined" || !Fme)
 
 	   browserSupportsHtml5Storage: function ACJC_browserSupportsHtml5Storage() {
 		   try {
-		     return 'localStorage' in window && window['localStorage'] !== null;
-		   } catch (e) {
-		     return false;
-		   }
+	            localStorage.setItem(mod, mod);
+	            localStorage.removeItem(mod);
+	            return true;
+	        } catch(e) {
+	            return false;
+	        }
 	   },
 	   
 	  createMenuButtons: function ACJC_createMenuButtons(listOfScripts) {

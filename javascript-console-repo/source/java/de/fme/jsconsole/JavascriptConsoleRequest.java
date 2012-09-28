@@ -80,10 +80,14 @@ public class JavascriptConsoleRequest {
 			String template = jsonInput.getString("template");
 			String spaceNodeRef = jsonInput.getString("spaceNodeRef");
 			String transaction = jsonInput.getString("transaction");
-			String runas = jsonInput.getString("runas");
 			String urlargs = jsonInput.getString("urlargs");
 			String documentNodeRef = jsonInput.getString("documentNodeRef");
 
+			String runas = jsonInput.getString("runas");
+			if (runas == null) {
+				runas = "";
+			}
+			
 			return new JavascriptConsoleRequest(script, template, spaceNodeRef, transaction, runas, urlargs, documentNodeRef);
 			
 		} catch (JSONException e) {

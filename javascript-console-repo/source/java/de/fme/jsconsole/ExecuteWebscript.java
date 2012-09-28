@@ -119,30 +119,40 @@ public class ExecuteWebscript extends AbstractWebScript {
 			final WebScriptResponse response, final JavascriptConsoleRequest jsreq, final ScriptContent scriptContent) {
 
 		log.debug("running script as user " + jsreq.runas);
-		return AuthenticationUtil.runAs(new AuthenticationUtil.RunAsWork<JavascriptConsoleResult>() {
-			public JavascriptConsoleResult doWork() {
-
-				if (jsreq.useTransaction) {
-					log.debug("Using transction to execute script: " + (jsreq.transactionReadOnly ? "readonly" : "readwrite"));
-					return transactionService.getRetryingTransactionHelper().doInTransaction(
-							new RetryingTransactionCallback<JavascriptConsoleResult>() {
-								public JavascriptConsoleResult execute() throws Exception {
-									return executeScriptContent(request, response, scriptContent, jsreq.template, jsreq.spaceNodeRef,
-											jsreq.urlargs, jsreq.documentNodeRef);
-								}
-							}, jsreq.transactionReadOnly);
-				} else {
-					try {
-						log.debug("Executing script script without transaction.");
-						return executeScriptContent(request, response, scriptContent, jsreq.template, jsreq.spaceNodeRef, 
-								jsreq.urlargs, jsreq.documentNodeRef);
-					} catch (IOException e) {
-						throw new RuntimeException(e);
-					}
+		
+		if (StringUtils.isNotBlank(jsreq.runas)) {
+			return AuthenticationUtil.runAs(new AuthenticationUtil.RunAsWork<JavascriptConsoleResult>() {
+				public JavascriptConsoleResult doWork() {
+					return runWithTransactionIfNeeded(request, response, jsreq, scriptContent);
 				}
-			}
-		}, jsreq.runas);
+			}, jsreq.runas);
+		}
+		else {
+			return runWithTransactionIfNeeded(request, response, jsreq, scriptContent);
+		}
 	}
+	
+	private JavascriptConsoleResult runWithTransactionIfNeeded(final WebScriptRequest request, final WebScriptResponse response,
+			final JavascriptConsoleRequest jsreq, final ScriptContent scriptContent) {
+		if (jsreq.useTransaction) {
+			log.debug("Using transction to execute script: " + (jsreq.transactionReadOnly ? "readonly" : "readwrite"));
+			return transactionService.getRetryingTransactionHelper().doInTransaction(
+					new RetryingTransactionCallback<JavascriptConsoleResult>() {
+						public JavascriptConsoleResult execute() throws Exception {
+							return executeScriptContent(request, response, scriptContent, jsreq.template, jsreq.spaceNodeRef,
+									jsreq.urlargs, jsreq.documentNodeRef);
+						}
+					}, jsreq.transactionReadOnly);
+		} else {
+			try {
+				log.debug("Executing script script without transaction.");
+				return executeScriptContent(request, response, scriptContent, jsreq.template, jsreq.spaceNodeRef, 
+						jsreq.urlargs, jsreq.documentNodeRef);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+		}
+	}	
 
 	/*
 	 * (non-Javadoc)
