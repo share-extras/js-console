@@ -117,8 +117,9 @@ if (typeof Fme == "undefined" || !Fme)
 
 	   browserSupportsHtml5Storage: function ACJC_browserSupportsHtml5Storage() {
 		   try {
-	            localStorage.setItem(mod, mod);
-	            localStorage.removeItem(mod);
+               var testString = "LSTEST12345";
+               localStorage.setItem(testString, testString );
+               localStorage.removeItem(testString);
 	            return true;
 	        } catch(e) {
 	            return false;
@@ -224,12 +225,25 @@ if (typeof Fme == "undefined" || !Fme)
             e.stop();
             i.owner.widgets.codeMirrorScript.redo(i.owner, e);
          }
-         // Hook into ctrl+shift+7 for Comment/Uncomment
-         if (e.keyCode == 191 && (e.ctrlKey || e.metaKey) && !e.altKey) {
+         // Hook into ctrl+/ for Comment/Uncomment
+         if (e.type=="keydown" && e.keyCode == 55 && (e.ctrlKey || e.metaKey) && !e.altKey) {
             e.stop();
-            //i.owner.widgets.codeMirrorScript.redo(i.owner, e);
-            alert("to be implemented");
+            var editor = i.owner.widgets.codeMirrorScript;
+            var code = editor.getSelection();
+            if (code.substr(0,2) == "//") {
+            	code = code.replace(/^\/\//gm, ""); // add a // before each line
+            }
+            else {
+            	code = code.replace(/^/gm, "//"); // remove // comment before each line
+            }
+            editor.replaceSelection(code);
          }
+         // Hook into ctrl+shift+F for js code format
+         if (e.type=="keydown" && e.keyCode == 70 && (e.ctrlKey || e.metaKey) && !e.altKey) {
+             e.stop();
+             var editor = i.owner.widgets.codeMirrorScript;
+             editor.setValue(js_beautify(editor.getValue()));
+          }
 	  },
 	  
       /**

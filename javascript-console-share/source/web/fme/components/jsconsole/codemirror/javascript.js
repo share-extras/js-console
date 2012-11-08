@@ -54,7 +54,7 @@ CodeMirror.defineMode("javascript", function(config, parserConfig) {
       stream.eatWhile(/[\da-f]/i);
       return ret("number", "number");
     }      
-    else if (/\d/.test(ch)) {
+    else if (/\d/.test(ch) || ch == "-" && stream.eat(/\d/)) {
       stream.match(/^\d*(?:\.\d*)?(?:[eE][+\-]?\d+)?/);
       return ret("number", "number");
     }
@@ -175,8 +175,8 @@ CodeMirror.defineMode("javascript", function(config, parserConfig) {
 
   var defaultVars = {name: "this", next: {name: "arguments"}};
   function pushcontext() {
-    if (!cx.state.context) cx.state.localVars = defaultVars;
     cx.state.context = {prev: cx.state.context, vars: cx.state.localVars};
+    cx.state.localVars = defaultVars;
   }
   function popcontext() {
     cx.state.localVars = cx.state.context.vars;
@@ -185,7 +185,7 @@ CodeMirror.defineMode("javascript", function(config, parserConfig) {
   function pushlex(type, info) {
     var result = function() {
       var state = cx.state;
-      state.lexical = new JSLexical(state.indented, cx.stream.column(), type, null, state.lexical, info)
+      state.lexical = new JSLexical(state.indented, cx.stream.column(), type, null, state.lexical, info);
     };
     result.lex = true;
     return result;
@@ -243,7 +243,7 @@ CodeMirror.defineMode("javascript", function(config, parserConfig) {
     
   function maybeoperator(type, value) {
     if (type == "operator" && /\+\+|--/.test(value)) return cont(maybeoperator);
-    if (type == "operator") return cont(expression);
+    if (type == "operator" && value == "?") return cont(expression, expect(":"), expression);
     if (type == ";") return;
     if (type == "(") return cont(pushlex(")"), commasep(expression, ")"), poplex, maybeoperator);
     if (type == ".") return cont(property, maybeoperator);
@@ -319,8 +319,8 @@ CodeMirror.defineMode("javascript", function(config, parserConfig) {
         kwAllowed: true,
         cc: [],
         lexical: new JSLexical((basecolumn || 0) - indentUnit, 0, "block", false),
-        localVars: null,
-        context: null,
+        localVars: parserConfig.localVars,
+        context: parserConfig.localVars && {vars: parserConfig.localVars},
         indented: 0
       };
     },
@@ -334,15 +334,16 @@ CodeMirror.defineMode("javascript", function(config, parserConfig) {
       if (stream.eatSpace()) return null;
       var style = state.tokenize(stream, state);
       if (type == "comment") return style;
-      state.reAllowed = type == "operator" || type == "keyword c" || type.match(/^[\[{}\(,;:]$/);
+      state.reAllowed = !!(type == "operator" || type == "keyword c" || type.match(/^[\[{}\(,;:]$/));
       state.kwAllowed = type != '.';
       return parseJS(state, style, type, content, stream);
     },
 
     indent: function(state, textAfter) {
       if (state.tokenize != jsTokenBase) return 0;
-      var firstChar = textAfter && textAfter.charAt(0), lexical = state.lexical,
-          type = lexical.type, closing = firstChar == type;
+      var firstChar = textAfter && textAfter.charAt(0), lexical = state.lexical;
+      if (lexical.type == "stat" && firstChar == "}") lexical = lexical.prev;
+      var type = lexical.type, closing = firstChar == type;
       if (type == "vardef") return lexical.indented + 4;
       else if (type == "form" && firstChar == "{") return lexical.indented;
       else if (type == "stat" || type == "form") return lexical.indented + indentUnit;
