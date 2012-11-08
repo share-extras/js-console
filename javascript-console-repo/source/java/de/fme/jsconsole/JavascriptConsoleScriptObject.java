@@ -7,8 +7,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.alfresco.repo.jscript.ScriptNode;
+import org.alfresco.repo.jscript.ScriptNode.ScriptContentData;
 import org.alfresco.repo.security.authority.script.ScriptGroup;
 import org.alfresco.repo.security.authority.script.ScriptUser;
+import org.alfresco.repo.site.script.Site;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.springframework.extensions.webscripts.ScriptContent;
@@ -77,6 +79,10 @@ public class JavascriptConsoleScriptObject {
 			return formatNodeRef((NodeRef) value);
 		} else if (value instanceof ChildAssociationRef) {
 		    return formatChildAssoc((ChildAssociationRef) value);
+		} else if (value instanceof ScriptContentData) {
+		    return formatScriptContentData((ScriptContentData) value);
+		} else if (value instanceof Site) {
+		    return formatSite((Site) value);
 	    } else if (value instanceof Map) {
 	    	return formatMap((Map<String, Object>) value);
 	    }
@@ -98,8 +104,12 @@ public class JavascriptConsoleScriptObject {
 		return "ScriptUser: " + value.getUserName() + " (" + value.getFullName()+")";
 	}
 
+	private String formatSite(Site site) {
+		return "Site: " + site.getShortName() + " (" + site.getTitle() + ", " + site.getNode().getNodeRef() + ")";
+	}
+
 	private String formatScriptGroup(ScriptGroup value) {
-		return "ScriptGroup: " + value.getShortName() + "(" + value.getFullName() + ")";
+		return "ScriptGroup: " + value.getShortName() + " (" + value.getFullName() + ")";
 	}
 
 	private String formatScriptContent(ScriptContent value) {
@@ -112,6 +122,10 @@ public class JavascriptConsoleScriptObject {
 	
 	private String formatNodeRef(NodeRef value) {
 		return "NodeRef: " + value.toString();
+	}
+	
+	private String formatScriptContentData(ScriptContentData value) {
+		return "ScriptContentData: " + value.getMimetype() + " Size:" + value.getSize() + " URL:" + value.getUrl();
 	}
 
 	private String formatScriptNode(ScriptNode value) {
