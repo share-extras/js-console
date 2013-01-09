@@ -67,6 +67,9 @@ public class JavascriptConsoleScriptObject {
 
 	@SuppressWarnings("unchecked")
 	private String formatValue(Object value) {
+		
+		if (value == null) return "null";
+		
 		if (value instanceof ScriptNode) {
 			return formatScriptNode((ScriptNode) value);
 		} else if (value instanceof ScriptContent) {
@@ -92,10 +95,12 @@ public class JavascriptConsoleScriptObject {
 	private String formatMap(Map<String, Object> map) {
 		StringBuffer buffer = new StringBuffer();
 		for (Map.Entry<String, Object> entry : map.entrySet()) {
-			buffer.append(formatValue(entry.getKey()));				
-			buffer.append(" : ");
-			buffer.append(formatValue(entry.getValue()));
-			buffer.append("\n");
+			if (entry != null) {
+				buffer.append(formatValue(entry.getKey()));				
+				buffer.append(" : ");
+				buffer.append(formatValue(entry.getValue()));
+				buffer.append("\n");
+			}
 		}
 		return buffer.toString();
 	}
