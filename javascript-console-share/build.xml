@@ -39,18 +39,18 @@
     <property name="config.excludes" value="" />
     <property name="build.res.includes" value="**/*.*" />
     <property name="build.res.excludes" value="" />
-    <property name="build.res.dir" value="webapps/share" />
+    <property name="build.res.dir" value="webapps/ROOT" />
     <property name="build.classes.dir" value="shared/classes" />
     <property name="build.lib.dir" value="shared/lib" />
     <property name="yuicompress.warn" value="false" />
     <property name="javac.debug" value="off" />
     <!-- Tomcat properties to reload web scripts or the manager webapp -->
-    <property name="tomcat.url" value="http://localhost:8080" />
-    <property name="tomcat.repo.url" value="${tomcat.url}" />
+	<property name="tomcat.url" value="http://localhost:8080" />
+	<property name="tomcat-share.url" value="http://localhost:9080" />
     <property name="tomcat.share.url" value="${tomcat.url}" />
     <!-- Tomcat properties to reload web scripts -->
     <property name="webapp.alfresco.path" value="/alfresco" />
-    <property name="webapp.share.path" value="/share" />
+    <property name="webapp.share.path" value="" />
     <property name="post.verbose" value="false" />
     <property name="repo.admin.username" value="admin" />
     <property name="repo.admin.password" value="admin" />
@@ -62,7 +62,7 @@
     <property name="webapp.manager.password" value="" />
     <!-- Paths to local Tomcat instances -->
     <property name="tomcat.repo.home" value="${tomcat.home}" />
-    <property name="tomcat.share.home" value="${tomcat.home}" />
+    <property name="tomcat.share.home" value="${tomcat-share.home}" />
    
     <!-- Additional property values. Generally should not be overridden -->
     <property name="config.dir" value="${basedir}/config" />
@@ -233,7 +233,7 @@
         file structure, however the hotcopy-tomcat-zip task will err on the side of caution and 
         will not copy files such as share-config-custom.xml itself into Tomcat.
     -->
-    <target name="build-zip-tomcat" depends="build-zip-prepare,build-zip-config"
+    <target name="build-zip-tomcat" depends="compile, build-zip-prepare,build-zip-config"
       description="Assemble the configuration and resource files for a Tomcat deployment structure">
       <!-- Copy web assets -->
         <copy todir="${build.zip.dir}/${build.res.dir}">
@@ -244,7 +244,7 @@
             <include name="**/*.js" />
         </yuicompress>
     	 <!-- Copy class files -->
-        <copy todir="${build.zip.dir}/webapps/${build.res.dir.name}/WEB-INF/classes">
+        <copy todir="${build.zip.dir}/webapps/${build.res.dir.name}/WEB-INF/classes" verbose="true">
             <fileset dir="${build.compile.dir}" includes="${build.res.includes}" excludes="${build.res.excludes}" />
         </copy>
         
@@ -348,21 +348,9 @@
         reload changes without restarting Tomcat.
     -->  
     <target name="hotcopy-tomcat-zip" depends="build-zip-tomcat" description="Hot copy individual files into a local Tomcat instance">
-        <echo message="Copying repository files" />
-        <copy todir="${tomcat.repo.home}" includeEmptyDirs="false">
-            <fileset dir="${build.zip.dir}">
-                <patternset refid="hotcopy-tomcat-zip-patternset" />
-                <!-- Exclude static resources -->
-                <exclude name="${build.res.dir}/**" />
-                <!-- Exclude web-tier config -->
-                <exclude name="**/classes/alfresco/site-webscripts/**" />
-                <exclude name="**/classes/alfresco/site-data/**" />
-                <exclude name="**/classes/alfresco/web-extension/**" />
-                <exclude name="**/classes/org/springframework/extensions/surf/**" />
-            </fileset>
-        </copy>
+       
         <echo message="Copying Share files" />
-        <copy todir="${tomcat.share.home}" includeEmptyDirs="false">
+        <copy todir="${tomcat.share.home}" includeEmptyDirs="false" verbose="true">
             <fileset dir="${build.zip.dir}">
                 <patternset refid="hotcopy-tomcat-zip-patternset" />
                 <!-- Exclude repo-tier web scripts config -->

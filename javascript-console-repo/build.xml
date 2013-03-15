@@ -235,7 +235,7 @@
     <target name="build-zip-tomcat" depends="build-zip-prepare,build-zip-config,compile"
       description="Assemble the configuration and resource files for a Tomcat deployment structure">
       <!-- Copy web assets -->
-        <copy todir="${build.zip.dir}/${build.res.dir}">
+        <copy todir="${build.zip.dir}/${build.res.dir}" verbose="true">
             <fileset dir="${res.dir}" includes="${build.res.includes}" excludes="${build.res.excludes}" />
         </copy>
         <!-- Minify JS -->
@@ -243,7 +243,7 @@
             <include name="**/*.js" />
         </yuicompress>
     	 <!-- Copy class files -->
-        <copy todir="${build.zip.dir}/webapps/${build.res.dir.name}/WEB-INF/classes">
+        <copy todir="${build.zip.dir}/webapps/${build.res.dir.name}/WEB-INF/classes" verbose="true">
             <fileset dir="${build.compile.dir}" includes="${build.res.includes}" excludes="${build.res.excludes}" />
         </copy>
     </target>
@@ -347,7 +347,7 @@
     -->  
     <target name="hotcopy-tomcat-zip" depends="build-zip-tomcat" description="Hot copy individual files into a local Tomcat instance">
         <echo message="Copying repository files" />
-        <copy todir="${tomcat.repo.home}" includeEmptyDirs="false">
+        <copy todir="${tomcat.repo.home}" includeEmptyDirs="false" verbose="true">
             <fileset dir="${build.zip.dir}">
                 <patternset refid="hotcopy-tomcat-zip-patternset" />
                 <!-- Exclude static resources -->
@@ -359,15 +359,6 @@
                 <exclude name="**/classes/org/springframework/extensions/surf/**" />
             </fileset>
         </copy>
-        <echo message="Copying Share files" />
-        <copy todir="${tomcat.share.home}" includeEmptyDirs="false">
-            <fileset dir="${build.zip.dir}">
-                <patternset refid="hotcopy-tomcat-zip-patternset" />
-                <!-- Exclude repo-tier web scripts config -->
-                <exclude name="**/classes/alfresco/extension/**" />
-                <exclude name="**/classes/alfresco/templates/webscripts/**" />
-            </fileset>
-         </copy>
     </target>
 
     <!--

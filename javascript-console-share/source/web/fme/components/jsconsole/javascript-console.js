@@ -9,6 +9,7 @@ if (typeof Fme == "undefined" || !Fme)
    var Fme = {};
    
 } 
+
    
 /**
  * Admin Console Javascript Console
@@ -19,26 +20,31 @@ if (typeof Fme == "undefined" || !Fme)
 (function()
 {
    /**
-	 * YUI Library aliases
-	 */
+     * YUI Library aliases
+     */
    var Dom = YAHOO.util.Dom,
        Event = YAHOO.util.Event,
        Element = YAHOO.util.Element;
    
+   
    /**
-	 * Alfresco Slingshot aliases
-	 */
+     * Alfresco Slingshot aliases
+     */
    var $html = Alfresco.util.encodeHTML,
        $hasEventInterest = Alfresco.util.hasEventInterest; 
 
+   
+   
+
+
    /**
-	 * JavascriptConsole constructor.
-	 * 
-	 * @param {String}
-	 *            htmlId The HTML id of the parent element
-	 * @return {Fme.JavascriptConsole} The new JavascriptConsole instance
-	 * @constructor
-	 */
+     * JavascriptConsole constructor.
+     * 
+     * @param {String}
+     *            htmlId The HTML id of the parent element
+     * @return {Fme.JavascriptConsole} The new JavascriptConsole instance
+     * @constructor
+     */
    Fme.JavascriptConsole = function(htmlId)
    {
       this.name = "Fme.JavascriptConsole";
@@ -62,10 +68,10 @@ if (typeof Fme == "undefined" || !Fme)
       YAHOO.extend(ListPanelHandler, Alfresco.ConsolePanelHandler,
       {
          /**
-			 * Called by the ConsolePanelHandler when this panel shall be loaded
-			 * 
-			 * @method onLoad
-			 */
+             * Called by the ConsolePanelHandler when this panel shall be loaded
+             * 
+             * @method onLoad
+             */
          onLoad: function onLoad()
          {
         	 parent.widgets.pathField = Dom.get(parent.id + "-pathField"); 
@@ -73,6 +79,7 @@ if (typeof Fme == "undefined" || !Fme)
         	 parent.widgets.nodeField = Dom.get(parent.id + "-nodeRef");
         	 parent.widgets.scriptInput = Dom.get(parent.id + "-jsinput");
         	 parent.widgets.scriptOutput = Dom.get(parent.id + "-jsoutput");
+        	 parent.widgets.jsonOutput= Dom.get(parent.id + "-jsonOutput");
         	 parent.widgets.templateInput = Dom.get(parent.id + "-templateinput");
         	 parent.widgets.templateOutputHtml = Dom.get(parent.id + "-templateoutputhtml");
         	 parent.widgets.templateOutputText = Dom.get(parent.id + "-templateoutputtext");
@@ -100,6 +107,8 @@ if (typeof Fme == "undefined" || !Fme)
 	       this.widgets.templateOutputHtml.innerHTML = "";
 	       this.widgets.templateOutputText.innerHTML = "";
 	   },
+	   
+	   template: '<div class="display-element"><span class="display-label">{name}</span><span class="display-field">{value}</span></div>',
 
 	   appendLineArrayToOutput: function ACJC_appendLineArrayToOutput(lineArray) {
 	       	 var newLines = "";
@@ -127,6 +136,49 @@ if (typeof Fme == "undefined" || !Fme)
 	   },
 	   
 	  createMenuButtons: function ACJC_createMenuButtons(listOfScripts) {
+	      	      
+	    var themeMenuItems =   [ { text : "default",           value : "default"},
+	                             { text : "ambiance-mobile",   value : "ambiance-mobile"},
+	                             { text : "ambiance",          value : "ambiance"},
+	                             { text : "blackboard",        value : "blackboard"},
+	                             { text : "cobalt",            value : "cobalt"},
+	                             { text : "eclipse",           value : "eclipse"},
+	                             { text : "erlang-dark",       value : "erlang-dark"},
+	                             { text : "lesser-dark",       value : "lesser-dark"},
+	                             { text : "monokai",           value : "monokai"},
+	                             { text : "neat",              value : "neat"},
+	                             { text : "rubyblue",          value : "rubyblue"},
+	                             { text : "solarized",         value : "solarized"},
+	                             { text : "twilight",          value : "twilight"},
+	                             { text : "vibrant-ink",       value : "vibrant-ink"},
+	                             { text : "xq-dark",           value : "xq-dark"}
+	                           ];
+	    
+	    var othemeMenuButton = new YAHOO.widget.Button({ 
+              id: "themeButton", 
+              name: "themeButton",
+              label: this.msg("button.codemirror.theme"),
+              type: "menu",  
+              menu: themeMenuItems,
+              container: this.id + "-theme"
+        });
+	    
+	    if(this.browserSupportsHtml5Storage()){
+	        // preselect item
+    	    var theme = window.localStorage["javascript.console.codemirror.theme"];
+    	    if(theme){
+    	        var menuItems = othemeMenuButton.getMenu().getItems();
+    	        for ( var i = 0; i < menuItems.length; i++) {
+                    var menuItem = menuItems[i];
+                    if(theme==menuItem.cfg.getProperty('text')){
+                        menuItem.cfg.setProperty("selected", true);
+                    }
+                }
+    	        
+    	    }
+	    }
+	      
+	    othemeMenuButton.getMenu().subscribe("click", this.onThemeSelection, this);
 
           var loadMenuItems = [{
         	  text : this.msg("button.load.create.new"),
@@ -210,11 +262,7 @@ if (typeof Fme == "undefined" || !Fme)
 	               e.stop();
 	               i.owner.onExecuteClick(i.owner, e);
 	         }
-         // Hook into ctrl-space
-         if (e.keyCode == 32 && (e.ctrlKey || e.metaKey) && !e.altKey) {
-            e.stop();
-            i.owner.onAutoComplete(i.owner, e);
-         }
+
          // Hook into ctrl-z for Undo
          if (e.keyCode == 122 && (e.ctrlKey || e.metaKey) && !e.altKey) {
             e.stop();
@@ -234,7 +282,8 @@ if (typeof Fme == "undefined" || !Fme)
             	code = code.replace(/^\/\//gm, ""); // add a // before each line
             }
             else {
-            	code = code.replace(/^/gm, "//"); // remove // comment before each line
+            	code = code.replace(/^/gm, "//"); // remove // comment before
+                                                    // each line
             }
             editor.replaceSelection(code);
          }
@@ -247,30 +296,56 @@ if (typeof Fme == "undefined" || !Fme)
 	  },
 	  
       /**
-		 * Fired by YUI when parent element is available for scripting.
-		 * Component initialisation, including instantiation of YUI widgets and
-		 * event listener binding.
-		 * 
-		 * @method onReady
-		 */
+         * Fired by YUI when parent element is available for scripting.
+         * Component initialisation, including instantiation of YUI widgets and
+         * event listener binding.
+         * 
+         * @method onReady
+         */
       onReady: function ACJC_onReady()
       {
          // Call super-class onReady() method
          Fme.JavascriptConsole.superclass.onReady.call(this);
          var self = this;
-
+         this.javascriptCommands=new Object();
+         
          // Attach the CodeMirror highlighting
          this.widgets.codeMirrorScript = CodeMirror.fromTextArea(this.widgets.scriptInput, {
         	 mode : "javascript",
+        	 styleActiveLine: true,
+        	 highlightSelectionMatches : true,
+        	 showCursorWhenSelecting :true,
+        	 gutters: ["CodeMirror-lint-markers"],
+       	     lintWith: function(text){
+       	         return CodeMirror.javascriptValidator(text, self.javascriptCommands.globalMap);
+       	     },
         	 lineNumbers: true,
         	 matchBrackets: true,
-        	 onKeyEvent: this.onEditorKeyEvent
+        	 autoCloseBrackets:true,
+        	 onKeyEvent: this.onEditorKeyEvent,
+        	 extraKeys: {"Ctrl-Space": "autocomplete"}
+         });
+
+         this.widgets.codeMirrorScript.on("cursorActivity", function(cm){
+             var currentLine = cm.getCursor().line+1;
+             var column = cm.getCursor().ch;
+             var results = CodeMirror.javascriptValidator(cm.getDoc().getValue(), self.javascriptCommands.globalMap);
+             var info = "Line "+currentLine +" \t - Column "+column+" \t - Errors/Warnings " +results.length;
+             var text = YAHOO.util.Selector.query('.scriptStatusLine', null, true);
+             text.innerHTML=info;
          });
          
+         this.widgets.codeMirrorScript.getInputField().blur();
+         
+                
          this.widgets.codeMirrorTemplate = CodeMirror.fromTextArea(this.widgets.templateInput, {
-        	 mode : "xml",
         	 lineNumbers: true,
+        	 mode:"htmlmixed",
+        	 styleActiveLine: true,
+             highlightSelectionMatches : true,
+             showCursorWhenSelecting :true,
         	 matchBrackets: true,
+        	 autoCloseBrackets: true,
         	 onKeyEvent: this.onEditorKeyEvent,
         	 markParen: function(node, ok) { 
         	        node.style.backgroundColor = ok ? "#CCF" : "#FCC#";
@@ -285,14 +360,76 @@ if (typeof Fme == "undefined" || !Fme)
         	    indentUnit: 4        	 
          });
          
+         this.widgets.codeMirrorTemplate.on("cursorActivity", function(cm){
+             var currentLine = cm.getCursor().line+1;
+             var column = cm.getCursor().ch;
+             var info = "Line "+currentLine +" \t - Column "+column;
+             var text = YAHOO.util.Selector.query('.templateStatusLine', null, true);
+             text.innerHTML=info;
+         });
+         
+         this.widgets.codeMirrorTemplate.getInputField().blur();
+         
+         
+      // Attach the CodeMirror highlighting
+         this.widgets.codeMirrorJSON = CodeMirror.fromTextArea(this.widgets.jsonOutput, {
+             mode : "application/json",
+             styleActiveLine: true,
+             readOnly: true,
+             showCursorWhenSelecting :true,
+             highlightSelectionMatches : true,
+             gutters: ["CodeMirror-lint-markers"],
+             lintWith: CodeMirror.jsonValidator,
+             lineNumbers: true,
+             matchBrackets: true,
+             onKeyEvent: this.onEditorKeyEvent
+         });
+         
+
+         this.widgets.codeMirrorJSON.on("cursorActivity", function(cm){
+             var currentLine = cm.getCursor().line+1;
+             var column = cm.getCursor().ch;
+             
+             var results = CodeMirror.jsonValidator(cm.getDoc().getValue(), self.javascriptCommands.globalMap);
+             var info = "Line "+currentLine +" \t - Column "+column+" \t - Errors/Warnings " +results.length;
+             var text = YAHOO.util.Selector.query('.jsonStatusLine', null, true);
+             text.innerHTML=info;
+         });
+         
+         
          // Store this for use in event
          this.widgets.codeMirrorScript.owner = this;
          this.widgets.codeMirrorTemplate.owner = this;
+         
+         this.javascriptKeywords = ("break case catch continue debugger default delete do else false finally for function " +
+         "if in instanceof new null return switch throw true try typeof var void while with").split(" ");
+         
+         // activate javascript code completion
+         CodeMirror.commands.autocomplete = function(cm) {
+             CodeMirror.showHint(cm, function(editor, options) {
+                 return self.scriptHint(editor, self.javascriptKeywords,
+                         function (e, cur) {return e.getTokenAt(cur);},
+                         options);
+                 });
+         }
 
          this.setupResizableEditor();
          
          this.widgets.inputTabs = new YAHOO.widget.TabView(this.id + "-inputTabs");
          this.widgets.outputTabs = new YAHOO.widget.TabView(this.id + "-outputTabs");
+         
+         // enable correct initialisation when navigating to the json editor
+            // -> refresh when the tab changes to active.
+         var jsonView = this.widgets.codeMirrorJSON; 
+         this.widgets.outputTabs.getTab(3).addListener("activeChange", function(event){
+             if(event.newValue){
+                 YAHOO.lang.later(50, undefined, function(){
+                     jsonView.refresh(); 
+                 });
+             };
+             
+             
+         });
          
          new YAHOO.widget.Tooltip("tooltip-urlargs", { 
         	    context: this.widgets.config.urlargs, 
@@ -309,7 +446,19 @@ if (typeof Fme == "undefined" || !Fme)
          var tab0 = this.widgets.inputTabs.getTab(1); // 2nd tab
          tab0.addListener('click', function handleClick(e) { 
         	 self.widgets.codeMirrorTemplate.refresh();
-         });         
+         });      
+         
+         this.widgets.statsModule = new YAHOO.widget.Module("perfPanel", {visible:true, draggable:false, close:false } ); 
+         this.widgets.statsModule.setHeader("Performance Stats");
+         
+         var noExecEl = YAHOO.lang.substitute(this.template, {
+            name:this.msg("label.stats.no.execution"),
+            value:''
+         });
+
+         this.widgets.statsModule.setBody(noExecEl); 
+         this.widgets.statsModule.render(this.id + "-executionStats");
+         
 
          YAHOO.Bubbling.on("folderSelected", this.onDestinationSelected, this);
          
@@ -320,11 +469,21 @@ if (typeof Fme == "undefined" || !Fme)
            		 window.localStorage["javascript.console.script"] = self.widgets.scriptInput.value;
            		 self.widgets.codeMirrorTemplate.save();
            		 window.localStorage["javascript.console.template"] = self.widgets.templateInput.value;
-
-           		 window.localStorage["javascript.console.config.runas"] = self.widgets.config.runas.value;
-           		 window.localStorage["javascript.console.config.transactions"] = self.widgets.config.transactions.value;
-           		 window.localStorage["javascript.console.config.urlarguments"] = self.widgets.config.urlarguments.value;
-           		 window.localStorage["javascript.console.config.runlikecrazy"] = self.widgets.config.runlikecrazy.value;
+           		 if(self.widgets.config.runas){
+           		     window.localStorage["javascript.console.config.runas"] = self.widgets.config.runas.value;           		     
+           		 }
+           		 if( self.widgets.config.transactions){
+           		     window.localStorage["javascript.console.config.transactions"] = self.widgets.config.transactions.value;           		     
+           		 }
+           		 
+           		 if( self.widgets.config.urlarguments){
+           		     window.localStorage["javascript.console.config.urlarguments"] = self.widgets.config.urlarguments.value;           		     
+           		 }
+                 if( self.widgets.config.runlikecrazy){
+                     window.localStorage["javascript.console.config.runlikecrazy"] = self.widgets.config.runlikecrazy.value;
+                 }
+                 
+           		 window.localStorage["javascript.console.codemirror.theme"]    = self.widgets.codeMirrorScript.options.theme;
              };
 
              if (window.localStorage["javascript.console.config.runas"]) {
@@ -344,7 +503,8 @@ if (typeof Fme == "undefined" || !Fme)
              }
              
              if (window.localStorage["javascript.console.script"]) {
-            	 this.widgets.codeMirrorScript.setValue(window.localStorage["javascript.console.script"]);
+                 var javascriptText = window.localStorage["javascript.console.script"];
+            	 this.widgets.codeMirrorScript.setValue(javascriptText);
              }
              else {
             	 this.loadDemoScript();
@@ -356,6 +516,13 @@ if (typeof Fme == "undefined" || !Fme)
              else {
             	 this.loadDemoTemplate();
              }
+             if (window.localStorage["javascript.console.codemirror.theme"]) {
+                 var theme = window.localStorage["javascript.console.codemirror.theme"];
+                 this.widgets.codeMirrorScript.setOption('theme',theme);
+                 this.widgets.codeMirrorTemplate.setOption('theme',theme);
+             }
+             
+             
     	 }
          
          // Load Scripts from Repository
@@ -382,12 +549,20 @@ if (typeof Fme == "undefined" || !Fme)
             successCallback: {
             	fn: function(res) {
             		this.javascriptCommands = res.json;
+                    this.javascriptCommands.globalMap={};
+                    for ( var i = 0; i < this.javascriptCommands.global.length; i++) {
+                        this.javascriptCommands.globalMap[this.javascriptCommands.global[i]]=false;
+                    }
+                    // add Packages as allowed object
+                    this.javascriptCommands.globalMap["Packages"]=false;
+            		
             	},
             	scope: this
             }
          });            
 
-         // Read the Alfresco Data Dictionary for code completion (types and aspects)
+         // Read the Alfresco Data Dictionary for code completion (types and
+            // aspects)
          Alfresco.util.Ajax.request(
          {
             url: Alfresco.constants.PROXY_URI + "api/classes",
@@ -420,8 +595,145 @@ if (typeof Fme == "undefined" || !Fme)
         	 this.widgets.documentField.innerHTML = this.options.documentName + " (" + this.options.documentNodeRef +")";
          }
          
-      },
+//         var help = [
+//                     '%+r **** termlib.js text wrap sample **** %-r',
+//                     ' ',
+//                     ' * type "clear" to clear the screen.',
+//                     ' * type "help" to see this page.',
+//                     ' * type "exit" to quit.',
+//                     ' '
+//                 ]
+//         var term = new Terminal(
+//             {
+//                 x: 0,
+//                 y: 33,
+//                 termDiv: 'termDiv',
+//                 bgColor: '#232e45',
+//                 greeting: help.join('%n'),
+//                 handler: termHandler,
+//                 exitHandler: termExitHandler,
+//                 wrapping: true
+//             }
+//         );
+//         
+//         term.open();
+//         term.cursorOff();
+//
+//         function termExitHandler() {
+////             // reset the UI
+////             var mainPane = (document.getElementById)?
+////                 document.getElementById('mainPane') : document.all.mainPane;
+////             if (mainPane) mainPane.className = 'lh15';
+//         }
+//
+//         function termHandler() {
+//             // default handler + exit
+//             this.newLine();
+//             if (this.lineBuffer.match(/^\s*clear\s*$/i)) {
+//                 this.clear();
+//             }
+//             else if (this.lineBuffer.match(/^\s*help\s*$/i)) {
+//                 this.clear();
+//                 this.write(help);
+//             }
+//             else if (this.lineBuffer != '') {
+//                 // echo with write for wrapping, but escape any mark-up
+//                 this.write(this.lineBuffer.replace(/%/g, '%%'));
+//                 this.newLine();
+//             }
+//             this.prompt();
+//         }
 
+         
+      },
+      
+      scriptHint: function(editor, keywords, getToken, options) {
+          // Find the token at the cursor
+          var cur = editor.getCursor(), token = getToken(editor, cur), tprop = token;
+          // If it's not a 'word-style' token, ignore the token.
+              if (!/^[\w$_]*$/.test(token.string)) {
+            token = tprop = {start: cur.ch, end: cur.ch, string: "", state: token.state,
+                             type: token.string == "." ? "property" : null};
+          }
+          // If it is a property, find out what it is a property of.
+          while (tprop.type == "property") {
+            tprop = getToken(editor, CodeMirror.Pos(cur.line, tprop.start));
+            if (tprop.string != ".") return;
+            tprop = getToken(editor, CodeMirror.Pos(cur.line, tprop.start));
+            if (tprop.string == ')') {
+              var level = 1;
+              do {
+                tprop = getToken(editor, CodeMirror.Pos(cur.line, tprop.start));
+                switch (tprop.string) {
+                case ')': level++; break;
+                case '(': level--; break;
+                default: break;
+                }
+              } while (level > 0);
+              tprop = getToken(editor, CodeMirror.Pos(cur.line, tprop.start));
+          if (tprop.type.indexOf("variable") === 0)
+            tprop.type = "function";
+          else return; // no clue
+            }
+            if (!context) var context = [];
+            context.push(tprop);
+          }
+          return {list: this.getCompletions(token, context, keywords, options),
+                  from: CodeMirror.Pos(cur.line, token.start),
+                  to: CodeMirror.Pos(cur.line, token.end)};
+      },
+      
+      getCompletions: function(token, context, keywords, options) {
+          var found = [], start = token.string;
+          function maybeAdd(str) {
+            if (str.indexOf(start) == 0 && !arrayContains(found, str)) found.push(str);
+          }
+          
+          if (context) {
+            // If this is a property, see if it belongs to some object we can
+            // find in the current environment.
+            var obj = context.pop();
+            var commands = this.javascriptCommands["methods"][obj.string];
+            if (commands) {
+                forEach(commands, maybeAdd);
+            }
+            else if (obj.string.substr(-4).toLowerCase() === "node") {
+                forEach(this.javascriptCommands["node"], maybeAdd);
+            } 
+          }
+          else {
+              if (token.className == "stringliteral") {
+                  var suggestions = {};
+                  for(var t in this.dictionary) {
+                      
+                      var info = { 
+                              type: (this.dictionary[t].isAspect ? "Aspect" : "Type"), 
+                              name : this.dictionary[t].name
+                      };
+                      suggestions[info.type + info.name] = info;
+
+                      for(var p in this.dictionary[t].properties) {
+                          info = { 
+                              type : "Property", 
+                              name : this.dictionary[t].properties[p].name 
+                          };
+                          suggestions[info.type + info.name] = info;
+                      }
+                  };
+                  for (var sg in suggestions) {
+                      maybeAdd(suggestions[sg].name, suggestions[sg].type);
+                  }
+              }
+              else{
+                  forEach(this.javascriptCommands.global, maybeAdd);
+                  forEach(keywords, maybeAdd);            
+              }
+          }
+          return found;
+        },
+ 
+        
+           
       setupResizableEditor: function() {
     	  var me = this;
     	  
@@ -430,13 +742,14 @@ if (typeof Fme == "undefined" || !Fme)
 
           var resize = new YAHOO.util.Resize(this.id + "-inputContentArea", { handles : ["b"] });
          
- 	     //var resize = new YAHOO.util.Resize(this.id + "-editorResize", { handles : ["b"] });
+ 	     // var resize = new YAHOO.util.Resize(this.id + "-editorResize", {
+            // handles : ["b"] });
  	     resize.on('resize', function(ev) {
  	    	 var h = ev.height; 
- 	         Dom.setStyle(codeMirrorScript.getScrollerElement(), "height", ""+ h + "px");
+ 	         Dom.setStyle(codeMirrorScript.getScrollerElement(), "height", ""+ h-20 + "px");
  	         codeMirrorScript.refresh();
 
-  	         Dom.setStyle(codeMirrorTemplate.getScrollerElement(), "height", ""+ h + "px");
+  	         Dom.setStyle(codeMirrorTemplate.getScrollerElement(), "height", ""+ h-20 + "px");
  	         codeMirrorTemplate.refresh();
  	        
   	         Dom.setStyle(me.id + "-inputContentArea", "width", "inherit");
@@ -452,220 +765,18 @@ if (typeof Fme == "undefined" || !Fme)
  	         // YAHOO.util.Resize sets an absolute width, reset to auto width
    	         Dom.setStyle(me.id + "-inputContentArea", "width", "inherit");
           }, this, true);
-          
-    	  
     	  
       },
 
-      /**
-		 * Returns the possible auto completions for a given context and a token.
-		 * 
-		 * @method getAutoCompletions
-		 */      
-      getAutoCompletions: function ACJC_getAutoCompletions(token, context)
-      {
-    	  var keywords = ("break case catch continue debugger default delete do else false finally for function " +
-          "if in instanceof new null return switch throw true try typeof var void while with").split(" ");
-    	  
-    	  var found = [], start = token.string;
-    	  
-    	  var maybeAdd = function(str, info) {
-    	      if (str.indexOf(start) == 0) {
-    	    	var obj = { value : str };
-    	    	if (info) obj.info = info;
-    	    	found.push(obj);
-    	      }
-    	  }
-    	  
-    	  var forEach = function(arr, f) {
-    	    for (var i = 0, e = arr.length; i < e; ++i) f(arr[i]);
-    	  }
-    	  
-    	  if (context) {
-    		  var variableName = context[0].string;
-    		  var commands = this.javascriptCommands["methods"][variableName];
-    		  if (commands) {
-          	      forEach(commands, maybeAdd);
-    		  }
-    		  else if (variableName.substr(-4).toLowerCase() === "node") {
-    			  forEach(this.javascriptCommands["node"], maybeAdd);
-    		  } 
-    	    }
-    	    else {
-    	      if (token.className == "stringliteral") {
-    	    	 var suggestions = {};
-    	    	 for(var t in this.dictionary) {
-    	    		 
-    	    		 var info = { 
-    	    				 type: (this.dictionary[t].isAspect ? "Aspect" : "Type"), 
-    	    				 name : this.dictionary[t].name
-    	    		 };
-    	    		 suggestions[info.type + info.name] = info;
-
-    	    		 for(var p in this.dictionary[t].properties) {
-    	    			 info = { 
-    	    				 type : "Property", 
-    	    				 name : this.dictionary[t].properties[p].name 
-    	    			 };
-        	    		 suggestions[info.type + info.name] = info;
-    	    		 }
-    	    	 };
-    	    	 for (var sg in suggestions) {
-    	    		 maybeAdd(suggestions[sg].name, suggestions[sg].type);
-    	    	 }
-    	      }
-    	      else {
-        	      forEach(this.javascriptCommands.global, maybeAdd);
-          	      forEach(keywords, maybeAdd);
-    	      }
-    	    }
-    	    return found;    	  
-      },
+                
       
       /**
-		 * Fired when the user clicks Ctrl+Space to trigger auto complete in the text editor.
-		 * 
-		 * @method onAutoComplete
-		 */      
-      onAutoComplete: function ACJC_onAutoComplete(e, p_obj)
-      {
-  	    	var editor = this.widgets.codeMirrorScript;
-
-  	    	var removeQuotes = function(text) {
-  	    		while (text[0]=='"') text = text.substr(1);
-  	    		while (text[text.length-1]=='"') text = text.substr(0,text.length-1);
-  	    		return text;
-  	    	}
-  	    	
-  	    	// We want a single cursor position.
-    	    if (editor.somethingSelected()) return;
-    	    
-    	    // Find the token at the cursor
-    	    var cur = editor.getCursor(false), token = editor.getTokenAt(cur), tprop = token;
-    	    
-    	    // If it's not a 'word-style' token, ignore the token.
-    	    if (!/^[\w$_]*$/.test(token.string)) {
-    	    	if (token.string[0] == '"') {
-    	    	  token.string = token.string.replace(/\s+$/, '');  // trim right
-  	    	      token = tprop = {
-  	    	    		  start: cur.ch - removeQuotes(token.string).length, 
-  	    	    		  end: cur.ch, 
-  	    	    		  string: removeQuotes(token.string), 
-  	    	    		  state: token.state,
-  	                      className: "stringliteral"
-  	              };
-    	    	}
-    	    	else {
-    	    	      token = tprop = {start: cur.ch, end: cur.ch, string: "", state: token.state,
-   	                       className: token.string == "." ? "property" : null};
-    	    	}
-    	    }
-    	    
-    	    // If it is a property, find out what it is a property of.
-    	    while (tprop.className == "property") {
-    	      tprop = editor.getTokenAt({line: cur.line, ch: tprop.start});
-    	      if (tprop.string != ".") return;
-    	      tprop = editor.getTokenAt({line: cur.line, ch: tprop.start});
-    	      if (!context) var context = [];
-    	      context.push(tprop);
-    	    }
-    	    
-    	    var completions = this.getAutoCompletions(token, context);
-    	    if (!completions.length) return;
-    	    
-    	    function insert(str) {
-    	      editor.replaceRange(str, {line: cur.line, ch: token.start}, {line: cur.line, ch: token.end});
-    	    }
-    	    
-    	    // When there is only one completion, use it directly.
-    	    if (completions.length == 1) {
-    	    	insert(completions[0].value); 
-    	    	return true;
-    	    }
-
-    	    // Build the select widget
-    	    var complete = document.createElement("div");
-    	    complete.className = "javascript-console-completions";
-    	    var sel = complete.appendChild(document.createElement("select"));
-    	    // Opera doesn't move the selection when pressing up/down in a
-    	    // multi-select, but it does properly support the size property on
-    	    // single-selects, so no multi-select is necessary.
-    	    if (!window.opera) sel.multiple = true;
-    	    for (var i = 0; i < completions.length; ++i) {
-    	      var opt = sel.appendChild(document.createElement("option"));
-    	      opt.value = completions[i].value;
-    	      
-    	      var optText = completions[i].value;
-    	      if (completions[i].info) {
-    	    	  optText += " (" + completions[i].info + ")";
-    	      }
-    	      opt.appendChild(document.createTextNode(optText));
-    	    }
-    	    sel.firstChild.selected = true;
-    	    sel.size = Math.min(10, completions.length);
-    	    var pos = editor.cursorCoords();
-    	    complete.style.left = pos.x + "px";
-    	    complete.style.top = pos.yBot + "px";
-    	    document.body.appendChild(complete);
-    	    // Hack to hide the scrollbar.
-    	    if (completions.length <= 10)
-    	      complete.style.width = (sel.clientWidth - 1) + "px";
-
-    	    var done = false;
-    	    
-    	    var fnClose = function() {
-    	      if (done) return;
-    	      done = true;
-    	      complete.parentNode.removeChild(complete);
-    	    }
-    	    
-    	    var fnPick = function() {
-    	      insert(sel.options[sel.selectedIndex].value);
-    	      fnClose();
-    	      setTimeout(function(){editor.focus();}, 50);
-    	    }
-    	    
-    	    Event.addListener(sel, "blur", fnClose, this, true);
-    	    Event.addListener(sel, "keydown", function(event) {
-    	      var code = event.keyCode;
-    	      // Enter and space
-    	      if (code == 13 || code == 32) {
-    	    	  Event.stopEvent(event); 
-    	    	  fnPick();
-    	      }
-    	      // Escape
-    	      else if (code == 27 || code == 8) {
-    	    	  Event.stopEvent(event); 
-    	    	  fnClose(); 
-    	    	  editor.focus();
-    	      }
-    	      //else if (code != 38 && code != 40) {
-    	    	//  fnClose();
-    	    	 // editor.focus(); 
-    	    	  // FM: WHY?? setTimeout(this.onAutoComplete, 50);
-    	      //}
-    	    }, this, true);
-    	    Event.addListener(sel, "dblclick", fnPick, this, true);
-
-    	    sel.focus();
-    	    // Opera sometimes ignores focusing a freshly created node
-    	    if (window.opera) {
-    	    	setTimeout(function(){
-	    			if (!done) sel.focus();
-	    		}, 100);
-    	    }
-    	    return true;    	  
-    	  
-      },
-      
-      
-      /**
-		 * Fired when the user clicks on the execute button. Reads the script
-		 * from the input textarea and calls the execute webscript in the
-		 * repository to run the script.
-		 * 
-		 * @method onExecuteClick
-		 */      
+         * Fired when the user clicks on the execute button. Reads the script
+         * from the input textarea and calls the execute webscript in the
+         * repository to run the script.
+         * 
+         * @method onExecuteClick
+         */      
       showResultTable: function ACJC_showResultTable(resultData)
       {
     	  var allFields = {};
@@ -705,9 +816,9 @@ if (typeof Fme == "undefined" || !Fme)
       },
       
       /**
-       * Exports the datatable as CSV in a separate browser window
-       * taken from http://stackoverflow.com/questions/2472424/exporting-data-from-a-yui-datatable
-       */
+         * Exports the datatable as CSV in a separate browser window taken from
+         * http://stackoverflow.com/questions/2472424/exporting-data-from-a-yui-datatable
+         */
       exportResultTableAsCSV : function() {
     	    var myDataTable = this.widgets.resultTable;
     	  
@@ -739,12 +850,12 @@ if (typeof Fme == "undefined" || !Fme)
        },      
       
       /**
-		 * Fired when the user clicks on the execute button. Reads the script
-		 * from the input textarea and calls the execute webscript in the
-		 * repository to run the script.
-		 * 
-		 * @method onExecuteClick
-		 */      
+         * Fired when the user clicks on the execute button. Reads the script
+         * from the input textarea and calls the execute webscript in the
+         * repository to run the script.
+         * 
+         * @method onExecuteClick
+         */      
       onExecuteClick: function ACJC_onExecuteClick(e, p_obj)
       {
     	// Save any changes done in CodeMirror editor before submitting
@@ -777,8 +888,9 @@ if (typeof Fme == "undefined" || !Fme)
    	  	this.widgets.scriptOutput.disabled = true;
    	    this.widgets.executeButton.disabled = true;
 
-   	    this.executeStartTime = new Date();
    	    this.showLoadingAjaxSpinner(true);
+   	    
+   	    this.executeStartTime = new Date();
    	    
    	  	Alfresco.util.Ajax.request(
          {
@@ -790,12 +902,14 @@ if (typeof Fme == "undefined" || !Fme)
             {
                fn: function(res) {
             	 this.showLoadingAjaxSpinner(false);
-            	 this.printExecutionStats();
+            	 this.printExecutionStats(res.json);
             	 this.clearOutput();
             	 this.appendLineArrayToOutput(res.json.printOutput);
             	 this.widgets.templateOutputHtml.innerHTML = res.json.renderedTemplate;
             	 this.widgets.templateOutputText.innerHTML = $html(res.json.renderedTemplate);
-            		 
+            	 this.widgets.codeMirrorJSON.setValue(formatter.formatJson(res.json.renderedTemplate,"  "));
+            	 this.widgets.codeMirrorJSON.focus();
+
                  if (res.json.spaceNodeRef) {
                 	 this.widgets.nodeField.value = res.json.spaceNodeRef;
                      this.widgets.pathField.innerHTML = res.json.spacePath;
@@ -817,17 +931,21 @@ if (typeof Fme == "undefined" || !Fme)
                fn: function(res) {
             	 this.showLoadingAjaxSpinner(false);  
             	 this.printExecutionStats();
-                 var result = YAHOO.lang.JSON.parse(res.serverResponse.responseText);
-                		 
+
+            	 var result = YAHOO.lang.JSON.parse(res.serverResponse.responseText);                      
+
+            	 this.markJSError(result);
+            	 this.markFreemarkerError(result);
+           	 
                  this.clearOutput();
-                 this.setOutputText(result.status.code + " " + 
-                		 result.status.name + "\n" +
-                		 result.status.description + "\n" + result.message + "\n");
+                 this.setOutputText(result.status.code + " " +
+                 result.status.name + "\nStacktrace-Details:\n"+result.callstack[1]+"\n\n"+
+                 result.status.description + "\n" + result.message);
 
                  this.widgets.scriptOutput.disabled = false;
            	     this.widgets.executeButton.disabled = false;
                	 Dom.addClass(this.widgets.scriptOutput, 'jserror');
-               	 this.widgets.outputTabs.selectTab(0); // show console tab               	 
+               	 this.widgets.outputTabs.selectTab(0); // show console tab
               	 
                	 this.runLikeCrazy();
                },
@@ -845,25 +963,113 @@ if (typeof Fme == "undefined" || !Fme)
 		 };
 	  },
 	  
+	  /**
+         * marks the error in the code mirror editor if there is any line hint
+         * in the error message.
+         */
+	  markJSError: function(result){
+          var regex= /js#([\d])/;
+          var callStackLineIndicator = regex.exec(result.callstack[1]);
+          if(callStackLineIndicator){
+              // show the javascript window
+              this.widgets.inputTabs.selectTab(0);
+              this.widgets.codeMirrorScript.focus();
+              
+              // create a marker for the editor to indicate that there was an error!
+              var line = callStackLineIndicator[1]-1;
+              if(this.widgets.codeMirrorScript.somethingSelected()){
+                  line = line + this.widgets.codeMirrorScript.getCursor().line-1;
+              }
+              var selectionEnd = this.widgets.codeMirrorScript.getLineHandle(line).text.length;
+              var from={"line":line,"ch":0};
+              var to={"line":line,"ch":selectionEnd};
+              this.widgets.codeMirrorScript.markText(from,to,{clearOnEnter:"true",className: "CodeMirror-lint-span-error", __annotation: {from:from, to:to, severity:"error", message:result.callstack[1]}});
+              
+          }
+	  },
+	  
+	  /**
+         * marks the error in the code mirror editor if there is any line hint
+         * in the error message.
+         */
+	  markFreemarkerError: function(result){
+	      var callstack = result.callstack;
+	      if(callstack){
+	          for ( var i = 0; i < callstack.length; i++) {
+
+                regex = /line (\d*), column (\d*)/;
+                callStackLineIndicator = regex.exec(callstack[i]);
+                if(callStackLineIndicator){
+                    this.widgets.inputTabs.selectTab(1);
+                    this.widgets.codeMirrorTemplate.focus();
+                    var line = callStackLineIndicator[1]-1;
+                    var selectionEnd = this.widgets.codeMirrorTemplate.getLineHandle(line).text.length;
+                    this.widgets.codeMirrorTemplate.markText({"line":line,"ch":0},{"line":line,"ch":selectionEnd},{clearOnEnter:"true",className: "CodeMirror-lint-span-error" ,__annotation: {message:callstack[i]}});                    
+                    break;
+                }
+	          }
+	      }
+      },
+	  
 	  showLoadingAjaxSpinner : function(showSpinner) {
 		  var spinner = Dom.get(this.id + "-spinner");
 		  Dom.setStyle(spinner, "display", showSpinner ? "inline" : "none");
 	  },
 	  
-	  printExecutionStats : function() {
+	  printExecutionStats : function(json) {
 		  this.executeEndTime = new Date();
-		  var stats = Dom.get(this.id + "-executionStats");
-		  var text = this.msg("label.stats.executed.in") +" "+ (this.executeEndTime - this.executeStartTime) + "ms";
-          stats.innerHTML = '';
-		  stats.appendChild(document.createTextNode(text));
+		  var overallPerf = this.executeEndTime - this.executeStartTime;
+		  var webscriptPerf="-"; 
+		  var fmPerf="-";
+		  var scriptPerf="-";
+		  var networkPerf="-"; 
+		  var serverCodePerf ="-";
+		  
+		  if(json){
+		      scriptPerf = json.scriptPerf;
+	          fmPerf = json.freemarkerPerf;
+	          webscriptPerf = json.webscriptPerf;    
+	          networkPerf = overallPerf - webscriptPerf;
+	          serverCodePerf = webscriptPerf - scriptPerf - fmPerf;
+		  }
+		  
+		  
+		  
+		  var overallEl = YAHOO.lang.substitute(this.template, {
+		     name:this.msg("label.stats.executed.in"),
+		     value:overallPerf + "ms"
+		  });
+		  
+          var scriptEl = YAHOO.lang.substitute(this.template, {
+              name:this.msg("label.stats.jscript.executed.in"),
+              value:scriptPerf + "ms"
+           });
+          
+          var fmEl = YAHOO.lang.substitute(this.template, {
+              name:this.msg("label.stats.freemarker.executed.in"),
+              value:fmPerf + "ms"
+           });
+          
+          var codeEl = YAHOO.lang.substitute(this.template, {
+              name:this.msg("label.stats.serverCode.executed.in"),
+              value:serverCodePerf + "ms"
+           });
+          
+          var networkEl = YAHOO.lang.substitute(this.template, {
+              name:this.msg("label.stats.network.executed.in"),
+              value:networkPerf + "ms"
+           });
+		  
+		  var text = overallEl+scriptEl+fmEl+codeEl+networkEl;
+ 		  this.widgets.statsModule.setBody(text); 
 	  },
 	  
 	  loadDemoScript: function ACJC_loadDemoScript() {
 		  this.widgets.codeMirrorScript.setValue(
-			'var nodes = search.luceneSearch("@name:alfresco");\n'+
+			'var nodes = search.luceneSearch(\'@name:alfresco\');\n'+
 			'\n'+
 			'for each(var node in nodes) {\n'+
-	        '    logger.log(node.name + " (" + node.typeShort + "): " + node.nodeRef);\n'+
+	        '    logger.log(node.name + \' (\' + node.typeShort + \'): \' + node.nodeRef);\n'+
 	        '}\n');
 	  },
 
@@ -872,11 +1078,11 @@ if (typeof Fme == "undefined" || !Fme)
 	  },
 	  
       /**
-		 * Fired when the user selects a script from the load scripts drop down
-		 * menu. Calls a repository webscript to retrieve the script contents.
-		 * 
-		 * @method onLoadScriptClick
-		 */ 	  
+         * Fired when the user selects a script from the load scripts drop down
+         * menu. Calls a repository webscript to retrieve the script contents.
+         * 
+         * @method onLoadScriptClick
+         */ 	  
       onLoadScriptClick : function ACJC_onLoadScriptClick(p_sType, p_aArgs, self) { 
 			 
           var callback = {
@@ -899,7 +1105,21 @@ if (typeof Fme == "undefined" || !Fme)
     		  var url = Alfresco.constants.PROXY_URI + "api/node/content/" + nodeRef.replace("://","/");
     		  YAHOO.util.Connect.asyncRequest('GET', url, callback);
     	  }
-       }, 
+       },
+       
+       /**
+         * Fired when the user selects a theme from the theme drop down menu.
+         * Changes the theme of all code mirror editors.
+         * 
+         * @method onLoadScriptClick
+         */       
+       onThemeSelection : function ACJC_onThemeSelection(p_sType, p_aArgs, self) { 
+           var theme = p_aArgs[1].value;
+           self.widgets.codeMirrorScript.setOption("theme", theme);
+           self.widgets.codeMirrorTemplate.setOption("theme", theme);
+      }, 
+       
+       
 
        saveAsExistingScript : function ACJC_saveAsExistingScript(filename, nodeRef) {
            Alfresco.util.Ajax.request({
@@ -924,11 +1144,11 @@ if (typeof Fme == "undefined" || !Fme)
        },
        
        /**
-		 * Fired when the user selects a script from the save scripts drop down
-		 * menu. Calls a repository webscript to store the script contents.
-		 * 
-		 * @method onLoadScriptClick
-		 */ 	  
+         * Fired when the user selects a script from the save scripts drop down
+         * menu. Calls a repository webscript to store the script contents.
+         * 
+         * @method onLoadScriptClick
+         */ 	  
        onSaveScriptClick : function ACJC_onSaveScriptClick(p_sType, p_aArgs, self) { 
     	  self.widgets.codeMirrorScript.save();
     	   
@@ -975,14 +1195,14 @@ if (typeof Fme == "undefined" || !Fme)
        }, 
        
       /**
-		 * Dialog select destination button event handler
-		 * 
-		 * @method onSelectDestinationClick
-		 * @param e
-		 *            {object} DomEvent
-		 * @param p_obj
-		 *            {object} Object passed back from addListener method
-		 */
+         * Dialog select destination button event handler
+         * 
+         * @method onSelectDestinationClick
+         * @param e
+         *            {object} DomEvent
+         * @param p_obj
+         *            {object} Object passed back from addListener method
+         */
       onSelectDestinationClick: function ACJC_onSelectDestinationClick(e, p_obj)
       {
          // Set up select destination dialog
@@ -1019,14 +1239,14 @@ if (typeof Fme == "undefined" || !Fme)
       }, 
  
       /**
-		 * Folder selected in destination dialog
-		 * 
-		 * @method onDestinationSelected
-		 * @param layer
-		 *            {object} Event fired
-		 * @param args
-		 *            {array} Event parameters (depends on event type)
-		 */
+         * Folder selected in destination dialog
+         * 
+         * @method onDestinationSelected
+         * @param layer
+         *            {object} Event fired
+         * @param args
+         *            {array} Event parameters (depends on event type)
+         */
       onDestinationSelected: function ACJC_onDestinationSelected(layer, args)
       {
          // Check the event is directed towards this instance
@@ -1042,6 +1262,25 @@ if (typeof Fme == "undefined" || !Fme)
       }      
       
    });
+   
+   function forEach(arr, f) {
+       for (var i = 0, e = arr.length; i < e; ++i) f(arr[i]);
+     }
+     
+     function arrayContains(arr, item) {
+       if (!Array.prototype.indexOf) {
+         var i = arr.length;
+         while (i--) {
+           if (arr[i] === item) {
+             return true;
+           }
+         }
+         return false;
+       }
+       return arr.indexOf(item) != -1;
+     }
+   
+     
 })();
       
 
