@@ -11,8 +11,8 @@ in the repository.
 Download newest rc version for Alfresco 4.x
 --------------------------------------------
 
-[Share Jar for 4.x](https://github.com/jgoldhammer/js-console/raw/5d083f5c594f679dc015c9dc1b0dd9132f5a4a9b/javascript-console-dist/javascript-console-share-0.6rc.jar title="Share JAR")  
-[Repo Jar for 4.x](https://github.com/jgoldhammer/js-console/raw/5d083f5c594f679dc015c9dc1b0dd9132f5a4a9b/javascript-console-dist/javascript-console-repo-0.6rc.jar title="Repo JAR")
+[Share Jar for 4.x](https://github.com/jgoldhammer/js-console/raw/5d083f5c594f679dc015c9dc1b0dd9132f5a4a9b/javascript-console-dist/javascript-console-share-0.6rc.jar)  
+[Repo Jar for 4.x](https://github.com/jgoldhammer/js-console/raw/5d083f5c594f679dc015c9dc1b0dd9132f5a4a9b/javascript-console-dist/javascript-console-repo-0.6rc.jar)
 
 New Features
 --------
