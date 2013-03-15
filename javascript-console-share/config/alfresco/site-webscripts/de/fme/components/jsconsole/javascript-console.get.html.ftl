@@ -46,14 +46,14 @@
 		        <div>
 
 					<div id="${el}-editorResize">
-						<textarea id="${el}-jsinput" name="jsinput" cols="80" rows="5" class="jsbox"></textarea>
+						<textarea id="${el}-jsinput" placeholder="${msg("editor.js.placeholder")}" name="jsinput" cols="80" rows="5" class="jsbox"></textarea>
 
 					</div>
 					<div id="${el}-scriptEditorInfo" class="scriptStatusLine"><br/></div>
 			
 				</div>
 		        <div>
-					<textarea id="${el}-templateinput" name="templateinput" cols="80" rows="5" class="templateInputBox"></textarea>
+					<textarea id="${el}-templateinput" placeholder="${msg("editor.fm.placeholder")}" name="templateinput" cols="80" rows="5" class="templateInputBox"></textarea>
 					<div id="${el}-templateEditorInfo" class="templateStatusLine"><br/></div>
 				</div>
 		        <div>

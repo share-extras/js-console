@@ -506,16 +506,11 @@ if (typeof Fme == "undefined" || !Fme)
                  var javascriptText = window.localStorage["javascript.console.script"];
             	 this.widgets.codeMirrorScript.setValue(javascriptText);
              }
-             else {
-            	 this.loadDemoScript();
-             }
 
              if (window.localStorage["javascript.console.template"]) {
             	 this.widgets.codeMirrorTemplate.setValue(window.localStorage["javascript.console.template"]);
              }
-             else {
-            	 this.loadDemoTemplate();
-             }
+
              if (window.localStorage["javascript.console.codemirror.theme"]) {
                  var theme = window.localStorage["javascript.console.codemirror.theme"];
                  this.widgets.codeMirrorScript.setOption('theme',theme);
@@ -1030,10 +1025,11 @@ if (typeof Fme == "undefined" || !Fme)
 	          fmPerf = json.freemarkerPerf;
 	          webscriptPerf = json.webscriptPerf;    
 	          networkPerf = overallPerf - webscriptPerf;
+	          if(fmPerf === undefined){
+	              fmPerf = 0;
+	          }
 	          serverCodePerf = webscriptPerf - scriptPerf - fmPerf;
 		  }
-		  
-		  
 		  
 		  var overallEl = YAHOO.lang.substitute(this.template, {
 		     name:this.msg("label.stats.executed.in"),
@@ -1073,10 +1069,6 @@ if (typeof Fme == "undefined" || !Fme)
 	        '}\n');
 	  },
 
-	  loadDemoTemplate: function ACJC_loadDemoTemplate() {
-		  this.widgets.codeMirrorTemplate.setValue('no template');
-	  },
-	  
       /**
          * Fired when the user selects a script from the load scripts drop down
          * menu. Calls a repository webscript to retrieve the script contents.

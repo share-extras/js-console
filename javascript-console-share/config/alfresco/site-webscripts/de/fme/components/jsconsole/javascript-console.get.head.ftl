@@ -23,6 +23,8 @@
 <@script type="text/javascript" src="${page.url.context}/res/fme/components/jsconsole/codemirror/addon/searchcursor.js"></@script>
 <@script type="text/javascript" src="${page.url.context}/res/fme/components/jsconsole/codemirror/addon/search.js"></@script>
 
+<@script type="text/javascript" src="${page.url.context}/res/fme/components/jsconsole/codemirror/addon/placeholder.js"></@script>
+
 <@script type="text/javascript" src="${page.url.context}/res/fme/components/jsconsole/codemirror/javascript.js"></@script>
 <@script type="text/javascript" src="${page.url.context}/res/fme/components/jsconsole/codemirror/xml.js"></@script>
 <@script type="text/javascript" src="${page.url.context}/res/fme/components/jsconsole/codemirror/htmlmixed.js"></@script>
