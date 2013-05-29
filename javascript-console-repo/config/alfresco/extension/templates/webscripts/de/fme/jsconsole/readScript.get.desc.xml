@@ -1,0 +1,6 @@
+<webscript>
+  <shortname>fme JSConsole read existing javascript and freemarker</shortname>
+  <url>/de/fme/jsconsole/readScript?nodeRef={nodeRef}</url>
+  <authentication>admin</authentication>
+  <format default="json">extension</format>
+</webscript>

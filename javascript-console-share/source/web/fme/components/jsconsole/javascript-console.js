@@ -9,7 +9,6 @@ if (typeof Fme == "undefined" || !Fme)
    var Fme = {};
    
 } 
-
    
 /**
  * Admin Console Javascript Console
@@ -137,123 +136,164 @@ if (typeof Fme == "undefined" || !Fme)
 	   
 	  createMenuButtons: function ACJC_createMenuButtons(listOfScripts) {
 	      	      
-	    var themeMenuItems =   [ { text : "default",           value : "default"},
-	                             { text : "ambiance-mobile",   value : "ambiance-mobile"},
-	                             { text : "ambiance",          value : "ambiance"},
-	                             { text : "blackboard",        value : "blackboard"},
-	                             { text : "cobalt",            value : "cobalt"},
-	                             { text : "eclipse",           value : "eclipse"},
-	                             { text : "erlang-dark",       value : "erlang-dark"},
-	                             { text : "lesser-dark",       value : "lesser-dark"},
-	                             { text : "monokai",           value : "monokai"},
-	                             { text : "neat",              value : "neat"},
-	                             { text : "rubyblue",          value : "rubyblue"},
-	                             { text : "solarized",         value : "solarized"},
-	                             { text : "twilight",          value : "twilight"},
-	                             { text : "vibrant-ink",       value : "vibrant-ink"},
-	                             { text : "xq-dark",           value : "xq-dark"}
-	                           ];
-	    
-	    var othemeMenuButton = new YAHOO.widget.Button({ 
-              id: "themeButton", 
-              name: "themeButton",
-              label: this.msg("button.codemirror.theme"),
-              type: "menu",  
-              menu: themeMenuItems,
-              container: this.id + "-theme"
-        });
-	    
-	    if(this.browserSupportsHtml5Storage()){
-	        // preselect item
-    	    var theme = window.localStorage["javascript.console.codemirror.theme"];
-    	    if(theme){
-    	        var menuItems = othemeMenuButton.getMenu().getItems();
-    	        for ( var i = 0; i < menuItems.length; i++) {
-                    var menuItem = menuItems[i];
-                    if(theme==menuItem.cfg.getProperty('text')){
-                        menuItem.cfg.setProperty("selected", true);
-                    }
-                }
-    	        
-    	    }
-	    }
-	      
-	    othemeMenuButton.getMenu().subscribe("click", this.onThemeSelection, this);
-
-          var loadMenuItems = [{
-        	  text : this.msg("button.load.create.new"),
-        	  value : "NEW"
-          }];
-          loadMenuItems.push(listOfScripts);
-		  
-          var oLoadMenuButton = new YAHOO.widget.Button({ 
-				id: "loadButton", 
-				name: "loadButton",
-				label: this.msg("button.load.script"),
-				type: "menu",  
-				menu: loadMenuItems,
-				container: this.id + "-scriptload"
-          });
-
-          oLoadMenuButton.getMenu().subscribe("click", this.onLoadScriptClick, this);
-          
-          var saveMenuItems = [{
-        	  text : this.msg("button.save.create.new"),
-        	  value : "NEW"
-          }];
-          saveMenuItems.push(listOfScripts);
-          
-          var oSaveMenuButton = new YAHOO.widget.Button({ 
-				id: "saveButton", 
-				name: "saveButton",
-				label: this.msg("button.save.script"),
-				type: "menu",  
-				menu: saveMenuItems,
-				container: this.id + "-scriptsave"
-          });
-
-          oSaveMenuButton.getMenu().subscribe("click", this.onSaveScriptClick, this);
-          
-          var docsMenuItems = [
-            [ { text : "Mozilla Javascript Reference", url : "https://developer.mozilla.org/en/JavaScript/Reference", target:"_blank"},
-              { text : "W3Schools Javascript Reference", url : "http://www.w3schools.com/jsref/default.asp", target:"_blank"},
-              { text : "Alfresco 3.4 Javascript API", url : "http://wiki.alfresco.com/wiki/3.4_JavaScript_API", target:"_blank" },
-              { text : "Alfresco 3.4 Javascript Services API", url : "http://wiki.alfresco.com/wiki/3.4_JavaScript_Services_API", target:"_blank" },
-              { text : "Alfresco 4.0 Javascript API", url : "http://docs.alfresco.com/4.0/topic/com.alfresco.enterprise.doc/references/API-JS-Scripting-API.html", target:"_blank" },
-              { text : "Alfresco 4.0 Javascript Services API", url : "http://docs.alfresco.com/4.0/topic/com.alfresco.enterprise.doc/references/API-JS-Services.html", target:"_blank" },
-              { text : "Alfresco Javascript Cookbook", url : "http://wiki.alfresco.com/wiki/JavaScript_API_Cookbook", target:"_blank" }
-            ],
-            [ 
-              { text : "Alfresco Freemarker Template Guide", url : "http://wiki.alfresco.com/wiki/Template_Guide", target:"_blank"},
-              { text : "Freemarker Manual", url : "http://freemarker.sourceforge.net/docs/index.html", target:"_blank"}
-            ],
-            [
-              { text : "Lucene Search Reference", url : "http://wiki.alfresco.com/wiki/Search", target:"_blank" }
-            ],
-            [
-              { text : "Webscripts Reference", url : "http://wiki.alfresco.com/wiki/Web_Scripts", target:"_blank" },
-              { text : "Webscripts Examples", url : "http://wiki.alfresco.com/wiki/Web_Scripts_Examples", target:"_blank" }
-            ]
-          ];
-          
-          var oDocsMenuButton = new YAHOO.widget.Button({ 
-				id: "docsButton", 
-				name: "docsButton",
-				label: this.msg("button.docs"),
-				type: "menu",  
-				menu: docsMenuItems,
-				container: this.id + "-documentation"
-          });
-          
-          oDocsMenuButton.getMenu().setItemGroupTitle("Javascript", 0);
-          oDocsMenuButton.getMenu().setItemGroupTitle("Freemarker", 1);
-          oDocsMenuButton.getMenu().setItemGroupTitle("Lucene", 2);
-          oDocsMenuButton.getMenu().setItemGroupTitle("Webscripts", 3);		  
+	      this.createThemeMenu();
+	      this.createScriptsLoadMenu(listOfScripts);
+	      this.createScriptsSaveMenu(listOfScripts);
+	      this.createDocsMenu();
           
           this.widgets.exportResultsButton = Alfresco.util.createYUIButton(this, 
         		  "exportResults-button", this.exportResultTableAsCSV);
 		  Dom.setStyle(this.widgets.exportResultsButton, "display", "none");
           
+	  },
+	  
+	  createDocsMenu: function ACJC_createDocsMenu(){
+	      if(!this.widgets.docsMenuButton){
+    	      var docsMenuItems = [
+               [ { text : "Mozilla Javascript Reference", url : "https://developer.mozilla.org/en/JavaScript/Reference", target:"_blank"},
+                 { text : "W3Schools Javascript Reference", url : "http://www.w3schools.com/jsref/default.asp", target:"_blank"},
+                 { text : "Alfresco 3.4 Javascript API", url : "http://wiki.alfresco.com/wiki/3.4_JavaScript_API", target:"_blank" },
+                 { text : "Alfresco 3.4 Javascript Services API", url : "http://wiki.alfresco.com/wiki/3.4_JavaScript_Services_API", target:"_blank" },
+                 { text : "Alfresco 4.0 Javascript API", url : "http://docs.alfresco.com/4.0/topic/com.alfresco.enterprise.doc/references/API-JS-Scripting-API.html", target:"_blank" },
+                 { text : "Alfresco 4.0 Javascript Services API", url : "http://docs.alfresco.com/4.0/topic/com.alfresco.enterprise.doc/references/API-JS-Services.html", target:"_blank" },
+                 { text : "Alfresco 4.1 Javascript API", url : "http://docs.alfresco.com/4.1/topic/com.alfresco.enterprise.doc/references/API-JS-Scripting-API.html", target:"_blank" },
+                 { text : "Alfresco 4.1 Javascript Services API", url : "http://docs.alfresco.com/4.1/topic/com.alfresco.enterprise.doc/references/API-JS-Services.html", target:"_blank" },
+                 { text : "Alfresco 4.2 Javascript API", url : "http://docs.alfresco.com/4.2/topic/com.alfresco.enterprise.doc/references/API-JS-Scripting-API.html", target:"_blank" },
+                 { text : "Alfresco 4.2 Javascript Services API", url : "http://docs.alfresco.com/4.2/topic/com.alfresco.enterprise.doc/references/API-JS-Services.html", target:"_blank" },
+                 { text : "Alfresco Javascript Cookbook", url : "http://wiki.alfresco.com/wiki/JavaScript_API_Cookbook", target:"_blank" }
+               ],
+               [ 
+                 { text : "Alfresco Freemarker Template Guide", url : "http://wiki.alfresco.com/wiki/Template_Guide", target:"_blank"},
+                 { text : "Alfresco Freemarker Template Cookbook", url : "http://wiki.alfresco.com/wiki/FreeMarker_Template_Cookbook", target:"_blank"},
+                 { text : "Alfresco 4.0 API Reference", url : "http://docs.alfresco.com/4.0/index.jsp?topic=%2Fcom.alfresco.enterprise.doc%2Freferences%2FAPI-FreeMarker-intro.html", target:"_blank"},
+                 { text : "Alfresco 4.1 API Reference", url : "http://docs.alfresco.com/4.1/index.jsp?topic=%2Fcom.alfresco.enterprise.doc%2Freferences%2FAPI-FreeMarker-intro.html", target:"_blank"},
+                 { text : "Alfresco 4.2 API Reference", url : "http://docs.alfresco.com/4.2/index.jsp?topic=%2Fcom.alfresco.enterprise.doc%2Freferences%2FAPI-FreeMarker-intro.html", target:"_blank"},
+                 { text : "Freemarker Manual", url : "http://freemarker.sourceforge.net/docs/index.html", target:"_blank"}
+               ],
+               [
+                 { text : "Lucene Search Reference", url : "http://wiki.alfresco.com/wiki/Search", target:"_blank" },
+                 { text : "Alfresco XPath Search", url : "http://wiki.alfresco.com/wiki/Search_Documentation", target:"_blank" }
+               ],
+               [
+                 { text : "Webscripts Reference", url : "http://wiki.alfresco.com/wiki/Web_Scripts", target:"_blank" },
+                 { text : "Webscripts Examples", url : "http://wiki.alfresco.com/wiki/Web_Scripts_Examples", target:"_blank" }
+               ]
+               
+             ];
+	      
+             this.widgets.docsMenuButton = new YAHOO.widget.Button({ 
+                   id: "docsButton", 
+                   name: "docsButton",
+                   label: this.msg("button.docs"),
+                   type: "menu",  
+                   menu: docsMenuItems,
+                   container: this.id + "-documentation"
+             });
+             
+             this.widgets.docsMenuButton.getMenu().setItemGroupTitle("Javascript", 0);
+             this.widgets.docsMenuButton.getMenu().setItemGroupTitle("Freemarker", 1);
+             this.widgets.docsMenuButton.getMenu().setItemGroupTitle("Lucene", 2);
+             this.widgets.docsMenuButton.getMenu().setItemGroupTitle("Webscripts", 3);
+	      }
+	  },
+	  
+	  createScriptsSaveMenu: function(listOfScripts){
+          var saveMenuItems = [{
+              text : this.msg("button.save.create.new"),
+              value : "NEW"
+          }];
+          
+          saveMenuItems.push(listOfScripts);
+          
+          if(this.widgets.saveMenuButton){
+              this.widgets.saveMenuButton.getMenu().clearContent();
+              this.widgets.saveMenuButton.getMenu().addItems(saveMenuItems);
+              this.widgets.saveMenuButton.getMenu().render(this.id + "-scriptsave"); 
+          }else{
+              this.widgets.saveMenuButton  = new YAHOO.widget.Button({ 
+                  id: "saveButton", 
+                  name: "saveButton",
+                  label: this.msg("button.save.script"),
+                  type: "menu",  
+                  menu: saveMenuItems,
+                  container: this.id + "-scriptsave"
+              });
+              this.widgets.saveMenuButton.getMenu().subscribe("click", this.onSaveScriptClick, this);
+          }
+          
+          
+	  },
+	  
+	  createScriptsLoadMenu: function(listOfScripts){
+	      var loadMenuItems = [{
+              text : this.msg("button.load.create.new"),
+              value : "NEW"
+          }];
+          
+          loadMenuItems.push(listOfScripts);
+          
+          if(this.widgets.loadMenuButton){
+              this.widgets.loadMenuButton.getMenu().clearContent();
+              this.widgets.loadMenuButton.getMenu().addItems(loadMenuItems);
+              this.widgets.loadMenuButton.getMenu().render(this.id + "-scriptload"); 
+          }else{
+              this.widgets.loadMenuButton = new YAHOO.widget.Button({ 
+                  id: "loadButton", 
+                  name: "loadButton",
+                  label: this.msg("button.load.script"),
+                  type: "menu",  
+                  menu: loadMenuItems,
+                  container: this.id + "-scriptload"
+            });
+  
+            this.widgets.loadMenuButton.getMenu().subscribe("click", this.onLoadScriptClick, this);
+          }
+	  },
+	  
+	  createThemeMenu: function ACJC_createThemeMenu(){
+	       if(!this.widgets.themeMenuButton){
+	            var themeMenuItems =   [ { text : "default",           value : "default"},
+	                                     { text : "ambiance-mobile",   value : "ambiance-mobile"},
+	                                     { text : "ambiance",          value : "ambiance"},
+	                                     { text : "blackboard",        value : "blackboard"},
+	                                     { text : "cobalt",            value : "cobalt"},
+	                                     { text : "eclipse",           value : "eclipse"},
+	                                     { text : "erlang-dark",       value : "erlang-dark"},
+	                                     { text : "lesser-dark",       value : "lesser-dark"},
+	                                     { text : "monokai",           value : "monokai"},
+	                                     { text : "neat",              value : "neat"},
+	                                     { text : "rubyblue",          value : "rubyblue"},
+	                                     { text : "solarized",         value : "solarized"},
+	                                     { text : "twilight",          value : "twilight"},
+	                                     { text : "vibrant-ink",       value : "vibrant-ink"},
+	                                     { text : "xq-dark",           value : "xq-dark"}
+	                                     ];
+	            this.widgets.themeMenuButton = new YAHOO.widget.Button({ 
+	                  id: "themeButton", 
+	                  name: "themeButton",
+	                  label: this.msg("button.codemirror.theme"),
+	                  type: "menu",  
+	                  menu: themeMenuItems,
+	                  container: this.id + "-theme"
+	            });
+	            
+	            if(this.browserSupportsHtml5Storage()){
+	                // preselect item
+	                var theme = window.localStorage["javascript.console.codemirror.theme"];
+	                if(theme){
+	                    var menuItems = this.widgets.themeMenuButton.getMenu().getItems();
+	                    for ( var i = 0; i < menuItems.length; i++) {
+	                        var menuItem = menuItems[i];
+	                        if(theme==menuItem.cfg.getProperty('text')){
+	                            menuItem.cfg.setProperty("checked", true);
+	                        }
+	                    }
+	                    
+	                }
+	            }
+	              
+	            this.widgets.themeMenuButton.getMenu().subscribe("click", this.onThemeSelection, this);
+	        }
 	  },
 	   
 	  onEditorKeyEvent : function ACJC_onEditorKeyEvent(i, e) {
@@ -262,6 +302,12 @@ if (typeof Fme == "undefined" || !Fme)
 	               e.stop();
 	               i.owner.onExecuteClick(i.owner, e);
 	         }
+          
+          // Hook into ctrl-z for Undo
+          if (e.keyCode == 76 && (e.ctrlKey || e.metaKey) && !e.altKey) {
+             e.stop();
+             i.owner.widgets.codeMirrorScript.undo(i.owner, e);
+          }
 
          // Hook into ctrl-z for Undo
          if (e.keyCode == 122 && (e.ctrlKey || e.metaKey) && !e.altKey) {
@@ -310,7 +356,7 @@ if (typeof Fme == "undefined" || !Fme)
          this.javascriptCommands=new Object();
          
          // Attach the CodeMirror highlighting
-         this.widgets.codeMirrorScript = CodeMirror.fromTextArea(this.widgets.scriptInput, {
+         var uiMirrorScript = new CodeMirrorUI(this.widgets.scriptInput, {imagePath:Alfresco.constants.URL_RESCONTEXT+'fme/components/jsconsole/codemirror-ui/images'} ,{
         	 mode : "javascript",
         	 styleActiveLine: true,
         	 highlightSelectionMatches : true,
@@ -320,12 +366,14 @@ if (typeof Fme == "undefined" || !Fme)
        	         return CodeMirror.javascriptValidator(text, self.javascriptCommands.globalMap);
        	     },
         	 lineNumbers: true,
+             lineWrapping: true,
         	 matchBrackets: true,
-        	 autoCloseBrackets:true,
+        	 autofocus :true,
         	 onKeyEvent: this.onEditorKeyEvent,
         	 extraKeys: {"Ctrl-Space": "autocomplete"}
          });
-
+         
+         this.widgets.codeMirrorScript = uiMirrorScript.getMirrorInstance();
          this.widgets.codeMirrorScript.on("cursorActivity", function(cm){
              var currentLine = cm.getCursor().line+1;
              var column = cm.getCursor().ch;
@@ -337,15 +385,14 @@ if (typeof Fme == "undefined" || !Fme)
          
          this.widgets.codeMirrorScript.getInputField().blur();
          
-                
-         this.widgets.codeMirrorTemplate = CodeMirror.fromTextArea(this.widgets.templateInput, {
+         var uiMirrorTemplate = new CodeMirrorUI(this.widgets.templateInput, {imagePath:Alfresco.constants.URL_RESCONTEXT+'fme/components/jsconsole/codemirror-ui/images'} , {
         	 lineNumbers: true,
+             lineWrapping: true,
         	 mode:"htmlmixed",
         	 styleActiveLine: true,
              highlightSelectionMatches : true,
              showCursorWhenSelecting :true,
         	 matchBrackets: true,
-        	 autoCloseBrackets: true,
         	 onKeyEvent: this.onEditorKeyEvent,
         	 markParen: function(node, ok) { 
         	        node.style.backgroundColor = ok ? "#CCF" : "#FCC#";
@@ -359,7 +406,8 @@ if (typeof Fme == "undefined" || !Fme)
         	    },
         	    indentUnit: 4        	 
          });
-         
+         this.widgets.codeMirrorTemplate = uiMirrorTemplate.getMirrorInstance();
+
          this.widgets.codeMirrorTemplate.on("cursorActivity", function(cm){
              var currentLine = cm.getCursor().line+1;
              var column = cm.getCursor().ch;
@@ -372,7 +420,7 @@ if (typeof Fme == "undefined" || !Fme)
          
          
       // Attach the CodeMirror highlighting
-         this.widgets.codeMirrorJSON = CodeMirror.fromTextArea(this.widgets.jsonOutput, {
+         var uiMirrorJSON = new CodeMirrorUI(this.widgets.jsonOutput, {buttons:[], imagePath:Alfresco.constants.URL_RESCONTEXT+'fme/components/jsconsole/codemirror-ui/images'} , {
              mode : "application/json",
              styleActiveLine: true,
              readOnly: true,
@@ -381,11 +429,12 @@ if (typeof Fme == "undefined" || !Fme)
              gutters: ["CodeMirror-lint-markers"],
              lintWith: CodeMirror.jsonValidator,
              lineNumbers: true,
+             lineWrapping: true,
              matchBrackets: true,
              onKeyEvent: this.onEditorKeyEvent
          });
          
-
+         this.widgets.codeMirrorJSON = uiMirrorJSON.getMirrorInstance();
          this.widgets.codeMirrorJSON.on("cursorActivity", function(cm){
              var currentLine = cm.getCursor().line+1;
              var column = cm.getCursor().ch;
@@ -410,6 +459,8 @@ if (typeof Fme == "undefined" || !Fme)
                  return self.scriptHint(editor, self.javascriptKeywords,
                          function (e, cur) {return e.getTokenAt(cur);},
                          options);
+                 }, {
+                     "handler" : CodeMirror.showContextualInfo
                  });
          }
 
@@ -520,20 +571,7 @@ if (typeof Fme == "undefined" || !Fme)
              
     	 }
          
-         // Load Scripts from Repository
-         Alfresco.util.Ajax.request(
-         {
-            url: Alfresco.constants.PROXY_URI + "de/fme/jsconsole/listscripts.json",
-            method: Alfresco.util.Ajax.GET,
-            requestContentType: Alfresco.util.Ajax.JSON,
-            successCallback: {
-            	fn: function(res) {
-            		var listOfScripts = res.json.scripts;
-            		this.createMenuButtons(listOfScripts);
-            	},
-            	scope: this
-            }
-         });
+    	 this.loadRepoScriptList();
 
          // Read Javascript API Commands for code completion
          Alfresco.util.Ajax.request(
@@ -548,6 +586,7 @@ if (typeof Fme == "undefined" || !Fme)
                     for ( var i = 0; i < this.javascriptCommands.global.length; i++) {
                         this.javascriptCommands.globalMap[this.javascriptCommands.global[i]]=false;
                     }
+                 
                     // add Packages as allowed object
                     this.javascriptCommands.globalMap["Packages"]=false;
             		
@@ -642,6 +681,23 @@ if (typeof Fme == "undefined" || !Fme)
          
       },
       
+      loadRepoScriptList: function(){
+          // Load Scripts from Repository
+          Alfresco.util.Ajax.request(
+          {
+             url: Alfresco.constants.PROXY_URI + "de/fme/jsconsole/listscripts.json",
+             method: Alfresco.util.Ajax.GET,
+             requestContentType: Alfresco.util.Ajax.JSON,
+             successCallback: {
+                 fn: function(res) {
+                     var listOfScripts = res.json.scripts;
+                     this.createMenuButtons(listOfScripts);
+                 },
+                 scope: this
+             }
+          });
+      },
+      
       scriptHint: function(editor, keywords, getToken, options) {
           // Find the token at the cursor
           var cur = editor.getCursor(), token = getToken(editor, cur), tprop = token;
@@ -673,12 +729,12 @@ if (typeof Fme == "undefined" || !Fme)
             if (!context) var context = [];
             context.push(tprop);
           }
-          return {list: this.getCompletions(token, context, keywords, options),
+          return {list: this.getCompletions(editor, token, context, keywords, options),
                   from: CodeMirror.Pos(cur.line, token.start),
                   to: CodeMirror.Pos(cur.line, token.end)};
       },
       
-      getCompletions: function(token, context, keywords, options) {
+      getCompletions: function(editor, token, context, keywords, options) {
           var found = [], start = token.string;
           function maybeAdd(str) {
             if (str.indexOf(start) == 0 && !arrayContains(found, str)) found.push(str);
@@ -724,6 +780,12 @@ if (typeof Fme == "undefined" || !Fme)
                   forEach(keywords, maybeAdd);            
               }
           }
+          
+          // templates
+          if (CodeMirror.templatesHint) {
+            CodeMirror.templatesHint.getCompletions(editor, found, start);
+          }
+          
           return found;
         },
  
@@ -741,10 +803,10 @@ if (typeof Fme == "undefined" || !Fme)
             // handles : ["b"] });
  	     resize.on('resize', function(ev) {
  	    	 var h = ev.height; 
- 	         Dom.setStyle(codeMirrorScript.getScrollerElement(), "height", ""+ h-20 + "px");
+ 	         Dom.setStyle(codeMirrorScript.getScrollerElement(), "height", ""+ h-50 + "px");
  	         codeMirrorScript.refresh();
 
-  	         Dom.setStyle(codeMirrorTemplate.getScrollerElement(), "height", ""+ h-20 + "px");
+  	         Dom.setStyle(codeMirrorTemplate.getScrollerElement(), "height", ""+ h-50 + "px");
  	         codeMirrorTemplate.refresh();
  	        
   	         Dom.setStyle(me.id + "-inputContentArea", "width", "inherit");
@@ -1115,22 +1177,41 @@ if (typeof Fme == "undefined" || !Fme)
 
        saveAsExistingScript : function ACJC_saveAsExistingScript(filename, nodeRef) {
            Alfresco.util.Ajax.request({
-        	   url: Alfresco.constants.PROXY_URI + "api/node/content/" + nodeRef.replace("://","/"),
-        	   method: Alfresco.util.Ajax.PUT,
-        	   dataStr: this.widgets.scriptInput.value,
-        	   requestContentType: "text/javascript",
-        	   successMessage: this.msg("message.save.successful", filename),
-        	   failureMessage: this.msg("error.script.save", filename)
+               url: Alfresco.constants.PROXY_URI + "de/fme/jsconsole/savescript.json?name="+encodeURIComponent(filename)+"&isUpdate=true",
+               method: Alfresco.util.Ajax.PUT,
+               dataStr: YAHOO.lang.JSON.stringify({'jsScript':this.widgets.codeMirrorScript.getValue(), 'fmScript':this.widgets.codeMirrorTemplate.getValue()}),
+               requestContentType: "application/json; charset=utf-8",
+               successCallback: {
+                   fn: function(res) {
+                       Alfresco.util.PopupManager.displayMessage({
+                           text: this.msg("message.save.successful", filename)
+                       });
+                       var listOfScripts = res.json.scripts;
+                       this.createMenuButtons(listOfScripts);
+                   },
+                   scope: this
+               },
+               failureMessage: this.msg("error.script.save", filename)
            });
        },
        
        saveAsNewScript : function ACJC_saveAsNewScript(filename) {
            Alfresco.util.Ajax.request({
-        	   url: Alfresco.constants.PROXY_URI + "de/fme/jsconsole/createscript.json?name="+encodeURIComponent(filename),
+        	   url: Alfresco.constants.PROXY_URI + "de/fme/jsconsole/savescript.json?name="+encodeURIComponent(filename)+"&isUpdate=false",
         	   method: Alfresco.util.Ajax.PUT,
-        	   dataStr: this.widgets.scriptInput.value,
-        	   requestContentType: "text/javascript",
-        	   successMessage: this.msg("message.save.successful", filename),
+        	   dataStr: YAHOO.lang.JSON.stringify({'jsScript':this.widgets.codeMirrorScript.getValue(), 'fmScript':this.widgets.codeMirrorTemplate.getValue()}),
+        	   requestContentType: "application/json; charset=utf-8",
+        	   successCallback: {
+                   fn: function(res) {
+                       Alfresco.util.PopupManager.displayMessage({
+                           text: this.msg("message.save.successful", filename)
+                       });
+                       
+                       var listOfScripts = res.json.scripts;
+                       this.createMenuButtons(listOfScripts);
+                   },
+                   scope: this
+               },
         	   failureMessage: this.msg("error.script.save", filename)
            });
        },

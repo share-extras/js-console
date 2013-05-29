@@ -30,6 +30,27 @@
 <@script type="text/javascript" src="${page.url.context}/res/fme/components/jsconsole/codemirror/htmlmixed.js"></@script>
 <@script type="text/javascript" src="${page.url.context}/res/yui/resize/resize.js"></@script>
 
+<!-- context infos-->
+<@script type="text/javascript" src="${page.url.context}/res/fme/components/jsconsole/codemirror/addon/contextual-info.js"></@script>
+<@script type="text/javascript" src="${page.url.context}/res/fme/components/jsconsole/codemirror/addon/show-context-info.js"></@script>
+<@link rel="stylesheet" media="screen" type="text/css" href="${page.url.context}/res/fme/components/jsconsole/codemirror/addon/show-context-info.css" />
+
+<!-- templates addon-->
+<@script type="text/javascript" src="${page.url.context}/res/fme/components/jsconsole/codemirror/addon/templates/templates-hint.js"></@script>
+<@script type="text/javascript" src="${page.url.context}/res/fme/components/jsconsole/codemirror/addon/templates/javascript-templates.js"></@script>
+<@link rel="stylesheet" media="screen" type="text/css" href="${page.url.context}/res/fme/components/jsconsole/codemirror/addon/templates/templates-hint.css" />
+
+<!-- codemirror ui-->
+<@script type="text/javascript" src="${page.url.context}/res/fme/components/jsconsole/codemirror-ui/js/codemirror-ui.js"></@script>
+<@script type="text/javascript" src="${page.url.context}/res/fme/components/jsconsole/codemirror-ui/js/codemirror-ui-find.js"></@script>
+
+<@link rel="stylesheet" media="screen" type="text/css" href="${page.url.context}/res/fme/components/jsconsole/codemirror-ui/css/codemirror-ui.css" />
+<@link rel="stylesheet" media="screen" type="text/css" href="${page.url.context}/res/fme/components/jsconsole/codemirror-ui/css/codemirror-ui-find.css" />
+
+
+
+
+
 <!--<@script type="text/javascript" src="${page.url.context}/res/fme/components/jsconsole/js-logtail/jquery.min.js"></@script>
 <@script type="text/javascript" src="${page.url.context}/res/fme/components/jsconsole/js-logtail/logtail.js"></@script>
 <@link rel="stylesheet" type="text/css" href="${page.url.context}/res/fme/components/jsconsole/js-logtail/logtail.css" />-->

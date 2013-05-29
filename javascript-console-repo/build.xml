@@ -43,7 +43,7 @@
     <property name="build.classes.dir" value="shared/classes" />
     <property name="build.lib.dir" value="shared/lib" />
     <property name="yuicompress.warn" value="false" />
-    <property name="javac.debug" value="off" />
+    <property name="javac.debug" value="on" />
     <!-- Tomcat properties to reload web scripts or the manager webapp -->
     <property name="tomcat.url" value="http://localhost:8080" />
     <property name="tomcat.repo.url" value="${tomcat.url}" />

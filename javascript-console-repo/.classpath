@@ -7,7 +7,7 @@
 	<classpathentry kind="var" path="ALFRESCO_SDK_412/lib/server/alfresco-remote-api-4.1.2.jar" sourcepath="/ALFRESCO_SDK_412/src/alfresco-remote-api-src.zip"/>
 	<classpathentry kind="var" path="ALFRESCO_SDK_412/lib/server/alfresco-repository-4.1.2.jar" sourcepath="/ALFRESCO_SDK_412/src/alfresco-repository-src.zip"/>
 	<classpathentry kind="var" path="ALFRESCO_SDK_412/lib/server/dependencies/commons/commons-io-1.4.jar"/>
-	<classpathentry kind="var" path="ALFRESCO_SDK_412/lib/server/dependencies/commons/commons-lang-2.6.jar"/>
+	<classpathentry kind="var" path="ALFRESCO_SDK_412/lib/server/dependencies/commons/commons-lang-2.6.jar" sourcepath="/ALFRESCO_SDK_412/src/commons-lang-2.6-sources.jar"/>
 	<classpathentry kind="var" path="ALFRESCO_SDK_412/lib/server/dependencies/commons/commons-logging-1.1.1.jar"/>
 	<classpathentry kind="var" path="ALFRESCO_SDK_412/lib/server/dependencies/j2ee/servlet.jar"/>
 	<classpathentry kind="var" path="ALFRESCO_SDK_412/lib/server/dependencies/optional/log4j-1.2.15.jar"/>
@@ -19,5 +19,8 @@
 	<classpathentry kind="var" path="ALFRESCO_SDK_412/lib/server/dependencies/spring-surf/spring-surf-core-1.2.0-SNAPSHOT.jar"/>
 	<classpathentry kind="var" path="ALFRESCO_SDK_412/lib/server/dependencies/spring-surf/spring-webscripts-1.2.0-SNAPSHOT.jar" sourcepath="/ALFRESCO_SDK_412/src/spring-webscripts-1.2.0-SNAPSHOT-sources.jar"/>
 	<classpathentry kind="var" path="ALFRESCO_SDK_412/lib/server/dependencies/spring-surf/spring-webscripts-api-1.2.0-SNAPSHOT.jar" sourcepath="/ALFRESCO_SDK_412/src/spring-webscripts-api-1.2.0-SNAPSHOT-sources.jar"/>
+	<classpathentry kind="lib" path="lib/javassist.jar"/>
+	<classpathentry kind="var" path="ALFRESCO_SDK_412/lib/server/alfresco-enterprise-repo-4.1.2.jar" sourcepath="/ALFRESCO_SDK_412/src/alfresco-enterprise-repository-src.zip"/>
+	<classpathentry kind="var" path="ALFRESCO_SDK_412/lib/server/dependencies/acegi-security-0.8.2_patched.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
