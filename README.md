@@ -13,52 +13,37 @@ Installation
 ------------
 
 The component has been developed to install on top of an existing Alfresco
-3.4 or 4.0 installation. There are two different version in this archive within
-a specific folder for each of the Alfresco versions 3.4.x or 4.0.x.
+4.0, 4.1 or 4.2 installation. The javascript-console-repo-<version>.amp or
+javascript-console-share-<version>.amp needs to be installed into the Alfresco
+Repository / Share webapp using the Alfresco Module Management Tool:
 
-When you have chosen the correct folder (3.4.x or 4.0.x) for your Alfresco version
-you'll find two jar files within that folder. The javascript-console-repo.jar needs
-to be copied into the Alfresco repository:
-
-    tomcat/webapps/alfresco/WEB-INF/lib/
+    java -jar alfresco-mmt.jar install javascript-console-repo-<version>.amp /path/to/alfresco.war
+    java -jar alfresco-mmt.jar install javascript-console-share-<version>.amp /path/to/share.war
   
-The other file javascript-console-share.jar needs to be copied to the 
-corresponding folder in the Share webapp:
-
-    tomcat/webapps/share/WEB-INF/lib/
-  
-If you prefer the AMP deployment method you also find amp files in the respective
-folder that you can install with the apply_amps.sh or apply_amps.bat utilities. Be
-aware that you need to install both amps files: the repo-amp and the share-amp.
-
-The deployment location has changed recently (with Javascript Console 0.5)
-because the Javascript Console now uses Java classes that have to be deployed 
-to these locations and can NOT reside in tomcat/shared/lib anymore.
+You can also use the Alfresco Maven SDK to install or overlay the AMP during the build of a
+Repository / Share WAR project. See https://artifacts.alfresco.com/nexus/content/repositories/alfresco-docs/alfresco-lifecycle-aggregator/latest/plugins/alfresco-maven-plugin/advanced-usage.html
+for details.
 
 
 Building
 --------
 
-To build the individual JAR files, run the following command from the base 
-project directory.
+To build the module and its AMP / JAR files, run the following command from the base 
+project directory:
 
-    ant -Dalfresco.sdk.dir=c:\dev\sdks\alfresco-enterprise-sdk-4.0.0 clean dist-jar
+    mvn install
 
-The command should build a JAR file named javascript-console-repo.jar or
-javascript-console-share.jar in the 'dist' directory within your project.
+The command builds two JAR files named javascript-console-repo-<version>.jar / 
+javascript-console-share-<version>.jar and javascript-console-repo-<version>-sources.jar /
+javascript-console-share-<version>-sources.jar as well as javascript-console-repo-<version>.amp /
+javascript-console-share-<version>.amp in the 'target' directory within your project.
 
-There also is the javascript-console-dist project which builds both jar files 
-and creates a patched version for Alfresco 3.4.x which does not support all the 
-features of the version for 4.0.x. This project creates the AMP files as well.
+If you want to build the module so it can be installed and run in an Alfresco 4.0 / 4.1 server
+running on Java 6 you need to have a Java 6 JDK available. Either make sure that your JDK 6 is set
+as the default Java environment (PATH / JAVA_HOME environment variable) or run the build with the
+following command from the base project directory:
 
-To deploy the extension files into a local Tomcat instance for testing, you can 
-use the hotcopy-tomcat-jar task. You will need to set the tomcat.home
-property in Ant.
-
-    ant -Dtomcat.home=C:/Alfresco/tomcat clean hotcopy-tomcat-jar
-    
-Once you have run this you will need to restart Tomcat so that the classpath 
-resources in the JAR file are picked up.
+    mvn install -P Java6-crossCompile -Djdk6.executable=/path/to/javac
 
 
 Using the component
