@@ -1,4 +1,0 @@
-<project basedir="." default="dist-jar" name="Javascript Console Repository">
-    <!-- Import properties and targets from stock build script -->
-    <import file="build.xml" />
-</project>
