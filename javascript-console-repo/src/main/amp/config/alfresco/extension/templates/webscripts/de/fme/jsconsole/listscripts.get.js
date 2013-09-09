@@ -24,7 +24,7 @@ function findScripts(folder) {
   return scriptlist;
 }
 
-var scriptFolder = search.xpathSearch("/app:company_home/app:dictionary/app:scripts")[0];
+var scriptFolder = companyhome.childrenByXPath("app:dictionary/app:scripts")[0];
 if (scriptFolder) {
 	model.scripts = jsonUtils.toJSONString(findScripts(scriptFolder));
 }

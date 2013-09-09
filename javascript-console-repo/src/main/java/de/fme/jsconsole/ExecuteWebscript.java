@@ -9,17 +9,16 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.alfresco.repo.jscript.RhinoScriptProcessor;
 import org.alfresco.repo.jscript.ScriptNode;
 import org.alfresco.repo.jscript.ScriptUtils;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.security.permissions.AccessDeniedException;
 import org.alfresco.repo.transaction.RetryingTransactionHelper.RetryingTransactionCallback;
-import org.alfresco.scripts.ScriptResourceHelper;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.transaction.TransactionService;
 import org.alfresco.util.MD5;
@@ -27,6 +26,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.extensions.webscripts.AbstractWebScript;
 import org.springframework.extensions.webscripts.Cache;
@@ -56,15 +56,13 @@ public class ExecuteWebscript extends AbstractWebScript {
 
 	private TransactionService transactionService;
 	
-	private Resource preRollScriptResource;
+	private ClassPathResource preRollScriptResource;
 
 	private String preRollScript = "";
 
-	private Resource postRollScriptResource;
+	private ClassPathResource postRollScriptResource;
 
 	private String postRollScript = "";
-
-	private RhinoScriptProcessor rhinoScriptProcessor;
 	
 	@Override
 	public void init(Container container, Description description) {
@@ -89,9 +87,10 @@ public class ExecuteWebscript extends AbstractWebScript {
 
 		JavascriptConsoleRequest jsreq = JavascriptConsoleRequest.readJson(request);
 		
-		String script = ScriptResourceHelper.resolveScriptImports(jsreq.script, rhinoScriptProcessor, log);
+		final String script = MessageFormat.format("<import resource=\"classpath:{0}\">",
+		        this.preRollScriptResource.getPath()) + jsreq.script; 
 		
-		ScriptContent scriptContent = new StringScriptContent(preRollScript + script + "\n" + postRollScript);
+		ScriptContent scriptContent = new StringScriptContent(script + "\n" + postRollScript);
 		JavascriptConsoleResult result = runScriptWithTransactionAndAuthentication(request, response, jsreq, scriptContent);
 		
 		if (!result.isStatusResponseSent()) {
@@ -315,16 +314,12 @@ public class ExecuteWebscript extends AbstractWebScript {
 		this.transactionService = transactionService;
 	}
 
-	public void setPostRollScriptResource(Resource postRollScriptResource) {
+	public void setPostRollScriptResource(ClassPathResource postRollScriptResource) {
 		this.postRollScriptResource = postRollScriptResource;
 	}
 
-	public void setPreRollScriptResource(Resource preRollScriptResource) {
+	public void setPreRollScriptResource(ClassPathResource preRollScriptResource) {
 		this.preRollScriptResource = preRollScriptResource;
-	}
-	
-	public void setRhinoScriptProcessor(RhinoScriptProcessor rhinoScriptProcessor) {
-		this.rhinoScriptProcessor = rhinoScriptProcessor;
 	}
 
 	private static class StringScriptContent implements ScriptContent {
