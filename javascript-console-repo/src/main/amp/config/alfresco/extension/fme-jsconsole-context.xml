@@ -7,7 +7,6 @@
 		<property name="transactionService" ref="transactionService"/>
 		<property name="preRollScriptResource" value="classpath:de/fme/jsconsole/jsconsole-pre-roll-script.js" />
 		<property name="postRollScriptResource" value="classpath:de/fme/jsconsole/jsconsole-post-roll-script.js" />
-		<property name="rhinoScriptProcessor" ref="javaScriptProcessor" />
 	</bean>
 
 </beans>
