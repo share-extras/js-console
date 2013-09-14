@@ -48,34 +48,34 @@
 					<textarea id="${el}-templateinput" name="templateinput" cols="80" rows="5" class="templateInputBox"></textarea>
 				</div>
 		        <div>
-		        	<div class="configform">
-			        	<div class="control">
-			        		<span class="label">Webscript URL arguments:</span>
-			        		<input id="${el}-urlarguments" type="text" size="50"/>
-			        	</div>
-			        	<div class="control">
-			        		<span class="label">Run script as:</span>
-			        		<input id="${el}-runas" type="text" size="20" value="admin"/>
-			        	</div>
-			        	<div class="control">
-			        		<span class="label">Transaction isolation:</span>
-			        		<select id="${el}-transactions">
-			        			<option value="none">none</option>
-			        			<option value="readonly">readonly</option>
-			        			<option value="readwrite" selected="selected">readwrite</option>
-			        		</select>
-			        	</div>
-			        	<div class="control">
-			        		<span class="label">Run like crazy:</span>
-			        		<select id="${el}-runlikecrazy">
-			        			<option value="0" selected="selected">off (execute once)</option>
-			        			<option value="10000">continuously 10s delay</option>
-			        			<option value="1000">continuously 1s delay</option>
-			        			<option value="1">continuously no delay!</option>
-			        		</select>
-			        	</div>
-			        </div> 
-		        </div>
+                    <div class="configform">
+                        <div class="control">
+                            <span class="label">${msg("option.arguments")}</span>
+                            <input id="${el}-urlarguments" type="text" size="50"/>
+                        </div>
+                        <div class="control">
+                            <span class="label">${msg("option.run")}</span>
+                            <input id="${el}-runas" type="text" size="20" value="admin"/>
+                        </div>
+                        <div class="control">
+                            <span class="label">${msg("option.isolation")}</span>
+                            <select id="${el}-transactions">
+                                <option value="none">${msg("value.none")}</option>
+                                <option value="readonly">${msg("value.readonly")}</option>
+                                <option value="readwrite" selected="selected">${msg("value.readwrite")}</option>
+                            </select>
+                        </div>
+                        <div class="control">
+                            <span class="label">${msg("option.crazy")}</span>
+                            <select id="${el}-runlikecrazy">
+                                <option value="0" selected="selected">${msg("value.off")}</option>
+                                <option value="10000">${msg("value.tenseconds")}</option>
+                                <option value="1000">${msg("value.onesecond")}</option>
+                                <option value="1">${msg("value.nodelay")}</option>
+                            </select>
+                        </div>
+                    </div> 
+                </div>
 		    </div>
 		</div>
 		<div class="execute-buttonbar">
