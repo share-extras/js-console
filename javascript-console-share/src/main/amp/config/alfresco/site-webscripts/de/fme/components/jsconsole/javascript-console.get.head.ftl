@@ -1,4 +1,8 @@
 <#include "../../../../org/alfresco/components/component.head.inc">
+
+<!-- OAuth helper -->
+<@script type="text/javascript" src="${page.url.context}/res/extras/modules/oauth.js"></@script>
+
 <!-- Admin Console Javascript Console -->
 <@link rel="stylesheet" type="text/css" href="${page.url.context}/res/fme/components/jsconsole/javascript-console.css" />
 <@script type="text/javascript" src="${page.url.context}/res/components/console/consoletool.js"></@script>

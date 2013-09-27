@@ -137,7 +137,7 @@ if (typeof Fme == "undefined" || !Fme)
           var oLoadMenuButton = new YAHOO.widget.Button({ 
 				id: "loadButton", 
 				name: "loadButton",
-				label: this.msg("button.load.script"),
+				label: "Load from GIST", //this.msg("button.load.script"),
 				type: "menu",  
 				menu: loadMenuItems,
 				container: this.id + "-scriptload"
@@ -193,6 +193,17 @@ if (typeof Fme == "undefined" || !Fme)
 				container: this.id + "-documentation"
           });
           
+          var oSaveGistMenuButton = new YAHOO.widget.Button({ 
+				id: "saveGistButton", 
+				name: "saveGistButton",
+				label: "Save Gist",
+				container: this.id + "-savegist",
+				onclick: {
+					fn: this.onSaveGistMenuButtonClick,
+					scope: this
+				}
+          });
+          
           oDocsMenuButton.getMenu().setItemGroupTitle("Javascript", 0);
           oDocsMenuButton.getMenu().setItemGroupTitle("Freemarker", 1);
           oDocsMenuButton.getMenu().setItemGroupTitle("Lucene", 2);
@@ -203,6 +214,7 @@ if (typeof Fme == "undefined" || !Fme)
 		  Dom.setStyle(this.widgets.exportResultsButton, "display", "none");
           
 	  },
+
 	   
 	  onEditorKeyEvent : function ACJC_onEditorKeyEvent(i, e) {
  		 // Hook into ctrl-enter
@@ -367,12 +379,36 @@ if (typeof Fme == "undefined" || !Fme)
             successCallback: {
             	fn: function(res) {
             		var listOfScripts = res.json.scripts;
-            		this.createMenuButtons(listOfScripts);
+//            		this.createMenuButtons(listOfScripts);
             	},
             	scope: this
             }
          });
 
+         
+         var ghurl = Alfresco.constants.PROXY_URI.replace("/alfresco", "/github");
+
+   	  YAHOO.util.Connect.asyncRequest ("GET", ghurl+
+   		  "gists?access_token=7566bde47fab645e13d7d3b4325abb005b6a02f3", {
+   		  	success: function(result) { 
+   		  		var gists = JSON.parse(result.responseText);
+      		  	var listOfScripts = [];
+   		  		for (var g=0; g < gists.length; g++) {
+   		  			
+   		  		    var gistInfo = this.findScriptAndTemplateInGist(gists[g]);
+
+   		  		    listOfScripts.push({
+   		  				text : gistInfo.name, 
+   		  				value : gists[g]
+   		  			});
+   		  		};
+   		  		
+     		  	this.createMenuButtons(listOfScripts);
+   		  	},
+   		  	scope: this
+   	  }, "");
+    	 
+    	 
          // Read Javascript API Commands for code completion
          Alfresco.util.Ajax.request(
          {
@@ -760,7 +796,7 @@ if (typeof Fme == "undefined" || !Fme)
     		scriptCode = this.widgets.scriptInput.value;
     	}
     	
-    	templateCode = this.widgets.templateInput.value;
+    	var templateCode = this.widgets.templateInput.value;
     	
     	// Build JSON Object to send to the server
    	  	var input = { 
@@ -870,6 +906,47 @@ if (typeof Fme == "undefined" || !Fme)
 	  loadDemoTemplate: function ACJC_loadDemoTemplate() {
 		  this.widgets.codeMirrorTemplate.setValue('no template');
 	  },
+
+	  
+	  onSaveGistMenuButtonClick: function(p_sType, p_aArgs, self) {
+	    	
+	    	this.widgets.codeMirrorScript.save();
+	    	this.widgets.codeMirrorTemplate.save();
+	    	var templateCode = this.widgets.templateInput.value;
+	    	var scriptCode = this.widgets.scriptInput.value;
+	    	
+	    	var newGist = {
+	    		  "description": "Frist script saved from the Javascript Console",
+	    		  "public": false,
+	    		  "files": {
+	    		    "script.js": {
+	    		      "content": scriptCode
+	    		    },
+	    		    "template.ftl": {
+		    		  "content": templateCode
+		    		}
+	    		  }
+	    		};
+	    	
+//	     	  YAHOO.util.Connect.asyncRequest ("POST", 
+//	     	   		  "https://api.github.com/gists?access_token=7566bde47fab645e13d7d3b4325abb005b6a02f3", {
+//	     	   		  	success: function(result) {
+//	     	   		  		console.log(result);
+//	     	   		  	},
+//	     	   		  	scope: this
+//	     	   	  }, JSON.stringify(newGist));	    	
+	    	
+		    	
+	     	  YAHOO.util.Connect.asyncRequest ("PATCH", 
+	     	   		  "https://api.github.com/gists/506547f5241be1a8ecf6?access_token=7566bde47fab645e13d7d3b4325abb005b6a02f3", {
+	     	   		  	success: function(result) {
+	     	   		  		console.log(result);
+	     	   		  	},
+	     	   		  	scope: this
+	     	   	  }, JSON.stringify(newGist));	    	
+		
+	  },
+	  
 	  
       /**
 		 * Fired when the user selects a script from the load scripts drop down
@@ -879,27 +956,112 @@ if (typeof Fme == "undefined" || !Fme)
 		 */ 	  
       onLoadScriptClick : function ACJC_onLoadScriptClick(p_sType, p_aArgs, self) { 
 			 
-          var callback = {
-              success : function(o) {
-        	  	  // set the new editor content
-            	  self.widgets.codeMirrorScript.setValue(o.responseText);
-              },
-              failure: function(o) {
-            	  text: self.msg("error.script.load", filename)
-              },
-              scope: this
-          }
-
+//          this.oAuth = new Extras.OAuthHelper().setOptions({
+//              providerId: "github",
+//              endpointId: "github-auth",
+//              connectorId: "github-oauth",
+//              requestTokenPath: "/login/oauth/authorize",
+//              authorizationUrl: "https://github.com/login/oauth/authorize"
+//           });
+//    	  
+//          this.oAuth.init({
+//              successCallback: { 
+//                  fn: function()
+//                  {
+//                	  console.log(this.oAuth);
+//                  }, 
+//                  scope: this
+//              },
+//              failureHandler: { 
+//                  fn: function() {
+//                	  console.log(this.oAuth);
+//                  }, 
+//                  scope: this
+//              }
+//          });
+//          
+//
+//          if (!this.oAuth.isAuthorized()) // Double-check we are still not connected
+//          {
+//              this.oAuth.requestToken({
+//                  successCallback: { 
+//                      fn: function() { console.log("oAuthSuccess");}, 
+//                      scope: this
+//                  },
+//                  failureHandler: { 
+//                      fn: function() { console.log("oAuthFailure");}, 
+//                      scope: this
+//                  }
+//              });
+//          }
+          
           var nodeRef = p_aArgs[1].value;
           
     	  if (nodeRef == "NEW") {
     		  self.loadDemoScript.call(self);
     	  }
     	  else {
-    		  var url = Alfresco.constants.PROXY_URI + "api/node/content/" + nodeRef.replace("://","/");
-    		  YAHOO.util.Connect.asyncRequest('GET', url, callback);
+    		  //var url = Alfresco.constants.PROXY_URI + "api/node/content/" + nodeRef.replace("://","/");
+    		  var gist = p_aArgs[1].value;
+    		  gistFiles = self.findScriptAndTemplateInGist(gist);
+    		  
+     		  if (gistFiles.script) {
+        		  var url = gistFiles.script.raw_url;
+        		  url = Alfresco.constants.PROXY_URI.replace("/alfresco", "/github-gist") + url.replace("https://gist.github.com/","");
+     			  
+     			  YAHOO.util.Connect.asyncRequest('GET', url, {
+     				  success : function(o) {
+     					  self.widgets.codeMirrorScript.setValue(o.responseText);
+     				  },
+     				  failure: function(o) {
+     					  text: self.msg("error.script.load", url);         
+     				  },
+     				  scope: this
+     			  });
+     		  };
+
+     		  if (gistFiles.template) {
+        		  var url = gistFiles.template.raw_url;
+        		  url = Alfresco.constants.PROXY_URI.replace("/alfresco", "/github-gist") + url.replace("https://gist.github.com/","");
+
+        		  YAHOO.util.Connect.asyncRequest('GET', url, {
+     				  success : function(o) {
+     					  self.widgets.codeMirrorTemplate.setValue(o.responseText);
+     				  },
+     				  failure: function(o) {
+     					  text: self.msg("error.script.load", url);             
+     				  },
+     				  scope: this
+     			  });
+     		  };
+    	  
     	  }
        }, 
+       
+       findScriptAndTemplateInGist: function(gist) {
+           var result = {};
+           for (k in gist.files) {
+               if (gist.files[k].type == "application/javascript") {
+                 result["script"] = gist.files[k]; 
+               }
+               else if (gist.files[k].filename.substr(-4) == ".ftl") {
+                 result["template"] = gist.files[k];   
+               }
+           }
+           
+           if (result.script && result.script.filename) {
+        	   result.name = result.script.filename;
+           }
+           else if (result.template && result.template.filename) {
+        	   result.name = result.template.filename;
+           }
+           else {
+        	   result.name = gist.id;
+           };
+
+           return result;
+       },
+       
 
        saveAsExistingScript : function ACJC_saveAsExistingScript(filename, nodeRef) {
            Alfresco.util.Ajax.request({

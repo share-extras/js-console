@@ -13,6 +13,9 @@
 	<div id="${el}-main" class="hidden">
 	    <div class="buttonbar">
 	    	<div class="scriptmenu">
+				<div id="${el}-savegist"></div>
+	    	</div>
+	    	<div class="scriptmenu">
 				<div id="${el}-scriptload"></div>
 	    	</div>
 	    	<div class="scriptmenu">

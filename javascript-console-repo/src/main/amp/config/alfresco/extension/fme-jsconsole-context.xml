@@ -9,5 +9,17 @@
 		<property name="postRollScriptResource" value="de/fme/jsconsole/jsconsole-post-roll-script.js" />
 	</bean>
 
+    <bean id="webscript.de.fme.jsconsole.oauth-token.get" class="de.fme.jsconsole.GetOAuthToken" parent="webscript">
+        <property name="oauth2CredentialsStoreService">
+            <ref bean="oauth2CredentialsStoreService" />
+        </property>
+    </bean>
+    
+    <bean id="webscript.de.fme.jsconsole.oauth-token.post" class="de.fme.jsconsole.SaveOAuthToken" parent="webscript">
+        <property name="oauth2CredentialsStoreService">
+            <ref bean="oauth2CredentialsStoreService" />
+        </property>
+    </bean>
+    
 </beans>
 
