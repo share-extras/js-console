@@ -34,53 +34,28 @@
 
 	<config evaluator="string-compare" condition="Remote">
 	  <remote>
-<!-- 	    
-		Connector instance
-		<connector>
-			<id>github-oauth</id>
-			<name>Github OAuth Connector</name>
-			<description>Github connector with support for OAuth authentication</description>
-			<class>org.sharextras.webscripts.connector.HttpOAuth2Connector</class>
-			<client-id>478fcdc445fa7b29ecf3</client-id>
-			<client-secret>83a5da867af471685c31e2568e50b5a5ee0fa32d</client-secret>
-			<access-token-path>/login/oauth/access_token</access-token-path>
-		</connector>
-	  
-		Endpoints
-	    <endpoint>
-	      <id>github-auth</id>
-	      <name>GitHub Authenticated API</name>
-	      <connector-id>github-oauth</connector-id>
-	      <endpoint-url>https://github.com</endpoint-url>
-	    </endpoint>
-	    
-	    <endpoint>
-	      <id>github</id>
-	      <name>GitHub Remote API</name>
-	      <connector-id>http</connector-id>
-	      <endpoint-url>https://api.github.com</endpoint-url>
-	    </endpoint>
-	    
-	    <endpoint>
-	      <id>github-gist</id>
-	      <name>GitHub Gist</name>
-	      <connector-id>http</connector-id>
-	      <endpoint-url>https://gist.github.com</endpoint-url>
-	    </endpoint>	    
- -->
+ 
+ 		<authenticator>
+ 			<id>oauth-token</id>
+ 			<name>OAuth Access Token Authenticator</name>
+ 			<description>Uses an access token from the repository backed OAuth ticket store and puts it the
+ 			   Authentication header</description>
+ 			<class>org.sharextras.webscripts.connector.OAuth2Authenticator</class>
+ 		</authenticator>
  
 		<connector>
 			<id>http-oauth</id>
 			<name>OAuth2 Connector</name>
-			<description>Connector with support for OAuth2 authentication</description>
+			<description>HTTP Connector with support for OAuth2 authentication</description>
 			<class>org.sharextras.webscripts.connector.OAuth2AuthenticatingConnector</class>
+			<authenticator-id>oauth-token</authenticator-id>
 		</connector>
 
 		<endpoint>
-	      <id>github-gist</id>
-	      <name>GitHub Gist</name>
+	      <id>github-api</id>
+	      <name>GitHub Api</name>
 	      <connector-id>http-oauth</connector-id>
-	      <endpoint-url>https://gist.github.com</endpoint-url>
+	      <endpoint-url>https://api.github.com</endpoint-url>
 	    </endpoint>	    
 		
  	  </remote>
