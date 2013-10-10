@@ -13,7 +13,7 @@ if (typeof Fme == "undefined" || !Fme)
 /**
  * Admin Console Javascript Console
  * 
- * @namespace Alfresco
+ * @namespace Fme
  * @class Fme.JavascriptConsole
  */
 (function()
@@ -131,7 +131,14 @@ if (typeof Fme == "undefined" || !Fme)
           var loadMenuItems = [{
         	  text : this.msg("button.load.create.new"),
         	  value : "NEW"
-          }];
+          },
+          {
+        	  text: "Connect to Github",
+        	  url: "https://github.com/login/oauth/authorize?client_id=478fcdc445fa7b29ecf3&scope=gist&redirect_uri=http://localhost:9080/share/service/fme/jsconsole/github-return%3Frp%3Dpage%2Fconsole%2Fadmin-console%2Fjavascript-console"
+          }
+          ];
+          
+          
           loadMenuItems.push(listOfScripts);
 		  
           var oLoadMenuButton = new YAHOO.widget.Button({ 
@@ -271,6 +278,9 @@ if (typeof Fme == "undefined" || !Fme)
          Fme.JavascriptConsole.superclass.onReady.call(this);
          var self = this;
 
+         this.gistService = new Fme.GistService();
+
+         
          // Attach the CodeMirror highlighting
          this.widgets.codeMirrorScript = CodeMirror.fromTextArea(this.widgets.scriptInput, {
         	 mode : "javascript",
@@ -385,29 +395,21 @@ if (typeof Fme == "undefined" || !Fme)
             }
          });
 
-         
-         var ghurl = Alfresco.constants.PROXY_URI.replace("/alfresco", "/github");
+         this.gistService.loadGists(function(gists) {
+   		  	var listOfScripts = [];
+	  		for (var g=0; g < gists.length; g++) {
+	  			
+	  		    var gistInfo = this.findScriptAndTemplateInGist(gists[g]);
 
-   	  YAHOO.util.Connect.asyncRequest ("GET", ghurl+
-   		  "gists?access_token=7566bde47fab645e13d7d3b4325abb005b6a02f3", {
-   		  	success: function(result) { 
-   		  		var gists = JSON.parse(result.responseText);
-      		  	var listOfScripts = [];
-   		  		for (var g=0; g < gists.length; g++) {
-   		  			
-   		  		    var gistInfo = this.findScriptAndTemplateInGist(gists[g]);
-
-   		  		    listOfScripts.push({
-   		  				text : gistInfo.name, 
-   		  				value : gists[g]
-   		  			});
-   		  		};
-   		  		
-     		  	this.createMenuButtons(listOfScripts);
-   		  	},
-   		  	scope: this
-   	  }, "");
-    	 
+	  		    listOfScripts.push({
+	  				text : gistInfo.name, 
+	  				value : gists[g]
+	  			});
+	  		};
+		  		
+ 		  	this.createMenuButtons(listOfScripts);
+        	 
+         }, this);
     	 
          // Read Javascript API Commands for code completion
          Alfresco.util.Ajax.request(
@@ -928,25 +930,8 @@ if (typeof Fme == "undefined" || !Fme)
 	    		  }
 	    		};
 	    	
-//	     	  YAHOO.util.Connect.asyncRequest ("POST", 
-//	     	   		  "https://api.github.com/gists?access_token=7566bde47fab645e13d7d3b4325abb005b6a02f3", {
-//	     	   		  	success: function(result) {
-//	     	   		  		console.log(result);
-//	     	   		  	},
-//	     	   		  	scope: this
-//	     	   	  }, JSON.stringify(newGist));	    	
-	    	
-		    	
-	     	  YAHOO.util.Connect.asyncRequest ("PATCH", 
-	     	   		  "https://api.github.com/gists/506547f5241be1a8ecf6?access_token=7566bde47fab645e13d7d3b4325abb005b6a02f3", {
-	     	   		  	success: function(result) {
-	     	   		  		console.log(result);
-	     	   		  	},
-	     	   		  	scope: this
-	     	   	  }, JSON.stringify(newGist));	    	
-		
+	    	this.gistService.createNewGist(newGist);
 	  },
-	  
 	  
       /**
 		 * Fired when the user selects a script from the load scripts drop down
@@ -955,46 +940,6 @@ if (typeof Fme == "undefined" || !Fme)
 		 * @method onLoadScriptClick
 		 */ 	  
       onLoadScriptClick : function ACJC_onLoadScriptClick(p_sType, p_aArgs, self) { 
-			 
-//          this.oAuth = new Extras.OAuthHelper().setOptions({
-//              providerId: "github",
-//              endpointId: "github-auth",
-//              connectorId: "github-oauth",
-//              requestTokenPath: "/login/oauth/authorize",
-//              authorizationUrl: "https://github.com/login/oauth/authorize"
-//           });
-//    	  
-//          this.oAuth.init({
-//              successCallback: { 
-//                  fn: function()
-//                  {
-//                	  console.log(this.oAuth);
-//                  }, 
-//                  scope: this
-//              },
-//              failureHandler: { 
-//                  fn: function() {
-//                	  console.log(this.oAuth);
-//                  }, 
-//                  scope: this
-//              }
-//          });
-//          
-//
-//          if (!this.oAuth.isAuthorized()) // Double-check we are still not connected
-//          {
-//              this.oAuth.requestToken({
-//                  successCallback: { 
-//                      fn: function() { console.log("oAuthSuccess");}, 
-//                      scope: this
-//                  },
-//                  failureHandler: { 
-//                      fn: function() { console.log("oAuthFailure");}, 
-//                      scope: this
-//                  }
-//              });
-//          }
-          
           var nodeRef = p_aArgs[1].value;
           
     	  if (nodeRef == "NEW") {
@@ -1003,40 +948,46 @@ if (typeof Fme == "undefined" || !Fme)
     	  else {
     		  //var url = Alfresco.constants.PROXY_URI + "api/node/content/" + nodeRef.replace("://","/");
     		  var gist = p_aArgs[1].value;
-    		  gistFiles = self.findScriptAndTemplateInGist(gist);
-    		  
-     		  if (gistFiles.script) {
-        		  var url = gistFiles.script.raw_url;
-        		  url = Alfresco.constants.PROXY_URI.replace("/alfresco", "/github-gist") + url.replace("https://gist.github.com/","");
-     			  
-     			  YAHOO.util.Connect.asyncRequest('GET', url, {
-     				  success : function(o) {
-     					  self.widgets.codeMirrorScript.setValue(o.responseText);
-     				  },
-     				  failure: function(o) {
-     					  text: self.msg("error.script.load", url);         
-     				  },
-     				  scope: this
-     			  });
-     		  };
-
-     		  if (gistFiles.template) {
-        		  var url = gistFiles.template.raw_url;
-        		  url = Alfresco.constants.PROXY_URI.replace("/alfresco", "/github-gist") + url.replace("https://gist.github.com/","");
-
-        		  YAHOO.util.Connect.asyncRequest('GET', url, {
-     				  success : function(o) {
-     					  self.widgets.codeMirrorTemplate.setValue(o.responseText);
-     				  },
-     				  failure: function(o) {
-     					  text: self.msg("error.script.load", url);             
-     				  },
-     				  scope: this
-     			  });
-     		  };
-    	  
+    		  self.loadEditorContentFromGist(gist);
     	  }
        }, 
+       
+       loadEditorContentFromGist: function(gistData) {
+		  gistFiles = this.findScriptAndTemplateInGist(gistData);
+		  
+ 		  if (gistFiles.script) {
+    		  var url = this.convertRawUrlToProxyUrl(gistFiles.script.raw_url);
+ 			  
+ 			  YAHOO.util.Connect.asyncRequest('GET', url, {
+ 				  success : function(o) {
+ 					 this.widgets.codeMirrorScript.setValue(o.responseText);
+ 				  },
+ 				  failure: function(o) {
+ 					  text: this.msg("error.script.load", url);         
+ 				  },
+ 				  scope: this
+ 			  });
+ 		  };
+
+ 		  if (gistFiles.template) {
+    		  var url = this.convertRawUrlToProxyUrl(gistFiles.template.raw_url);
+
+    		  YAHOO.util.Connect.asyncRequest('GET', url, {
+ 				  success : function(o) {
+ 					 this.widgets.codeMirrorTemplate.setValue(o.responseText);
+ 				  },
+// 				  failure: function(o) {
+// 					  text: this.msg("error.script.load", url);             
+// 				  },
+ 				  scope: this
+ 			  });
+ 		  };
+    	   
+       },
+       
+       convertRawUrlToProxyUrl: function(url) {
+ 		  return Alfresco.constants.PROXY_URI.replace("/alfresco", "/github-gist") + url.replace("https://gist.github.com/","");
+       },
        
        findScriptAndTemplateInGist: function(gist) {
            var result = {};

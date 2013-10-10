@@ -34,7 +34,7 @@
 
 	<config evaluator="string-compare" condition="Remote">
 	  <remote>
- 
+ <!-- 
  		<authenticator>
  			<id>oauth-token</id>
  			<name>OAuth Access Token Authenticator</name>
@@ -50,14 +50,20 @@
 			<class>org.sharextras.webscripts.connector.OAuth2AuthenticatingConnector</class>
 			<authenticator-id>oauth-token</authenticator-id>
 		</connector>
-
+-->
 		<endpoint>
-	      <id>github-api</id>
+	      <id>github</id>
 	      <name>GitHub Api</name>
-	      <connector-id>http-oauth</connector-id>
+	      <connector-id>http</connector-id>
 	      <endpoint-url>https://api.github.com</endpoint-url>
-	    </endpoint>	    
+	    </endpoint>
 		
+	    <endpoint>
+	      <id>github-gist</id>
+	      <name>GitHub Gist</name>
+	      <connector-id>http</connector-id>
+	      <endpoint-url>https://gist.github.com</endpoint-url>
+	    </endpoint>	 		
  	  </remote>
 	</config>
 

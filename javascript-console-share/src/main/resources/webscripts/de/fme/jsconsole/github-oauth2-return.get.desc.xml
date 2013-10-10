@@ -1,0 +1,5 @@
+<webscript>
+    <shortname>GitHub OAuth return</shortname>
+    <description>Receive a verification code back from the GitHub OAuth service, swap it for an access token, store this and redirect the user</description>
+    <url>/fme/jsconsole/github-return</url>
+</webscript>

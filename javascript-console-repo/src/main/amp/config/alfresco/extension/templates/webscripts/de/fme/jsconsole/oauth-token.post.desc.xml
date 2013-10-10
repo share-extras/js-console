@@ -1,0 +1,7 @@
+<webscript>
+    <shortname>OAuth2-save-token</shortname>
+    <description>Script to save an OAuth 2.0 token</description>
+    <url>/oauth/token/{name}</url>
+    <authentication>user</authentication>
+    <format default="json">any</format>
+</webscript>

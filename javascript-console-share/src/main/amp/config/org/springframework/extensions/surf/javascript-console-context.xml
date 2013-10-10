@@ -15,7 +15,7 @@
     <bean id="webscript.de.fme.jsconsole.github-oauth2-return.get" parent="webscript.org.sharextras.slingshot.oauth2-return.get">
         <property name="endpointId" value="github-oauth" />
         <property name="clientId" value="478fcdc445fa7b29ecf3" />
-        <property name="clientSecret" value="83a5da867af471685c31e2568e50b5a5ee0fa32d" />
+        <property name="clientSecret" value="187d2f9181448e4b0b260125a39aa4d04133fe49" />
         <property name="accessTokenUrl" value ="https://github.com/login/oauth/access_token" />
     </bean>
            
