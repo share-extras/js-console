@@ -134,7 +134,7 @@ if (typeof Fme == "undefined" || !Fme)
           },
           {
         	  text: "Connect to Github",
-        	  url: "https://github.com/login/oauth/authorize?client_id=478fcdc445fa7b29ecf3&scope=gist&redirect_uri=http://localhost:9080/share/service/fme/jsconsole/github-return%3Frp%3Dpage%2Fconsole%2Fadmin-console%2Fjavascript-console"
+        	  url: "https://github.com/login/oauth/authorize?client_id=478fcdc445fa7b29ecf3&scope=gist&redirect_uri=http://localhost:9080/share/service/extras/oauth/auth2-return%3Frp%3Dpage%2Fconsole%2Fadmin-console%2Fjavascript-console"
           }
           ];
           

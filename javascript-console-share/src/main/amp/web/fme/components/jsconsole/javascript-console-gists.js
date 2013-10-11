@@ -28,10 +28,10 @@ if (typeof Fme == "undefined" || !Fme)
    {
 	   accessToken : "",
 	   
-	   PROXY_URI_GITHUB : Alfresco.constants.PROXY_URI.replace("/alfresco", "/github"),
+	   PROXY_URI_GITHUB : Alfresco.constants.PROXY_URI.replace("/alfresco", "/github-api"),
 	   
 	   isConnected : function GistService_isConnected() {
-		   return this.accessToken && this.accessToken.length > 0;
+		   return true;
 	   },
 	   
 	   connect : function GistService_connect(connectedCallback, scope) {
@@ -56,7 +56,7 @@ if (typeof Fme == "undefined" || !Fme)
 	   loadGists : function GistService_loadGists(callback, scope) {
 		   if (this.isConnected()) {
 			   Alfresco.util.Ajax.jsonGet({
-				   url : this.PROXY_URI_GITHUB + "gists?access_token=" + this.accessToken,
+				   url : this.PROXY_URI_GITHUB + "gists",
 				   successCallback : {
 					   fn : function(result) {
 						   if (scope) {
@@ -82,7 +82,7 @@ if (typeof Fme == "undefined" || !Fme)
 	   createNewGist : function GistService_createNewGist(newGist) {
 		   if (this.isConnected()) {
 			   Alfresco.util.Ajax.jsonPost({
-				   url : this.PROXY_URI_GITHUB + "gists?access_token="+ this.accessToken,
+				   url : this.PROXY_URI_GITHUB + "gists",
 				   dataObj: newGist,
 	               successCallback: {
 	            	   fn : function(response) {
@@ -109,7 +109,7 @@ if (typeof Fme == "undefined" || !Fme)
 	   updateGist : function GistService_updateGist(gistId, newData) {
 		   if (this.isConnected()) {
 			   YAHOO.util.Connect.asyncRequest ("PATCH", 
-				this.PROXY_URI_GITHUB + "gists/" + gistId + "?access_token=" + this.accessToken, {
+				this.PROXY_URI_GITHUB + "gists/" + gistId, {
 				   success: function(result) {
 					   // TODO add callback
 					   console.log(result);

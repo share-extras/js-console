@@ -34,30 +34,25 @@
 
 	<config evaluator="string-compare" condition="Remote">
 	  <remote>
- <!-- 
- 		<authenticator>
- 			<id>oauth-token</id>
- 			<name>OAuth Access Token Authenticator</name>
- 			<description>Uses an access token from the repository backed OAuth ticket store and puts it the
- 			   Authentication header</description>
- 			<class>org.sharextras.webscripts.connector.OAuth2Authenticator</class>
- 		</authenticator>
- 
-		<connector>
-			<id>http-oauth</id>
-			<name>OAuth2 Connector</name>
-			<description>HTTP Connector with support for OAuth2 authentication</description>
-			<class>org.sharextras.webscripts.connector.OAuth2AuthenticatingConnector</class>
-			<authenticator-id>oauth-token</authenticator-id>
-		</connector>
--->
-		<endpoint>
-	      <id>github</id>
-	      <name>GitHub Api</name>
-	      <connector-id>http</connector-id>
-	      <endpoint-url>https://api.github.com</endpoint-url>
-	    </endpoint>
-		
+        <connector>
+            <id>oauth2-header-token</id>
+            <name>Chatter OAuth 2.0 Connector</name>
+            <description>HTTP Connector with support for OAuth 2.0 authentication</description>
+            <class>org.sharextras.webscripts.connector.HttpOAuth2Connector</class>
+            <identity>user</identity>
+            <auth-method>token</auth-method>
+        </connector>
+            		 
+        <endpoint>
+            <id>github-api</id>
+            <name>GitHub Api</name>
+            <connector-id>oauth2-header-token</connector-id>
+            <endpoint-url>https://api.github.com</endpoint-url>
+            <client-id>478fcdc445fa7b29ecf3</client-id>
+            <client-secret>187d2f9181448e4b0b260125a39aa4d04133fe49</client-secret>
+            <access-token-url>https://github.com/login/oauth/access_token</access-token-url>
+        </endpoint>	  
+        		
 	    <endpoint>
 	      <id>github-gist</id>
 	      <name>GitHub Gist</name>
