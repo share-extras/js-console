@@ -10,7 +10,7 @@
 
     <groupId>org.sharextras</groupId>
     <artifactId>javascript-console-share</artifactId>
-    <version>0.5.2-SNAPSHOT</version>
+    <version>0.6.0-SNAPSHOT</version>
     <name>JavaScript Console - Share</name>
     <description>Alfresco Share-Extras JavaScript Console - Share Module</description>
     <packaging>amp</packaging>
@@ -221,6 +221,7 @@
             <!-- com.googlecode.jslint4java:jslint4java-maven-plugin would be a better / more configurable jslint plugin -->
             <!-- com.samaxes.maven:minify-maven-plugin would be a better compressor, but requires Java 7 and min-suffix pattern is non-standard for 
                 Alfresco -->
+				<!--
             <plugin>
                 <groupId>net.alchim31.maven</groupId>
                 <artifactId>yuicompressor-maven-plugin</artifactId>
@@ -246,6 +247,7 @@
                     </execution>
                 </executions>
             </plugin>
+-->			
         </plugins>
 
         <pluginManagement>
