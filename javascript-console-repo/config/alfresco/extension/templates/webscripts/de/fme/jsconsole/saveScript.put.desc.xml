@@ -1,0 +1,6 @@
+<webscript>
+  <shortname>fme JSConsole store new Javascript</shortname>
+  <url>/de/fme/jsconsole/savescript?name={name}</url>
+  <authentication>admin</authentication>
+  <format default="json">extension</format>
+</webscript>

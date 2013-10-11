@@ -1,6 +1,4 @@
-
-
-function findScripts(folder) {
+var prepareOutput= function prepareOutput(folder) {
   var scriptlist = [];
 
   var children = folder.children;
@@ -13,7 +11,7 @@ function findScripts(folder) {
     
     if (node.isContainer) {
        scriptlist.push({text : node.name, submenu : {
-            id: node.properties["sys:node-uuid"], itemdata : findScripts(node) 
+            id: node.properties["sys:node-uuid"], itemdata : prepareOutput(node) 
        }});
     }
     else {
@@ -24,10 +22,13 @@ function findScripts(folder) {
   return scriptlist;
 }
 
-var scriptFolder = companyhome.childrenByXPath("app:dictionary/app:scripts")[0];
-if (scriptFolder) {
-	model.scripts = jsonUtils.toJSONString(findScripts(scriptFolder));
-}
-else {
-	model.scripts = "[]";
-}
+var findAvailableScripts = function findAvailableScripts(){
+    var scriptFolder = companyhome.childrenByXPath("app:dictionary/app:scripts")[0];
+    if (scriptFolder) {
+    	model.scripts = jsonUtils.toJSONString(prepareOutput(scriptFolder));
+    }
+    else {
+    	model.scripts = "[]";
+    }}
+
+findAvailableScripts();

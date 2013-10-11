@@ -30,6 +30,24 @@ public class JavascriptConsoleResult {
 	private String spacePath = "";
 	
 	private boolean statusResponseSent = false;
+	
+	private String scriptPerformance;
+	
+	private String freemarkerPerformance;
+	
+	private String webscriptPerformance;
+	
+	public void setWebscriptPerformance(String webscriptPerformance) {
+		this.webscriptPerformance = webscriptPerformance;
+	}
+	
+	public void setScriptPerformance(String scriptPerformance) {
+		this.scriptPerformance = scriptPerformance;
+	}
+	
+	public void setFreemarkerPerformance(String freemarkerPerformance) {
+		this.freemarkerPerformance = freemarkerPerformance;
+	}
 
 	public void setPrintOutput(List<String> printOutput) {
 		this.printOutput = printOutput;
@@ -75,6 +93,9 @@ public class JavascriptConsoleResult {
 			jsonOutput.put("spaceNodeRef", getSpaceNodeRef());
 			jsonOutput.put("spacePath", getSpacePath());
 			jsonOutput.put("result", new JSONArray());
+			jsonOutput.put("scriptPerf", scriptPerformance);
+			jsonOutput.put("freemarkerPerf", freemarkerPerformance);
+			jsonOutput.put("webscriptPerf", webscriptPerformance);
 
 			response.getWriter().write(jsonOutput.toString());
 
@@ -91,4 +112,14 @@ public class JavascriptConsoleResult {
 	public void setStatusResponseSent(boolean statusResponseSent) {
 		this.statusResponseSent = statusResponseSent;
 	}
+
+	@Override
+	public String toString() {
+		return "JavascriptConsoleResult [renderedTemplate=" + renderedTemplate + ", printOutput=" + printOutput
+				+ ", spaceNodeRef=" + spaceNodeRef + ", spacePath=" + spacePath + ", statusResponseSent=" + statusResponseSent
+				+ ", scriptPerformance=" + scriptPerformance + ", freemarkerPerformance=" + freemarkerPerformance + "]";
+	}
+	
+	
 }
+      

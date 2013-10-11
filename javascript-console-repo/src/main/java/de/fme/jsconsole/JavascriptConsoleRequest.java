@@ -95,4 +95,13 @@ public class JavascriptConsoleRequest {
 					"Error reading json request body.", e);
 		}
 	}
+
+	@Override
+	public String toString() {
+		return "JavascriptConsoleRequest [script=" + script + ", template=" + template + ", spaceNodeRef=" + spaceNodeRef
+				+ ", runas=" + runas + ", useTransaction=" + useTransaction + ", transactionReadOnly=" + transactionReadOnly
+				+ ", urlargs=" + urlargs + ", documentNodeRef=" + documentNodeRef + "]";
+	}
+	
+	
 }

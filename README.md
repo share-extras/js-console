@@ -1,12 +1,38 @@
-
 Javascript Console Admin Console component for Alfresco 3.4/4.0
 ===============================================================
 
-Author: Florian Maul (fme AG)
+Author: Florian Maul (fme AG)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Jens Goldhammer (fme AG)
 
 This project contains a Javascript Console component for the Alfresco Share's 
 Administration Console, that enables the execution of arbitrary javascript code 
 in the repository. 
+
+Download newest rc version for Alfresco 4.x
+--------------------------------------------
+
+[Share Jar for 4.x](https://github.com/jgoldhammer/js-console/raw/5d083f5c594f679dc015c9dc1b0dd9132f5a4a9b/javascript-console-dist/javascript-console-share-0.6rc.jar)  
+[Repo Jar for 4.x](https://github.com/jgoldhammer/js-console/raw/5d083f5c594f679dc015c9dc1b0dd9132f5a4a9b/javascript-console-dist/javascript-console-repo-0.6rc.jar)
+
+New Features
+--------
+
++ new json output view for validation and formatting json from the freemarker template processing
+![JSONView](https://raw.github.com/jgoldhammer/js-console/master/javascript-console-share/screenshots/json_output_view.png) 
+
++ JSHint integration in javascript editor- it validates input on the fly and integrates the alfresco root objects like search, node...
+![JSHINT](https://raw.github.com/jgoldhammer/js-console/master/javascript-console-share/screenshots/jshint_live_integration.png) 
+
++ performance statistics - displays overall time, time for javascript and freemarker processing, time for network and time for rest of the server side processing 
+![PERFORMANCE](https://raw.github.com/jgoldhammer/js-console/master/javascript-console-share/screenshots/performance_stats.png) 
+
++ Editor Theming - allows you to theme the javascript and freemarker codemirror editor
+![Editor themes](https://raw.github.com/jgoldhammer/js-console/master/javascript-console-share/screenshots/editor_themes.png)
+
++ better error marking of server runtime errors in the editors
+![Error](https://raw.github.com/jgoldhammer/js-console/master/javascript-console-share/screenshots/js_error_detection_and_marking.png)
+
++ update codemirror to version 3 and enabling many codemirror addons(activeline, hightlight selection, new autocomplete module)
 
 
 Installation
