@@ -8,14 +8,15 @@ This project contains a Javascript Console component for the Alfresco Share's
 Administration Console, that enables the execution of arbitrary javascript code 
 in the repository. 
 
-Download newest rc version for Alfresco 4.x
---------------------------------------------
+Watch the video
+--------
 
-[Share Jar for 4.x](https://github.com/jgoldhammer/js-console/raw/5d083f5c594f679dc015c9dc1b0dd9132f5a4a9b/javascript-console-dist/javascript-console-share-0.6rc.jar)  
-[Repo Jar for 4.x](https://github.com/jgoldhammer/js-console/raw/5d083f5c594f679dc015c9dc1b0dd9132f5a4a9b/javascript-console-dist/javascript-console-repo-0.6rc.jar)
+https://www.youtube.com/watch?v=c3JIeVY8Nnk
 
 New Features
 --------
+
++ autocomplete with tern.js
 
 + new json output view for validation and formatting json from the freemarker template processing
 ![JSONView](https://raw.github.com/jgoldhammer/js-console/master/javascript-console-share/screenshots/json_output_view.png) 
