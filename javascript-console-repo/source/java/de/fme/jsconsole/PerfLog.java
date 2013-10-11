@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package de.fme.jsconsole;
 
@@ -14,7 +14,7 @@ import org.apache.commons.logging.LogFactory;
  * the monitoring via {@link #start()} or {@link #start(String, Object...)} and
  * stop the monitoring with {@link #stop(String, Object...)} or
  * {@link #stop(int, String, Object...)}.
- * 
+ *
  * @author jgoldhammer
  */
 public class PerfLog {
@@ -24,7 +24,7 @@ public class PerfLog {
 	private long startTime;
 
 	/**
-	 * 
+	 *
 	 * @param logger
 	 *            the logger to log the performance mesaure
 	 */
@@ -43,13 +43,13 @@ public class PerfLog {
 
 	/**
 	 * start the logging
-	 * 
+	 *
 	 * @param message
 	 * @param params
 	 */
 	public PerfLog start(String message, Object... params) {
+		startTime = System.currentTimeMillis();
 		if (LOG.isInfoEnabled() || LOG.isWarnEnabled()) {
-			startTime = System.currentTimeMillis();
 			if (StringUtils.isNotEmpty(message)) {
 				LOG.info(MessageFormat.format(message, params));
 			}
@@ -89,7 +89,7 @@ public class PerfLog {
 	 * ends the performance monitoring. Logs a warning if the operation is
 	 * finished after {@value #DEFAULT_ASSERT_PERFORMANCE} milliseconds. To
 	 * specify your own time limit, use {@link #stop(int, String, Object...)}.
-	 * 
+	 *
 	 * @param message
 	 *            the message to log in the log statement.
 	 * @param params

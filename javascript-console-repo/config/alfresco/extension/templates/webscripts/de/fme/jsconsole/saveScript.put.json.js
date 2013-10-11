@@ -6,14 +6,13 @@ var saveScript = function saveScript(){
     var scriptFolder = search.xpathSearch("/app:company_home/app:dictionary/app:scripts")[0];
     if (scriptFolder) {
         var scriptNode;
-        if(isUpdate){
+        if(isUpdate && isUpdate=="true"){
             scriptNode = scriptFolder.childByNamePath(args.name);
         }else{
             scriptNode = scriptFolder.createFile(args.name);
         }
     	scriptNode.content = json.get('jsScript');
-//    	scriptNode.properties["jsc:freemarkerScript"] = json.get('fmScript');
-    	logger.error("fmScript: "+json.get('fmScript'));
+    	scriptNode.properties["jsc:freemarkerScript"].content=json.get('fmScript');
     	scriptNode.save();
     }else{
         logger.warn('No script folder');

@@ -19,18 +19,5 @@
 .cm-s-eclipse span.cm-attribute {color: #00c;}
 .cm-s-eclipse span.cm-link {color: #219;}
 
-.cm-s-eclipse .CodeMirror-matchingbracket {
-	border:1px solid grey;
-	color:black !important;
-}
-
-.cm-s-eclipse .CodeMirror-activeline-background {
-	background: #e8f2ff !important;
-}
-
-.cm-s-eclipse .CodeMirror-focused .cm-matchhighlight {
-    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAFklEQVQI12NgYGBgkKzc8x9CMDAwAAAmhwSbidEoSQAAAABJRU5ErkJggg==);
-    background-position: bottom;
-    background-repeat: repeat-x;
-    background-color:lightgrey;
-}
+.cm-s-eclipse .CodeMirror-activeline-background {background: #e8f2ff !important;}
+.cm-s-eclipse .CodeMirror-matchingbracket {outline:1px solid grey; color:black !important;}

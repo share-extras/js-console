@@ -45,14 +45,6 @@
                 }
             }
 
-            if (objectName === "jmx") {
-                result["global"].push("jmxProps");
-                var properties = jmx.getAllPropertyNames();
-                for ( var i = 0; i < properties.length; i++) {
-                    result["methods"]["jmxProps"].push(properties[i]);
-                }
-            }
-
             result["methods"][objectName].sort();
         }
         result["global"].sort();
@@ -61,6 +53,7 @@
     // add global scriptNodes document and space modelled by the companyhome
     result["global"].push("document");
     result["global"].push("space");
+    result["global"].push("script");
     result["methods"]["document"] = result["methods"]["companyhome"];
     result["methods"]["space"] = result["methods"]["companyhome"];
 
@@ -75,14 +68,13 @@
     result["methods"]["json"].push("isNull(fieldName)");
     result["methods"]["json"].push("getJSONArray(fieldName)");
 
-    // copy commands for all scriptnodes to a specific "node" property
-    result["node"] = result["methods"]["companyhome"];
-
     // Javascript Console specific commands
     result["global"].push("print");
     result["global"].push("recurse");
     result["methods"]["logger"].push("setLevel");
 
+    result["global"].push("Packages");
+    result["global"].push("formdata");
     model.json = jsonUtils.toJSONString(result);
 
 })(this, model);

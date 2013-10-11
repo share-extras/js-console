@@ -43,10 +43,10 @@ import org.springframework.extensions.webscripts.WebScriptResponse;
 /**
  * Implements a webscript that is used to execute arbitrary scripts and
  * freemarker templates the same way a {@link DeclarativeWebScript} would do.
- * 
+ *
  * @author Florian Maul (fme AG)
  * @version 1.0
- * 
+ *
  */
 public class ExecuteWebscript extends AbstractWebScript {
 
@@ -79,7 +79,7 @@ public class ExecuteWebscript extends AbstractWebScript {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.springframework.extensions.webscripts.WebScript#execute(org.
 	 * springframework.extensions.webscripts.WebScriptRequest,
 	 * org.springframework.extensions.webscripts.WebScriptResponse)
@@ -153,7 +153,7 @@ public class ExecuteWebscript extends AbstractWebScript {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.alfresco.web.scripts.WebScript#execute(org.alfresco.web.scripts.
 	 * WebScriptRequest, org.alfresco.web.scripts.WebScriptResponse)
 	 */
@@ -266,7 +266,7 @@ public class ExecuteWebscript extends AbstractWebScript {
 
 	/**
 	 * Merge script generated model into template-ready model
-	 * 
+	 *
 	 * @param scriptContent
 	 *            script content
 	 * @param scriptModel
@@ -290,7 +290,7 @@ public class ExecuteWebscript extends AbstractWebScript {
 
 	/**
 	 * Render a template (of given format) to the Web Script Response
-	 * 
+	 *
 	 * @param format
 	 *            template format (null, default format)
 	 * @param model

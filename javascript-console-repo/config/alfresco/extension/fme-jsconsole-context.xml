@@ -16,27 +16,6 @@
 			</list>
 		</property>
 	</bean>
-	
-	<bean id="jmxClientSciptFacade" parent="baseJavaScriptExtension"
-	class="de.fme.jsconsole.jmx.JmxClientScriptFacade">
-		<property name="extensionName" value="jmx" />
-		<property name="alfrescoMBeanServer" ref="alfrescoMBeanServer" />
-	</bean>
-	
-	<bean id="solrScriptFacade" parent="baseJavaScriptExtension"
-	class="de.fme.jsconsole.jmx.SolrScriptFacade">
-		<property name="extensionName" value="solr" />
-		<property name="solrIndexCheckService" ref="search.solrIndexCheckService" />
-	</bean>
-	
-	<bean id="batchScriptFacade" parent="baseJavaScriptExtension"
-	class="de.fme.jsconsole.batch.BatchScriptFacade">
-		<property name="extensionName" value="batch" />
-		<property name="transactionService" ref="transactionService" />
-		<property name="searchService" ref="searchService" />
-		<property name="scriptService" ref="scriptService" />
-		<property name="serviceRegistry" ref="ServiceRegistry" />
-	</bean>
 
 </beans>
 
