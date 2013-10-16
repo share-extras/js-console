@@ -126,37 +126,58 @@ if (typeof Fme == "undefined" || !Fme)
 	        }
 	   },
 	   
-	  createMenuButtons: function ACJC_createMenuButtons(listOfScripts) {
+	  createMenuButtons: function ACJC_createMenuButtons() {
 
           var loadMenuItems = [{
         	  text : this.msg("button.load.create.new"),
         	  value : "NEW"
           },
-          {
+          {	
         	  text: "Connect to Github",
-        	  url: "https://github.com/login/oauth/authorize?client_id=478fcdc445fa7b29ecf3&scope=gist&redirect_uri=http://localhost:9080/share/service/extras/oauth/auth2-return%3Frp%3Dpage%2Fconsole%2Fadmin-console%2Fjavascript-console"
+        	  url: this.gistService.getConnectUrl()		
+          },
+          {	
+        	  text: "Load from Repository",
+        	  submenu: {
+        		  id : "loadFromRepoMenu"
+        	  }
+          },
+          {	
+        	  text: "Load from my Gists",
+        	  submenu: {
+        		  id : "loadFromMyGistsMenu"
+        	  }
+          },
+          {	
+        	  text: "Load from starred Gists",
+        	  submenu: {
+        		  id : "loadFromStarredGistsMenu"
+        	  }
           }
+          
           ];
-          
-          
-          loadMenuItems.push(listOfScripts);
+
+          //loadMenuItems.push(listOfScripts);
 		  
           var oLoadMenuButton = new YAHOO.widget.Button({ 
 				id: "loadButton", 
 				name: "loadButton",
-				label: "Load from GIST", //this.msg("button.load.script"),
+				label: this.msg("button.load.script"),
 				type: "menu",  
 				menu: loadMenuItems,
-				container: this.id + "-scriptload"
+				container: this.id + "-scriptload",
+				lazyloadmenu: false // render the menu immediately
           });
 
-          oLoadMenuButton.getMenu().subscribe("click", this.onLoadScriptClick, this);
+          this.loadListOfMyGists();
+          this.loadListOfStarredGists();
+          this.loadListOfRepoScripts();
           
           var saveMenuItems = [{
         	  text : this.msg("button.save.create.new"),
         	  value : "NEW"
           }];
-          saveMenuItems.push(listOfScripts);
+          //saveMenuItems.push(listOfScripts);
           
           var oSaveMenuButton = new YAHOO.widget.Button({ 
 				id: "saveButton", 
@@ -164,7 +185,8 @@ if (typeof Fme == "undefined" || !Fme)
 				label: this.msg("button.save.script"),
 				type: "menu",  
 				menu: saveMenuItems,
-				container: this.id + "-scriptsave"
+				container: this.id + "-scriptsave",
+				lazyloadmenu: false // render the menu immediately
           });
 
           oSaveMenuButton.getMenu().subscribe("click", this.onSaveScriptClick, this);
@@ -200,17 +222,6 @@ if (typeof Fme == "undefined" || !Fme)
 				container: this.id + "-documentation"
           });
           
-          var oSaveGistMenuButton = new YAHOO.widget.Button({ 
-				id: "saveGistButton", 
-				name: "saveGistButton",
-				label: "Save Gist",
-				container: this.id + "-savegist",
-				onclick: {
-					fn: this.onSaveGistMenuButtonClick,
-					scope: this
-				}
-          });
-          
           oDocsMenuButton.getMenu().setItemGroupTitle("Javascript", 0);
           oDocsMenuButton.getMenu().setItemGroupTitle("Freemarker", 1);
           oDocsMenuButton.getMenu().setItemGroupTitle("Lucene", 2);
@@ -222,6 +233,80 @@ if (typeof Fme == "undefined" || !Fme)
           
 	  },
 
+	  
+	  loadListOfMyGists: function JSC_loadListOfMyGists() {
+         this.gistService.loadGists(function(gists) {
+    		var listOfScripts = [];
+ 	  		for (var g=0; g < gists.length; g++) {
+ 	  			
+ 	  		    var gistInfo = this.findScriptAndTemplateInGist(gists[g]);
+
+ 	  		    listOfScripts.push({
+ 	  				text : gistInfo.name, 
+ 	  				value : gists[g],
+  	  				onclick: {
+  	  					fn: this.loadEditorContentFromGist,
+  	  					scope: this
+  	  				}  	  				
+ 	  				
+ 	  			});
+ 	  		};
+ 		  	
+ 	  		var menu = YAHOO.widget.MenuManager.getMenu("loadFromMyGistsMenu");
+ 	  		menu.clearContent();
+ 	  		menu.addItems(listOfScripts);
+ 	  		menu.render();
+         	 
+          }, this);
+	  },
+	  
+	  loadListOfStarredGists: function JSC_loadListOfStarredGists() {
+         this.gistService.loadStarredGists(function(gists) {
+     		var listOfScripts = [];
+  	  		for (var g=0; g < gists.length; g++) {
+  	  			
+  	  		    var gistInfo = this.findScriptAndTemplateInGist(gists[g]);
+
+  	  		    listOfScripts.push({
+  	  				text : gistInfo.name, 
+  	  				value : gists[g],
+  	  				onclick: {
+  	  					fn: this.loadEditorContentFromGist,
+  	  					scope: this
+  	  				}  	  				
+  	  			});
+  	  		};
+  		  	
+  	  		var menu = YAHOO.widget.MenuManager.getMenu("loadFromStarredGistsMenu");
+  	  		menu.clearContent();
+  	  		menu.addItems(listOfScripts);
+  	  		menu.render();
+  	  		
+           }, this);		  
+	  },
+	  
+
+	  loadListOfRepoScripts: function JSC_loadListOfRepoScripts() {
+         
+         // Load Scripts from Repository
+         Alfresco.util.Ajax.request(
+         {
+            url: Alfresco.constants.PROXY_URI + "de/fme/jsconsole/listscripts.json",
+            method: Alfresco.util.Ajax.GET,
+            requestContentType: Alfresco.util.Ajax.JSON,
+            successCallback: {
+            	fn: function(res) {
+            		var listOfScripts = res.json.scripts;
+            		
+          	  		var menu = YAHOO.widget.MenuManager.getMenu("loadFromRepoMenu");
+          	  		menu.clearContent();
+          	  		menu.addItems(listOfScripts);
+          	  		menu.render();
+            	},
+            	scope: this
+            }
+         });	      
+	  },	  
 	   
 	  onEditorKeyEvent : function ACJC_onEditorKeyEvent(i, e) {
  		 // Hook into ctrl-enter
@@ -278,7 +363,6 @@ if (typeof Fme == "undefined" || !Fme)
          Fme.JavascriptConsole.superclass.onReady.call(this);
          var self = this;
 
-         this.gistService = new Fme.GistService();
 
          
          // Attach the CodeMirror highlighting
@@ -379,38 +463,9 @@ if (typeof Fme == "undefined" || !Fme)
             	 this.loadDemoTemplate();
              }
     	 }
-         
-         // Load Scripts from Repository
-         Alfresco.util.Ajax.request(
-         {
-            url: Alfresco.constants.PROXY_URI + "de/fme/jsconsole/listscripts.json",
-            method: Alfresco.util.Ajax.GET,
-            requestContentType: Alfresco.util.Ajax.JSON,
-            successCallback: {
-            	fn: function(res) {
-            		var listOfScripts = res.json.scripts;
-//            		this.createMenuButtons(listOfScripts);
-            	},
-            	scope: this
-            }
-         });
 
-         this.gistService.loadGists(function(gists) {
-   		  	var listOfScripts = [];
-	  		for (var g=0; g < gists.length; g++) {
-	  			
-	  		    var gistInfo = this.findScriptAndTemplateInGist(gists[g]);
+         this.createMenuButtons();
 
-	  		    listOfScripts.push({
-	  				text : gistInfo.name, 
-	  				value : gists[g]
-	  			});
-	  		};
-		  		
- 		  	this.createMenuButtons(listOfScripts);
-        	 
-         }, this);
-    	 
          // Read Javascript API Commands for code completion
          Alfresco.util.Ajax.request(
          {
@@ -952,8 +1007,8 @@ if (typeof Fme == "undefined" || !Fme)
     	  }
        }, 
        
-       loadEditorContentFromGist: function(gistData) {
-		  gistFiles = this.findScriptAndTemplateInGist(gistData);
+       loadEditorContentFromGist: function(type, args, menuItem) {    	   
+		  gistFiles = this.findScriptAndTemplateInGist(menuItem.value);
 		  
  		  if (gistFiles.script) {
     		  var url = this.convertRawUrlToProxyUrl(gistFiles.script.raw_url);

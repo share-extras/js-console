@@ -34,19 +34,10 @@
 
 	<config evaluator="string-compare" condition="Remote">
 	  <remote>
-        <connector>
-            <id>oauth2-header-token</id>
-            <name>Chatter OAuth 2.0 Connector</name>
-            <description>HTTP Connector with support for OAuth 2.0 authentication</description>
-            <class>org.sharextras.webscripts.connector.HttpOAuth2Connector</class>
-            <identity>user</identity>
-            <auth-method>token</auth-method>
-        </connector>
-            		 
         <endpoint>
             <id>github-api</id>
             <name>GitHub Api</name>
-            <connector-id>oauth2-header-token</connector-id>
+            <connector-id>oauth2-querystring</connector-id>
             <endpoint-url>https://api.github.com</endpoint-url>
             <client-id>478fcdc445fa7b29ecf3</client-id>
             <client-secret>187d2f9181448e4b0b260125a39aa4d04133fe49</client-secret>

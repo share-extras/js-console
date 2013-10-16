@@ -5,7 +5,16 @@
 
 <#assign el=args.htmlid?html>
 <script type="text/javascript">//<![CDATA[
-   new Fme.JavascriptConsole("${el}").setMessages(${messages});
+(function() {
+   var gistService = new Fme.GistService();
+   gistService.setOptions({
+   		endpointId: "${endpointId}",
+   		clientId:   "${clientId}",
+   		authorizationUrl: "${authorizationUrl}"
+   });
+   var jsc = new Fme.JavascriptConsole("${el}").setMessages(${messages});
+   jsc.gistService = gistService;
+})();
 //]]></script>
 
 <div id="${el}-body" class="javascript-console">
