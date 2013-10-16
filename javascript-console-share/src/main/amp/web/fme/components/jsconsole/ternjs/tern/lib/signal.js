@@ -1,8 +1,4 @@
 (function(mod) {
-  if (typeof exports == "object" && typeof module == "object") // CommonJS
-    return mod(exports);
-  if (typeof define == "function" && define.amd) // AMD
-    return define(["exports"], mod);
   mod((self.tern || (self.tern = {})).signal = {}); // Plain browser env
 })(function(exports) {
   function on(type, f) {

@@ -8,7 +8,7 @@
 <@script type="text/javascript" src="${page.url.context}/res/fme/components/jsconsole/beautify.js"></@script>
 <@script type="text/javascript" src="${page.url.context}/res/yui/resize/resize.js"></@script>
 
-<@link href="http://fonts.googleapis.com/css?family=Source+Code+Pro:300" rel="stylesheet" type="text/css"/>
+<link href="http://fonts.googleapis.com/css?family=Source+Code+Pro:300" rel="stylesheet" type="text/css"/>
 
 <!-------------------------->
 <!-- Codemirror-->
@@ -56,7 +56,7 @@
 <@script type="text/javascript" src="${page.url.context}/res/fme/components/jsconsole/codemirror/addon/lint/javascript-lint.js"></@script>
 
 <!-- selection addons-->
-<@script type="text/javascript" src="${page.url.context}/res/fme/components/jsconsole/codemirror/addon/selection/matchbrackets.js"></@script>
+<@script type="text/javascript" src="${page.url.context}/res/fme/components/jsconsole/codemirror/addon/edit/matchbrackets.js"></@script>
 <@script type="text/javascript" src="${page.url.context}/res/fme/components/jsconsole/codemirror/addon/selection/active-line.js"></@script>
 
 <!-- search addons-->
@@ -68,15 +68,14 @@
 <@script type="text/javascript" src="${page.url.context}/res/fme/components/jsconsole/codemirror/mode/javascript/javascript.js"></@script>
 <@script type="text/javascript" src="${page.url.context}/res/fme/components/jsconsole/codemirror/mode/htmlmixed/htmlmixed.js"></@script>
 <@link rel="stylesheet" media="screen" type="text/css" href="${page.url.context}/res/fme/components/jsconsole/codemirror/mode/freemarker/freemarkercolors.css" />
-<@script type="text/javascript" src="${page.url.context}/res/fme/components/jsconsole/codemirror/mode/freemarker/parsefreemarker.js"></@script>
 
  <!-- Tern JS -->
 <@script type="text/javascript" src="${page.url.context}/res/fme/components/jsconsole/ternjs/acorn/acorn.js"></@script>
 <@script type="text/javascript" src="${page.url.context}/res/fme/components/jsconsole/ternjs/acorn/acorn_loose.js"></@script>
 <@script type="text/javascript" src="${page.url.context}/res/fme/components/jsconsole/ternjs/acorn/util/walk.js"></@script>
 <@script type="text/javascript" src="${page.url.context}/res/fme/components/jsconsole/ternjs/tern/lib/signal.js"></@script>
-<@script type="text/javascript" src="${page.url.context}/res/fme/components/jsconsole//ternjs/tern/lib/tern.js"></@script>
-<@script type="text/javascript" src="${page.url.context}/res/fme/components/jsconsole//ternjs/tern/lib/def.js"></@script>
+<@script type="text/javascript" src="${page.url.context}/res/fme/components/jsconsole/ternjs/tern/lib/tern.js"></@script>
+<@script type="text/javascript" src="${page.url.context}/res/fme/components/jsconsole/ternjs/tern/lib/def.js"></@script>
 <@script type="text/javascript" src="${page.url.context}/res/fme/components/jsconsole/ternjs/tern/lib/comment.js"></@script>
 <@script type="text/javascript" src="${page.url.context}/res/fme/components/jsconsole/ternjs/tern/lib/infer.js"></@script>
 

@@ -9,10 +9,6 @@
 //    can't be inferred well
 
 (function(mod) {
-  if (typeof exports == "object" && typeof module == "object") // CommonJS
-    return exports.init = mod;
-  if (typeof define == "function" && define.amd) // AMD
-    return define({init: mod});
   tern.def = {init: mod};
 })(function(exports, infer) {
   "use strict";

@@ -1,8 +1,4 @@
 (function(mod) {
-  if (typeof exports == "object" && typeof module == "object") // CommonJS
-    return mod(exports);
-  if (typeof define == "function" && define.amd) // AMD
-    return define(["exports"], mod);
   mod(tern.comment || (tern.comment = {}));
 })(function(exports) {
   function isSpace(ch) {

@@ -13,11 +13,6 @@
 // single type.
 
 (function(mod) {
-  if (typeof exports == "object" && typeof module == "object") // CommonJS
-    return mod(exports, require("acorn/acorn"), require("acorn/acorn_loose"), require("acorn/util/walk"),
-               require("./def"), require("./signal"));
-  if (typeof define == "function" && define.amd) // AMD
-    return define(["exports", "acorn/acorn", "acorn/acorn_loose", "acorn/util/walk", "./def", "./signal"], mod);
   mod(self.tern || (self.tern = {}), acorn, acorn, acorn.walk, tern.def, tern.signal); // Plain browser env
 })(function(exports, acorn, acorn_loose, walk, def, signal) {
   "use strict";

@@ -8,10 +8,6 @@
 // then cheaply included in later analysis.
 
 (function(mod) {
-  if (typeof exports == "object" && typeof module == "object") // CommonJS
-    return mod(exports, require("./infer"));
-  if (typeof define == "function" && define.amd) // AMD
-    return define(["exports", "./infer"], mod);
   mod(self.tern || (self.tern = {}), tern); // Plain browser env
 })(function(exports, infer) {
   "use strict";

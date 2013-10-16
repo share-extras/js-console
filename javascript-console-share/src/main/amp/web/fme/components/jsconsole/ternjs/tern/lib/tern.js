@@ -5,11 +5,6 @@
 // project.
 
 (function(mod) {
-  if (typeof exports == "object" && typeof module == "object") // CommonJS
-    return mod(exports, require("./infer"), require("./signal"),
-               require("acorn/acorn"), require("acorn/util/walk"));
-  if (typeof define == "function" && define.amd) // AMD
-    return define(["exports", "./infer", "./signal", "acorn/acorn", "acorn/util/walk"], mod);
   mod(self.tern || (self.tern = {}), tern, tern.signal, acorn, acorn.walk); // Plain browser env
 })(function(exports, infer, signal, acorn, walk) {
   "use strict";

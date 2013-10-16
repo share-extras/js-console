@@ -30,8 +30,6 @@
 // tangle.
 
 (function(root, mod) {
-  if (typeof exports == "object" && typeof module == "object") return mod(exports, require("./acorn")); // CommonJS
-  if (typeof define == "function" && define.amd) return define(["exports", "./acorn"], mod); // AMD
   mod(root.acorn || (root.acorn = {}), root.acorn); // Plain browser env
 })(this, function(exports, acorn) {
   "use strict";
