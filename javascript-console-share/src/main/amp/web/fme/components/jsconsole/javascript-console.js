@@ -174,7 +174,13 @@ if (typeof Fme == "undefined" || !Fme)
           this.loadListOfRepoScripts();
           
           var saveMenuItems = [{
-        	  text : this.msg("button.save.create.new"),
+        	  text : "Update existing gist 'myscript.js'",
+        	  value : "NEW"
+          },{
+        	  text : "Save as new Repo Script",
+        	  value : "NEW"
+          },{
+        	  text : "Save as new Gist",
         	  value : "NEW"
           }];
           //saveMenuItems.push(listOfScripts);
@@ -297,6 +303,14 @@ if (typeof Fme == "undefined" || !Fme)
             successCallback: {
             	fn: function(res) {
             		var listOfScripts = res.json.scripts;
+            		
+            		for(var i=0; i < listOfScripts.length; i++) {
+            			
+            			listOfScripts[i].onclick = {
+            					fn: this.onLoadScriptClick,
+            					scope: this
+            			};
+            		}
             		
           	  		var menu = YAHOO.widget.MenuManager.getMenu("loadFromRepoMenu");
           	  		menu.clearContent();
@@ -994,17 +1008,27 @@ if (typeof Fme == "undefined" || !Fme)
 		 * 
 		 * @method onLoadScriptClick
 		 */ 	  
-      onLoadScriptClick : function ACJC_onLoadScriptClick(p_sType, p_aArgs, self) { 
-          var nodeRef = p_aArgs[1].value;
-          
-    	  if (nodeRef == "NEW") {
-    		  self.loadDemoScript.call(self);
-    	  }
-    	  else {
-    		  //var url = Alfresco.constants.PROXY_URI + "api/node/content/" + nodeRef.replace("://","/");
-    		  var gist = p_aArgs[1].value;
-    		  self.loadEditorContentFromGist(gist);
-    	  }
+      onLoadScriptClick : function ACJC_onLoadScriptClick(p_sType, p_aArgs, menuItem) { 
+    	  var callback = {
+                  success : function(o) {
+                                // set the new editor content
+                          this.widgets.codeMirrorScript.setValue(o.responseText);
+                  },
+                  failure: function(o) {
+                          text: this.msg("error.script.load", filename);
+                  },
+                  scope: this
+              };
+
+              var nodeRef = menuItem.value;
+
+                  if (nodeRef == "NEW") {
+                          this.loadDemoScript.call(this);
+                  }
+                  else {
+                          var url = Alfresco.constants.PROXY_URI + "api/node/content/" + nodeRef.replace("://","/");
+                          YAHOO.util.Connect.asyncRequest('GET', url, callback);
+               }
        }, 
        
        loadEditorContentFromGist: function(type, args, menuItem) {    	   

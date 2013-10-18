@@ -37,7 +37,7 @@
     <properties>
         <!-- alfresco-sdk-parent POM references 4.2.c still -->
         <alfresco.groupId>org.alfresco</alfresco.groupId>
-        <alfresco.version>4.2.d</alfresco.version>
+        <alfresco.version>4.2.e</alfresco.version>
         <alfresco.client.war>share</alfresco.client.war>
     </properties>
 
