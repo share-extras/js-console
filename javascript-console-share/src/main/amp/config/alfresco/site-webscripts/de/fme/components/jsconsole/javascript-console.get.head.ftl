@@ -47,7 +47,7 @@
 
 
 <!-- lint addons-->
-<@script type="text/javascript" src="${page.url.context}/res/fme/components/jsconsole/jshint/jshint_fme.js"></@script>
+<script type="text/javascript" src="${page.url.context}/res/fme/components/jsconsole/jshint/jshint_fme.js"></script>
 <@script type="text/javascript" src="${page.url.context}/res/fme/components/jsconsole/jsonlint/jsonlint.js"></@script>
 <@script type="text/javascript" src="${page.url.context}/res/fme/components/jsconsole/jsonlint/json-formatter.js"></@script>
 <@link rel="stylesheet" media="screen" type="text/css" href="${page.url.context}/res/fme/components/jsconsole/codemirror/addon/lint/lint.css" />
@@ -86,8 +86,8 @@
 <!-- codemirror extension for ternjs by angelo zerr-->
 <@link rel="stylesheet" media="screen" type="text/css" href="${page.url.context}/res/fme/components/jsconsole/codemirror/addon/tern/tern-extension.css" />
 <@script type="text/javascript" src="${page.url.context}/res/fme/components/jsconsole/codemirror/addon/tern/tern-extension.js"></@script>
-<@script type="text/javascript" src="${page.url.context}/res/fme/components/jsconsole/codemirror/addon/tern/defs/ecma5.json.js"></@script>
-<@script type="text/javascript" src="${page.url.context}/res/fme/components/jsconsole/codemirror/addon/tern/defs/alfresco.json.js"></@script>
+<@script type="text/javascript" src="${page.url.context}/res/fme/components/jsconsole/codemirror/addon/tern/defs/ecma5-json.js"></@script>
+<@script type="text/javascript" src="${page.url.context}/res/fme/components/jsconsole/codemirror/addon/tern/defs/alfresco-json.js"></@script>
 <@script type="text/javascript" src="${page.url.context}/res/fme/components/jsconsole/codemirror/addon/tern/defs/alfresco-webscripts-tern.js"></@script>
 <@script type="text/javascript" src="${page.url.context}/res/fme/components/jsconsole/codemirror/addon/tern/defs/alfresco-batchprocessing-tern.js"></@script>
 
@@ -106,11 +106,11 @@
 <@link rel="stylesheet" type="text/css" href="${page.url.context}/res/fme/components/jsconsole/codemirror/theme/monokai.css" />
 <@link rel="stylesheet" type="text/css" href="${page.url.context}/res/fme/components/jsconsole/codemirror/theme/cobalt.css" />
 <@link rel="stylesheet" type="text/css" href="${page.url.context}/res/fme/components/jsconsole/codemirror/theme/eclipse.css" />
-<@link rel="stylesheet" type="text/css" href="${page.url.context}/res/fme/components/jsconsole/codemirror/theme/rubyblue.css" />
+<link rel="stylesheet" type="text/css" href="${page.url.context}/res/fme/components/jsconsole/codemirror/theme/rubyblue.css" />
 <@link rel="stylesheet" type="text/css" href="${page.url.context}/res/fme/components/jsconsole/codemirror/theme/lesser-dark.css" />
 <@link rel="stylesheet" type="text/css" href="${page.url.context}/res/fme/components/jsconsole/codemirror/theme/xq-dark.css" />
 <@link rel="stylesheet" type="text/css" href="${page.url.context}/res/fme/components/jsconsole/codemirror/theme/ambiance.css" />
 <@link rel="stylesheet" type="text/css" href="${page.url.context}/res/fme/components/jsconsole/codemirror/theme/blackboard.css" />
 <@link rel="stylesheet" type="text/css" href="${page.url.context}/res/fme/components/jsconsole/codemirror/theme/vibrant-ink.css" />
-<@link rel="stylesheet" type="text/css" href="${page.url.context}/res/fme/components/jsconsole/codemirror/theme/solarized.css" />
+<link rel="stylesheet" type="text/css" href="${page.url.context}/res/fme/components/jsconsole/codemirror/theme/solarized.css" />
 <@link rel="stylesheet" type="text/css" href="${page.url.context}/res/fme/components/jsconsole/codemirror/theme/twilight.css" />

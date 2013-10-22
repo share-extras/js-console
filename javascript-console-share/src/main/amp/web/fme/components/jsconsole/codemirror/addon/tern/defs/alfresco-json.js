@@ -2,7 +2,7 @@
     var def = {
 
                 "!name": "alfresco",
-                "companyHome": {
+                "companyhome": {
                   "!type": "ScriptNode",
                   "!doc": "The company home ScriptNode. See ScriptNode API for properties and methods."  },
                 "document": {

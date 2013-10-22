@@ -221,7 +221,7 @@
             <!-- com.googlecode.jslint4java:jslint4java-maven-plugin would be a better / more configurable jslint plugin -->
             <!-- com.samaxes.maven:minify-maven-plugin would be a better compressor, but requires Java 7 and min-suffix pattern is non-standard for 
                 Alfresco -->
-				<!--
+
             <plugin>
                 <groupId>net.alchim31.maven</groupId>
                 <artifactId>yuicompressor-maven-plugin</artifactId>
@@ -231,7 +231,6 @@
                         <id>Check and Minify JS</id>
                         <phase>process-resources</phase>
                         <goals>
-                            <goal>jslint</goal>
                             <goal>compress</goal>
                         </goals>
                         <configuration>
@@ -240,6 +239,9 @@
                             <outputDirectory>${project.build.directory}/${project.build.finalName}</outputDirectory>
                             <excludes>
                                 <exclude>WEB-INF/**/*</exclude>
+								<exclude>**/jshint_fme.js</exclude>
+								<exclude>**/ambiance.css</exclude>
+								<exclude>**/solarized.css</exclude>
                             </excludes>
                             <excludeResources>true</excludeResources>
                             <excludeWarSourceDirectory>true</excludeWarSourceDirectory>
@@ -247,7 +249,7 @@
                     </execution>
                 </executions>
             </plugin>
--->			
+			
         </plugins>
 
         <pluginManagement>
