@@ -10,7 +10,7 @@
 
     <groupId>org.sharextras</groupId>
     <artifactId>javascript-console-repo</artifactId>
-    <version>0.6.0-rc1</version>
+    <version>0.6.0</version>
     <name>JavaScript Console - Repository</name>
     <description>Alfresco Share-Extras JavaScript Console - Repository Module</description>
     <packaging>amp</packaging>
