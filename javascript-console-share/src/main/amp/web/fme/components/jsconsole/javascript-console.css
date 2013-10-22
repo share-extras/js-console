@@ -60,15 +60,14 @@
 }
 
 .javascript-console .jserror {
-	border:2px solid red;
+	border:1px solid red;
 	background-color:#FFE0E0;
 }
 
 .javascript-console .jsgreen {
-	border:2px solid DarkGreen;
-	background-color:#32CD32;
+	border:1px solid #d2edc2;
+	background-color:#e2fdd2;
 }
-
 
 .javascript-console .header-bar
 {
