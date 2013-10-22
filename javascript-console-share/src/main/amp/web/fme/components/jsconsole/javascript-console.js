@@ -1415,11 +1415,13 @@ if (typeof String.prototype.startsWith != 'function') {
               if(this.widgets.codeMirrorScript.somethingSelected()){
                   line = line + this.widgets.codeMirrorScript.getCursor().line-1;
               }
-              var selectionEnd = this.widgets.codeMirrorScript.getLineHandle(line).text.length;
-              var from={"line":line,"ch":0};
-              var to={"line":line,"ch":selectionEnd};
-              this.widgets.codeMirrorScript.markText(from,to,{clearOnEnter:"true",className: "CodeMirror-lint-mark-error", __annotation: {from:from, to:to, severity:"error", message:result.callstack[1]}});
-
+			  var handle = this.widgets.codeMirrorScript.getLineHandle(line);
+			  if (handle) {
+				  var selectionEnd = handle.text.length;
+				  var from={"line":line,"ch":0};
+				  var to={"line":line,"ch":selectionEnd};
+				  this.widgets.codeMirrorScript.markText(from,to,{clearOnEnter:"true",className: "CodeMirror-lint-mark-error", __annotation: {from:from, to:to, severity:"error", message:result.callstack[1]}});
+			  }
           }
 	  },
 
