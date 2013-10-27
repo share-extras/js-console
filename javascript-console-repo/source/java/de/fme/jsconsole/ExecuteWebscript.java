@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.alfresco.repo.content.MimetypeMap;
 import org.alfresco.repo.jscript.RhinoScriptProcessor;
 import org.alfresco.repo.jscript.ScriptNode;
 import org.alfresco.repo.jscript.ScriptUtils;
@@ -27,6 +28,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.core.io.Resource;
 import org.springframework.extensions.webscripts.AbstractWebScript;
 import org.springframework.extensions.webscripts.Cache;
@@ -37,6 +40,7 @@ import org.springframework.extensions.webscripts.ScriptContent;
 import org.springframework.extensions.webscripts.ScriptProcessor;
 import org.springframework.extensions.webscripts.Status;
 import org.springframework.extensions.webscripts.TemplateProcessor;
+import org.springframework.extensions.webscripts.WebScriptException;
 import org.springframework.extensions.webscripts.WebScriptRequest;
 import org.springframework.extensions.webscripts.WebScriptResponse;
 
@@ -49,6 +53,8 @@ import org.springframework.extensions.webscripts.WebScriptResponse;
  *
  */
 public class ExecuteWebscript extends AbstractWebScript {
+
+	private static final String LINE_SEPERATOR = System.getProperty("line.separator");
 
 	private static final Log LOG = LogFactory.getLog(ExecuteWebscript.class);
 
@@ -86,18 +92,80 @@ public class ExecuteWebscript extends AbstractWebScript {
 	 */
 	@Override
 	public void execute(WebScriptRequest request, WebScriptResponse response) throws IOException {
-		PerfLog webscriptPerf = new PerfLog().start();
-		JavascriptConsoleRequest jsreq = JavascriptConsoleRequest.readJson(request);
+		int scriptOffset = 0;
 
-		String script = ScriptResourceHelper.resolveScriptImports(jsreq.script, rhinoScriptProcessor, LOG);
+		try {
+			PerfLog webscriptPerf = new PerfLog().start();
+			JavascriptConsoleRequest jsreq = JavascriptConsoleRequest.readJson(request);
+			int scriptLength = jsreq.script.split(LINE_SEPERATOR).length;
 
-		ScriptContent scriptContent = new StringScriptContent(preRollScript + script + "\n" + postRollScript);
-		JavascriptConsoleResult result = runScriptWithTransactionAndAuthentication(request, response, jsreq, scriptContent);
+			String script = preRollScript + "\n"
+					+ ScriptResourceHelper.resolveScriptImports(jsreq.script, rhinoScriptProcessor, LOG);
+			int resolvedScriptLength = script.split(LINE_SEPERATOR).length + 1;
+			scriptOffset = scriptLength - resolvedScriptLength;
 
-		if (!result.isStatusResponseSent()) {
-			result.setWebscriptPerformance(String.valueOf(webscriptPerf.stop("Execute Webscript with {0} - result: {1} ", jsreq,
-					result)));
-			result.writeJson(response);
+			ScriptContent scriptContent = new StringScriptContent(script + "\n" + postRollScript);
+			JavascriptConsoleResult result = runScriptWithTransactionAndAuthentication(request, response, jsreq, scriptContent);
+
+			if (!result.isStatusResponseSent()) {
+				result.setWebscriptPerformance(String.valueOf(webscriptPerf.stop("Execute Webscript with {0} - result: {1} ",
+						jsreq, result)));
+				result.setScriptOffset(scriptOffset);
+				result.writeJson(response);
+			}
+		} catch (WebScriptException e) {
+			response.setStatus(500);
+			response.setContentEncoding("UTF-8");
+			response.setContentType(MimetypeMap.MIMETYPE_JSON);
+
+			writeErrorInfosAsJson(response, scriptOffset, e);
+
+		}
+	}
+
+	/**
+	 * used our own json reponse for errors because you cannot pass your own parameters to the built-in alfresco status templates.
+	 *
+	 * @param response
+	 * @param scriptOffset
+	 * @param e the occured exception
+	 * @throws IOException
+	 */
+	private void writeErrorInfosAsJson(WebScriptResponse response, int scriptOffset, WebScriptException e) throws IOException {
+		try {
+			JSONObject jsonOutput = new JSONObject();
+
+			// set some common stuff like
+			JSONObject status = new JSONObject();
+			status.put("code", 500);
+			status.put("name", "Internal Error");
+			status.put("description", "An error inside the HTTP server which prevented it from fulfilling the request.");
+			jsonOutput.put("status", status);
+
+			// find out the closest error message which is helpful for the user...
+			String errorMessage = e.getMessage();
+			if(e.getCause()!=null){
+				errorMessage = e.getCause().getMessage();
+				if(e.getCause().getCause()!=null){
+					errorMessage = e.getCause().getCause().getMessage();
+				}
+			}
+			jsonOutput.put("message", errorMessage);
+
+			// print the stacktrace into the callstack variable...
+			Writer writer = new StringWriter();
+			PrintWriter printWriter = new PrintWriter(writer);
+			e.printStackTrace(printWriter);
+			String s = writer.toString();
+			jsonOutput.put("callstack", s);
+
+			// scriptoffset is useful to determine the correct line in case of an error (if you use preroll-scripts or imports in javascript input)
+			jsonOutput.put("scriptOffset", scriptOffset);
+
+			response.getWriter().write(jsonOutput.toString(5));
+
+		} catch (JSONException ex) {
+			throw new WebScriptException(Status.STATUS_INTERNAL_SERVER_ERROR, "Error writing json error response.", ex);
 		}
 	}
 

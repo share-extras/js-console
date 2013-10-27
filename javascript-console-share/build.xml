@@ -197,13 +197,13 @@
             <globmapper from="alfresco/web-extension/*.xml" to="*.xml" handledirsep="true" />
         </copy>
         <!-- Minify JS -->
-        <yuicompress fromdir="${res.dir}" todir="${build.jar.dir}/META-INF" excludes="**/*-min.js" warn="${yuicompress.warn}">
+        <yuicompress fromdir="${res.dir}"  todir="${build.jar.dir}/META-INF" excludes="**/*-min.js" warn="${yuicompress.warn} ">
             <include name="**/*.js" />
         </yuicompress>
     </target>
 
    <!-- Build the JAR file -->
-    <target name="dist-jar" depends="clean, prepare, compile, build-jar"
+    <target name="dist-jar" depends="prepare, compile, build-jar"
       description="Build a JAR file containing configuration and resource files">
       <jar destfile="${dist.dir}/${jar.name}">
          <fileset dir="${build.jar.dir}" />

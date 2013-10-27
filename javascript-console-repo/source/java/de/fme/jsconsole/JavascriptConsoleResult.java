@@ -13,38 +13,40 @@ import org.springframework.extensions.webscripts.WebScriptException;
 import org.springframework.extensions.webscripts.WebScriptResponse;
 
 /**
- * Stores the result of a script and template execution on the Javascript Console and 
+ * Stores the result of a script and template execution on the Javascript Console and
  * is used internally by the {@link ExecuteWebscript}.
- * 
+ *
  * @author Florian Maul (fme AG)
  *
  */
 public class JavascriptConsoleResult {
 
 	private String renderedTemplate = "";
-	
+
 	private List<String> printOutput = new ArrayList<String>();
-	
+
 	private String spaceNodeRef = "";
-	
+
 	private String spacePath = "";
-	
+
 	private boolean statusResponseSent = false;
-	
+
 	private String scriptPerformance;
-	
+
 	private String freemarkerPerformance;
-	
+
 	private String webscriptPerformance;
-	
+
+	private int scriptOffset;
+
 	public void setWebscriptPerformance(String webscriptPerformance) {
 		this.webscriptPerformance = webscriptPerformance;
 	}
-	
+
 	public void setScriptPerformance(String scriptPerformance) {
 		this.scriptPerformance = scriptPerformance;
 	}
-	
+
 	public void setFreemarkerPerformance(String freemarkerPerformance) {
 		this.freemarkerPerformance = freemarkerPerformance;
 	}
@@ -52,36 +54,36 @@ public class JavascriptConsoleResult {
 	public void setPrintOutput(List<String> printOutput) {
 		this.printOutput = printOutput;
 	}
-	
+
 	public void setRenderedTemplate(String renderedTemplate) {
 		this.renderedTemplate = renderedTemplate;
 	}
-	
+
 	public void setSpaceNodeRef(String spaceNodeRef) {
 		this.spaceNodeRef = spaceNodeRef;
 	}
-	
+
 	public void setSpacePath(String spacePath) {
 		this.spacePath = spacePath;
 	}
-	
+
 	public List<String> getPrintOutput() {
 		return printOutput;
 	}
-	
+
 	public String getRenderedTemplate() {
 		return renderedTemplate;
 	}
-	
+
 	public String getSpaceNodeRef() {
 		return spaceNodeRef;
 	}
-	
+
 	public String getSpacePath() {
 		return spacePath;
 	}
-	
-	
+
+
 	public void writeJson(WebScriptResponse response) throws IOException {
 		response.setContentEncoding("UTF-8");
 		response.setContentType(MimetypeMap.MIMETYPE_JSON);
@@ -96,6 +98,7 @@ public class JavascriptConsoleResult {
 			jsonOutput.put("scriptPerf", scriptPerformance);
 			jsonOutput.put("freemarkerPerf", freemarkerPerformance);
 			jsonOutput.put("webscriptPerf", webscriptPerformance);
+			jsonOutput.put("scriptOffset", scriptOffset);
 
 			response.getWriter().write(jsonOutput.toString());
 
@@ -119,7 +122,10 @@ public class JavascriptConsoleResult {
 				+ ", spaceNodeRef=" + spaceNodeRef + ", spacePath=" + spacePath + ", statusResponseSent=" + statusResponseSent
 				+ ", scriptPerformance=" + scriptPerformance + ", freemarkerPerformance=" + freemarkerPerformance + "]";
 	}
-	
-	
+
+	public void setScriptOffset(int scriptOffset) {
+		this.scriptOffset = scriptOffset;
+	}
+
+
 }
-      
