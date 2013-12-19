@@ -100,24 +100,24 @@ if (typeof String.prototype.startsWith != 'function') {
              */
          onLoad: function onLoad()
          {
-        	 parent.widgets.pathField = Dom.get(parent.id + "-pathField");
-        	 parent.widgets.documentField = Dom.get(parent.id + "-documentField");
-        	 parent.widgets.nodeField = Dom.get(parent.id + "-nodeRef");
-        	 parent.widgets.scriptInput = Dom.get(parent.id + "-jsinput");
-        	 parent.widgets.scriptOutput = Dom.get(parent.id + "-jsoutput");
-        	 parent.widgets.jsonOutput= Dom.get(parent.id + "-jsonOutput");
-        	 parent.widgets.templateInput = Dom.get(parent.id + "-templateinput");
-        	 parent.widgets.templateOutputHtml = Dom.get(parent.id + "-templateoutputhtml");
-        	 parent.widgets.templateOutputText = Dom.get(parent.id + "-templateoutputtext");
-        	 parent.widgets.config = {
-        			 runas : Dom.get(parent.id + "-runas"),
-        			 transaction : Dom.get(parent.id + "-transactions"),
-        			 urlargs : Dom.get(parent.id + "-urlarguments"),
-        			 runlikecrazy : Dom.get(parent.id + "-runlikecrazy")
-        	 };
+             parent.widgets.pathField = Dom.get(parent.id + "-pathField");
+             parent.widgets.documentField = Dom.get(parent.id + "-documentField");
+             parent.widgets.nodeField = Dom.get(parent.id + "-nodeRef");
+             parent.widgets.scriptInput = Dom.get(parent.id + "-jsinput");
+             parent.widgets.scriptOutput = Dom.get(parent.id + "-jsoutput");
+             parent.widgets.jsonOutput= Dom.get(parent.id + "-jsonOutput");
+             parent.widgets.templateInput = Dom.get(parent.id + "-templateinput");
+             parent.widgets.templateOutputHtml = Dom.get(parent.id + "-templateoutputhtml");
+             parent.widgets.templateOutputText = Dom.get(parent.id + "-templateoutputtext");
+             parent.widgets.config = {
+                     runas : Dom.get(parent.id + "-runas"),
+                     transaction : Dom.get(parent.id + "-transactions"),
+                     urlargs : Dom.get(parent.id + "-urlarguments"),
+                     runlikecrazy : Dom.get(parent.id + "-runlikecrazy")
+             };
 
              // Buttons
-        	 parent.widgets.selectDestinationButton = Alfresco.util.createYUIButton(parent, "selectDestination-button", parent.onSelectDestinationClick);
+             parent.widgets.selectDestinationButton = Alfresco.util.createYUIButton(parent, "selectDestination-button", parent.onSelectDestinationClick);
              parent.widgets.executeButton = Alfresco.util.createYUIButton(parent, "execute-button", parent.onExecuteClick);
          }
       });
@@ -128,55 +128,55 @@ if (typeof String.prototype.startsWith != 'function') {
 
    YAHOO.extend(Fme.JavascriptConsole, Alfresco.ConsoleTool,
    {
-	   clearOutput : function ACJC_clearOutput() {
-	       this.widgets.scriptOutput.innerHTML = "";
-	       this.widgets.templateOutputHtml.innerHTML = "";
-	       this.widgets.templateOutputText.innerHTML = "";
-	   },
+       clearOutput : function ACJC_clearOutput() {
+           this.widgets.scriptOutput.innerHTML = "";
+           this.widgets.templateOutputHtml.innerHTML = "";
+           this.widgets.templateOutputText.innerHTML = "";
+       },
 
-	   template: '<div class="display-element"><span class="display-label">{name}</span><span class="display-field">{value}</span></div>',
+       template: '<div class="display-element"><span class="display-label">{name}</span><span class="display-field">{value}</span></div>',
 
-	   appendLineArrayToOutput: function ACJC_appendLineArrayToOutput(lineArray) {
-	       	 var newLines = "";
-	         for (line in lineArray) {
-	         	newLines = newLines + lineArray[line] + "\n";
-	         }
-	         this.setOutputText(newLines);
-	   },
+       appendLineArrayToOutput: function ACJC_appendLineArrayToOutput(lineArray) {
+             var newLines = "";
+             for (line in lineArray) {
+                newLines = newLines + lineArray[line] + "\n";
+             }
+             this.setOutputText(newLines);
+       },
 
-	   setOutputText : function(text) {
-	       var outputfield = this.widgets.scriptOutput;
-	       outputfield.innerHTML = "";
-	       outputfield.appendChild(document.createTextNode(text));
-	   },
+       setOutputText : function(text) {
+           var outputfield = this.widgets.scriptOutput;
+           outputfield.innerHTML = "";
+           outputfield.appendChild(document.createTextNode(text));
+       },
 
-	   browserSupportsHtml5Storage: function ACJC_browserSupportsHtml5Storage() {
-		   try {
+       browserSupportsHtml5Storage: function ACJC_browserSupportsHtml5Storage() {
+           try {
                var testString = "LSTEST12345";
                localStorage.setItem(testString, testString );
                localStorage.removeItem(testString);
-	            return true;
-	        } catch(e) {
-	            return false;
-	        }
-	   },
+                return true;
+            } catch(e) {
+                return false;
+            }
+       },
 
-	  createMenuButtons: function ACJC_createMenuButtons(listOfScripts) {
+      createMenuButtons: function ACJC_createMenuButtons(listOfScripts) {
 
-	      this.createThemeMenu();
-	      this.createScriptsLoadMenu(listOfScripts);
-	      this.createScriptsSaveMenu(listOfScripts);
-	      this.createDocsMenu();
+          this.createThemeMenu();
+          this.createScriptsLoadMenu(listOfScripts);
+          this.createScriptsSaveMenu(listOfScripts);
+          this.createDocsMenu();
 
           this.widgets.exportResultsButton = Alfresco.util.createYUIButton(this,
-        		  "exportResults-button", this.exportResultTableAsCSV);
-		  Dom.setStyle(this.widgets.exportResultsButton, "display", "none");
+                  "exportResults-button", this.exportResultTableAsCSV);
+          Dom.setStyle(this.widgets.exportResultsButton, "display", "none");
 
-	  },
+      },
 
-	  createDocsMenu: function ACJC_createDocsMenu(){
-	      if(!this.widgets.docsMenuButton){
-    	      var docsMenuItems = [
+      createDocsMenu: function ACJC_createDocsMenu(){
+          if(!this.widgets.docsMenuButton){
+              var docsMenuItems = [
                [ { text : "Mozilla Javascript Reference", url : "https://developer.mozilla.org/en/JavaScript/Reference", target:"_blank"},
                  { text : "W3Schools Javascript Reference", url : "http://www.w3schools.com/jsref/default.asp", target:"_blank"},
                  { text : "Alfresco 3.4 Javascript API", url : "http://wiki.alfresco.com/wiki/3.4_JavaScript_API", target:"_blank" },
@@ -221,10 +221,10 @@ if (typeof String.prototype.startsWith != 'function') {
              this.widgets.docsMenuButton.getMenu().setItemGroupTitle("Freemarker", 1);
              this.widgets.docsMenuButton.getMenu().setItemGroupTitle("Lucene", 2);
              this.widgets.docsMenuButton.getMenu().setItemGroupTitle("Webscripts", 3);
-	      }
-	  },
+          }
+      },
 
-	  createScriptsSaveMenu: function(listOfScripts){
+      createScriptsSaveMenu: function(listOfScripts){
           var saveMenuItems = [{
               text : this.msg("button.save.create.new"),
               value : "NEW"
@@ -249,10 +249,10 @@ if (typeof String.prototype.startsWith != 'function') {
           }
 
 
-	  },
+      },
 
-	  createScriptsLoadMenu: function(listOfScripts){
-	      var loadMenuItems = [{
+      createScriptsLoadMenu: function(listOfScripts){
+          var loadMenuItems = [{
               text : this.msg("button.load.create.new"),
               value : "NEW"
           }];
@@ -275,60 +275,60 @@ if (typeof String.prototype.startsWith != 'function') {
 
             this.widgets.loadMenuButton.getMenu().subscribe("click", this.onLoadScriptClick, this);
           }
-	  },
+      },
 
-	  createThemeMenu: function ACJC_createThemeMenu(){
-	       if(!this.widgets.themeMenuButton){
-	            var themeMenuItems =   [ { text : "default",           value : "default"},
-	                                     { text : "ambiance-mobile",   value : "ambiance-mobile"},
-	                                     { text : "ambiance",          value : "ambiance"},
-	                                     { text : "blackboard",        value : "blackboard"},
-	                                     { text : "cobalt",            value : "cobalt"},
-	                                     { text : "eclipse",           value : "eclipse"},
-	                                     { text : "erlang-dark",       value : "erlang-dark"},
-	                                     { text : "lesser-dark",       value : "lesser-dark"},
-	                                     { text : "monokai",           value : "monokai"},
-	                                     { text : "neat",              value : "neat"},
-	                                     { text : "rubyblue",          value : "rubyblue"},
-	                                     { text : "solarized",         value : "solarized"},
-	                                     { text : "twilight",          value : "twilight"},
-	                                     { text : "vibrant-ink",       value : "vibrant-ink"},
-	                                     { text : "xq-dark",           value : "xq-dark"}
-	                                     ];
-	            this.widgets.themeMenuButton = new YAHOO.widget.Button({
-	                  id: "themeButton",
-	                  name: "themeButton",
-	                  label: this.msg("button.codemirror.theme"),
-	                  type: "menu",
-	                  menu: themeMenuItems,
-	                  container: this.id + "-theme"
-	            });
+      createThemeMenu: function ACJC_createThemeMenu(){
+           if(!this.widgets.themeMenuButton){
+                var themeMenuItems =   [ { text : "default",           value : "default"},
+                                         { text : "ambiance-mobile",   value : "ambiance-mobile"},
+                                         { text : "ambiance",          value : "ambiance"},
+                                         { text : "blackboard",        value : "blackboard"},
+                                         { text : "cobalt",            value : "cobalt"},
+                                         { text : "eclipse",           value : "eclipse"},
+                                         { text : "erlang-dark",       value : "erlang-dark"},
+                                         { text : "lesser-dark",       value : "lesser-dark"},
+                                         { text : "monokai",           value : "monokai"},
+                                         { text : "neat",              value : "neat"},
+                                         { text : "rubyblue",          value : "rubyblue"},
+                                         { text : "solarized",         value : "solarized"},
+                                         { text : "twilight",          value : "twilight"},
+                                         { text : "vibrant-ink",       value : "vibrant-ink"},
+                                         { text : "xq-dark",           value : "xq-dark"}
+                                         ];
+                this.widgets.themeMenuButton = new YAHOO.widget.Button({
+                      id: "themeButton",
+                      name: "themeButton",
+                      label: this.msg("button.codemirror.theme"),
+                      type: "menu",
+                      menu: themeMenuItems,
+                      container: this.id + "-theme"
+                });
 
-	            if(this.browserSupportsHtml5Storage()){
-	                // preselect item
-	                var theme = window.localStorage["javascript.console.codemirror.theme"];
-	                if(theme){
-	                    var menuItems = this.widgets.themeMenuButton.getMenu().getItems();
-	                    for ( var i = 0; i < menuItems.length; i++) {
-	                        var menuItem = menuItems[i];
-	                        if(theme==menuItem.cfg.getProperty('text')){
-	                            menuItem.cfg.setProperty("checked", true);
-	                        }
-	                    }
+                if(this.browserSupportsHtml5Storage()){
+                    // preselect item
+                    var theme = window.localStorage["javascript.console.codemirror.theme"];
+                    if(theme){
+                        var menuItems = this.widgets.themeMenuButton.getMenu().getItems();
+                        for ( var i = 0; i < menuItems.length; i++) {
+                            var menuItem = menuItems[i];
+                            if(theme==menuItem.cfg.getProperty('text')){
+                                menuItem.cfg.setProperty("checked", true);
+                            }
+                        }
 
-	                }
-	            }
+                    }
+                }
 
-	            this.widgets.themeMenuButton.getMenu().subscribe("click", this.onThemeSelection, this);
-	        }
-	  },
+                this.widgets.themeMenuButton.getMenu().subscribe("click", this.onThemeSelection, this);
+            }
+      },
 
-	  onEditorKeyEvent : function ACJC_onEditorKeyEvent(i, e) {
- 		 // Hook into ctrl-enter
+      onEditorKeyEvent : function ACJC_onEditorKeyEvent(i, e) {
+         // Hook into ctrl-enter
           if (e.type=="keyup" && e.keyCode == 13 && (e.ctrlKey || e.metaKey) && !e.altKey) {
-	               e.stop();
-	               i.owner.onExecuteClick(i.owner, e);
-	         }
+                   e.stop();
+                   i.owner.onExecuteClick(i.owner, e);
+             }
 
           // Hook into ctrl-z for Undo
           if (e.keyCode == 76 && (e.ctrlKey || e.metaKey) && !e.altKey) {
@@ -352,10 +352,10 @@ if (typeof String.prototype.startsWith != 'function') {
             var editor = i.owner.widgets.codeMirrorScript;
             var code = editor.getSelection();
             if (code.substr(0,2) == "//") {
-            	code = code.replace(/^\/\//gm, ""); // add a // before each line
+                code = code.replace(/^\/\//gm, ""); // add a // before each line
             }
             else {
-            	code = code.replace(/^/gm, "//"); // remove // comment before
+                code = code.replace(/^/gm, "//"); // remove // comment before
                                                     // each line
             }
             editor.replaceSelection(code);
@@ -366,7 +366,7 @@ if (typeof String.prototype.startsWith != 'function') {
              var editor = i.owner.widgets.codeMirrorScript;
              editor.setValue(js_beautify(editor.getValue()));
           }
-	  },
+      },
 
       /**
          * Fired by YUI when parent element is available for scripting.
@@ -396,26 +396,26 @@ if (typeof String.prototype.startsWith != 'function') {
 
          // Attach the CodeMirror highlighting
          var uiMirrorScript = new CodeMirrorUI(this.widgets.scriptInput, {imagePath:Alfresco.constants.URL_RESCONTEXT+'fme/components/jsconsole/codemirror-ui/images', searchMode:'no'} ,{
-        	 mode : "javascript",
-        	 styleActiveLine: true,
-        	 showCursorWhenSelecting :true,
-        	 gutters: ["CodeMirror-linenumbers", "CodeMirror-lint-markers"],
-       	     lintWith: function(text){
-       	         return CodeMirror.lint.javascript(text, self.javascriptCommands.globalMap);
-       	     },
-        	 lineNumbers: true,
+             mode : "javascript",
+             styleActiveLine: true,
+             showCursorWhenSelecting :true,
+             gutters: ["CodeMirror-linenumbers", "CodeMirror-lint-markers"],
+             lintWith: function(text){
+                 return CodeMirror.lint.javascript(text, self.javascriptCommands.globalMap);
+             },
+             lineNumbers: true,
              lineWrapping: true,
-        	 matchBrackets: true,
-        	 tabSize: 4,
+             matchBrackets: true,
+             tabSize: 4,
              indentUnit: 4,
              indentWithTabs: true,
-        	 autofocus :true,
-        	 onKeyEvent: this.onEditorKeyEvent,
-        	 extraKeys: {
-        	     "'.'": passAndHint,
-        	     "Ctrl-I": function(cm) { CodeMirror.tern.showType(cm); },
-        	     "Ctrl-Space": "autocomplete"
-        	 }
+             autofocus :true,
+             onKeyEvent: this.onEditorKeyEvent,
+             extraKeys: {
+                 "'.'": passAndHint,
+                 "Ctrl-I": function(cm) { CodeMirror.tern.showType(cm); },
+                 "Ctrl-Space": "autocomplete"
+             }
          });
 
          this.widgets.codeMirrorScript = uiMirrorScript.getMirrorInstance();
@@ -432,26 +432,26 @@ if (typeof String.prototype.startsWith != 'function') {
          this.widgets.codeMirrorScript.getInputField().blur();
 
          var uiMirrorTemplate = new CodeMirrorUI(this.widgets.templateInput, {imagePath:Alfresco.constants.URL_RESCONTEXT+'fme/components/jsconsole/codemirror-ui/images', searchMode:'no'} , {
-        	 lineNumbers: true,
+             lineNumbers: true,
              lineWrapping: true,
-        	 mode:"freemarker",
-        	 styleActiveLine: true,
+             mode:"freemarker",
+             styleActiveLine: true,
              highlightSelectionMatches : true,
              showCursorWhenSelecting :true,
-        	 matchBrackets: true,
-        	 showTrailingSpace: true,
-        	 onKeyEvent: this.onEditorKeyEvent,
-        	 markParen: function(node, ok) {
-        	        node.style.backgroundColor = ok ? "#CCF" : "#FCC#";
-        	        if(!ok) {
-        	            node.style.color = "red";
-        	        }
-        	    },
-        	    unmarkParen: function(node) {
-        	         node.style.backgroundColor = "";
-        	         node.style.color = "";
-        	    },
-        	    indentUnit: 4
+             matchBrackets: true,
+             showTrailingSpace: true,
+             onKeyEvent: this.onEditorKeyEvent,
+             markParen: function(node, ok) {
+                    node.style.backgroundColor = ok ? "#CCF" : "#FCC#";
+                    if(!ok) {
+                        node.style.color = "red";
+                    }
+                },
+                unmarkParen: function(node) {
+                     node.style.backgroundColor = "";
+                     node.style.color = "";
+                },
+                indentUnit: 4
          });
          this.widgets.codeMirrorTemplate = uiMirrorTemplate.getMirrorInstance();
 
@@ -513,20 +513,20 @@ if (typeof String.prototype.startsWith != 'function') {
 
 
          new YAHOO.widget.Tooltip("tooltip-urlargs", {
-        	    context: this.widgets.config.urlargs,
-        	    text: this.msg("tooltip.urlargs"),
-        	    showDelay: 200
-        	});
+                context: this.widgets.config.urlargs,
+                text: this.msg("tooltip.urlargs"),
+                showDelay: 200
+            });
 
          new YAHOO.widget.Tooltip("tooltip-runas", {
-     	    context: this.widgets.config.runas,
-     	    text: this.msg("tooltip.runas"),
-     	    showDelay: 200
-     	});
+            context: this.widgets.config.runas,
+            text: this.msg("tooltip.runas"),
+            showDelay: 200
+        });
 
          var tab0 = this.widgets.inputTabs.getTab(1); // 2nd tab
          tab0.addListener('click', function handleClick(e) {
-        	 self.widgets.codeMirrorTemplate.refresh();
+             self.widgets.codeMirrorTemplate.refresh();
          });
 
          this.widgets.statsModule = new YAHOO.widget.Module("perfPanel", {visible:true, draggable:false, close:false } );
@@ -553,52 +553,52 @@ if (typeof String.prototype.startsWith != 'function') {
          YAHOO.Bubbling.on("folderSelected", this.onDestinationSelected, this);
 
          // Store and Restore script content to and from local storage
-    	 if (self.browserSupportsHtml5Storage()) {
+         if (self.browserSupportsHtml5Storage()) {
              window.onbeforeunload = function(e) {
-           		 self.widgets.codeMirrorScript.save();
-           		 window.localStorage["javascript.console.script"] = self.widgets.scriptInput.value;
-           		 self.widgets.codeMirrorTemplate.save();
-           		 window.localStorage["javascript.console.template"] = self.widgets.templateInput.value;
-           		 if(self.widgets.config.runas){
-           		     window.localStorage["javascript.console.config.runas"] = self.widgets.config.runas.value;
-           		 }
-           		 if( self.widgets.config.transactions){
-           		     window.localStorage["javascript.console.config.transactions"] = self.widgets.config.transactions.value;
-           		 }
+                 self.widgets.codeMirrorScript.save();
+                 window.localStorage["javascript.console.script"] = self.widgets.scriptInput.value;
+                 self.widgets.codeMirrorTemplate.save();
+                 window.localStorage["javascript.console.template"] = self.widgets.templateInput.value;
+                 if(self.widgets.config.runas){
+                     window.localStorage["javascript.console.config.runas"] = self.widgets.config.runas.value;
+                 }
+                 if( self.widgets.config.transactions){
+                     window.localStorage["javascript.console.config.transactions"] = self.widgets.config.transactions.value;
+                 }
 
-           		 if( self.widgets.config.urlarguments){
-           		     window.localStorage["javascript.console.config.urlarguments"] = self.widgets.config.urlarguments.value;
-           		 }
+                 if( self.widgets.config.urlarguments){
+                     window.localStorage["javascript.console.config.urlarguments"] = self.widgets.config.urlarguments.value;
+                 }
                  if( self.widgets.config.runlikecrazy){
                      window.localStorage["javascript.console.config.runlikecrazy"] = self.widgets.config.runlikecrazy.value;
                  }
 
-           		 window.localStorage["javascript.console.codemirror.theme"]    = self.widgets.codeMirrorScript.options.theme;
+                 window.localStorage["javascript.console.codemirror.theme"]    = self.widgets.codeMirrorScript.options.theme;
              };
 
              if (window.localStorage["javascript.console.config.runas"]) {
-            	 self.widgets.config.runas.value = window.localStorage["javascript.console.config.runas"];
+                 self.widgets.config.runas.value = window.localStorage["javascript.console.config.runas"];
              }
 
              if (window.localStorage["javascript.console.config.transactions"]) {
-            	 self.widgets.config.transactions.value = window.localStorage["javascript.console.config.transactions"];
+                 self.widgets.config.transactions.value = window.localStorage["javascript.console.config.transactions"];
              }
 
              if (window.localStorage["javascript.console.config.urlarguments"]) {
-            	 self.widgets.config.urlarguments.value = window.localStorage["javascript.console.config.urlarguments"];
+                 self.widgets.config.urlarguments.value = window.localStorage["javascript.console.config.urlarguments"];
              }
 
              if (window.localStorage["javascript.console.config.runlikecrazy"]) {
-            	 self.widgets.config.runlikecrazy.value = window.localStorage["javascript.console.config.runlikecrazy"];
+                 self.widgets.config.runlikecrazy.value = window.localStorage["javascript.console.config.runlikecrazy"];
              }
 
              if (window.localStorage["javascript.console.script"]) {
                  var javascriptText = window.localStorage["javascript.console.script"];
-            	 this.widgets.codeMirrorScript.setValue(javascriptText);
+                 this.widgets.codeMirrorScript.setValue(javascriptText);
              }
 
              if (window.localStorage["javascript.console.template"]) {
-            	 this.widgets.codeMirrorTemplate.setValue(window.localStorage["javascript.console.template"]);
+                 this.widgets.codeMirrorTemplate.setValue(window.localStorage["javascript.console.template"]);
              }
 
              if (window.localStorage["javascript.console.codemirror.theme"]) {
@@ -608,9 +608,9 @@ if (typeof String.prototype.startsWith != 'function') {
              }
 
 
-    	 }
+         }
 
-    	 this.loadRepoScriptList();
+         this.loadRepoScriptList();
 
          // Read Javascript API Commands for code completion
          Alfresco.util.Ajax.request(
@@ -619,14 +619,14 @@ if (typeof String.prototype.startsWith != 'function') {
             method: Alfresco.util.Ajax.GET,
             requestContentType: Alfresco.util.Ajax.JSON,
             successCallback: {
-            	fn: function(res) {
-            		this.javascriptCommands = res.json;
+                fn: function(res) {
+                    this.javascriptCommands = res.json;
                     this.javascriptCommands.globalMap={};
                     for ( var i = 0; i < this.javascriptCommands.global.length; i++) {
                         this.javascriptCommands.globalMap[this.javascriptCommands.global[i]]=false;
                     }
-            	},
-            	scope: this
+                },
+                scope: this
             }
          });
 
@@ -713,17 +713,17 @@ if (typeof String.prototype.startsWith != 'function') {
             method: Alfresco.util.Ajax.GET,
             requestContentType: Alfresco.util.Ajax.JSON,
             successCallback: {
-            	fn: function(res) {
-            		this.dictionary = res.json;
-            		var templates= generateTemplates(this.dictionary);
+                fn: function(res) {
+                    this.dictionary = res.json;
+                    var templates= generateTemplates(this.dictionary);
                     var templateDefinitions = {
                             "name" : "alfresco_datatypes",
                             "context" : "javascript",
                             "templates" : templates
                     };
                     CodeMirror.templatesHint.addTemplates(templateDefinitions);
-            	},
-            	scope: this
+                },
+                scope: this
             }
          });
 
@@ -1077,23 +1077,23 @@ if (typeof String.prototype.startsWith != 'function') {
    }
 
 
-     	  var getQueryVariable = function getQueryVariable(variable) {
-	        var query = window.location.search.substring(1);
-	        var vars = query.split("&");
-	        for (var i = 0; i < vars.length; i++) {
-	            var pair = vars[i].split("=");
-	            if (pair[0] == variable) {
-	                return unescape(pair[1]);
-	            }
-	        }
-	        return "";
-	     }
+          var getQueryVariable = function getQueryVariable(variable) {
+            var query = window.location.search.substring(1);
+            var vars = query.split("&");
+            for (var i = 0; i < vars.length; i++) {
+                var pair = vars[i].split("=");
+                if (pair[0] == variable) {
+                    return unescape(pair[1]);
+                }
+            }
+            return "";
+         }
 
-	     this.options.documentNodeRef = getQueryVariable("nodeRef");
-	     this.options.documentName = getQueryVariable("name");
+         this.options.documentNodeRef = getQueryVariable("nodeRef");
+         this.options.documentName = getQueryVariable("name");
          if (this.options.documentNodeRef || this.options.documentName) {
- 	         Dom.setStyle(Dom.get(this.id + "-documentDisplay"), "display", "inline");
-        	 this.widgets.documentField.innerHTML = this.options.documentName + " (" + this.options.documentNodeRef +")";
+             Dom.setStyle(Dom.get(this.id + "-documentDisplay"), "display", "inline");
+             this.widgets.documentField.innerHTML = this.options.documentName + " (" + this.options.documentNodeRef +")";
          }
 
 // var help = [
@@ -1166,36 +1166,36 @@ if (typeof String.prototype.startsWith != 'function') {
       },
 
       setupResizableEditor: function() {
-    	  var me = this;
+          var me = this;
 
           var codeMirrorScript = this.widgets.codeMirrorScript;
           var codeMirrorTemplate = this.widgets.codeMirrorTemplate;
 
           var resize = new YAHOO.util.Resize(this.id + "-inputContentArea", { handles : ["b"] });
 
- 	     resize.on('resize', function(ev) {
-             var h = ev.height;
-
-             codeMirrorScript.setSize(null, h-50);
-             codeMirrorTemplate.setSize(null,h-50);
-
-  	         Dom.setStyle(me.id + "-inputContentArea", "width", "inherit");
- 	     });
-
- 	     resize.on('endResize', function(ev) {
+         resize.on('resize', function(ev) {
              var h = ev.height;
 
              codeMirrorScript.setSize(null, h-50);
              codeMirrorTemplate.setSize(null,h-50);
 
              Dom.setStyle(me.id + "-inputContentArea", "width", "inherit");
-	     });
+         });
 
- 	     // Recalculate the horizontal size on a browser window resize event
+         resize.on('endResize', function(ev) {
+             var h = ev.height;
+
+             codeMirrorScript.setSize(null, h-50);
+             codeMirrorTemplate.setSize(null,h-50);
+
+             Dom.setStyle(me.id + "-inputContentArea", "width", "inherit");
+         });
+
+         // Recalculate the horizontal size on a browser window resize event
           YAHOO.util.Event.on(window, "resize", function(e)
           {
- 	         // YAHOO.util.Resize sets an absolute width, reset to auto width
-   	         Dom.setStyle(me.id + "-inputContentArea", "width", "inherit");
+             // YAHOO.util.Resize sets an absolute width, reset to auto width
+             Dom.setStyle(me.id + "-inputContentArea", "width", "inherit");
           }, this, true);
 
       },
@@ -1211,40 +1211,40 @@ if (typeof String.prototype.startsWith != 'function') {
          */
       showResultTable: function ACJC_showResultTable(resultData)
       {
-    	  var allFields = {};
+          var allFields = {};
 
-    	  for (var row in resultData) {
-    		  for (var fieldname in resultData[row]) {
-    			  allFields[fieldname] = 1;
-    		  }
-    	  }
+          for (var row in resultData) {
+              for (var fieldname in resultData[row]) {
+                  allFields[fieldname] = 1;
+              }
+          }
 
-    	  var myColumnDefs = [];
-    	  var responseSchemaFields = [];
+          var myColumnDefs = [];
+          var responseSchemaFields = [];
 
-    	  for (var fieldname in allFields) {
-			  responseSchemaFields.push(fieldname);
-			  myColumnDefs.push({key:fieldname, sortable:true, resizeable:true});
-		  }
+          for (var fieldname in allFields) {
+              responseSchemaFields.push(fieldname);
+              myColumnDefs.push({key:fieldname, sortable:true, resizeable:true});
+          }
 
-    	  if (myColumnDefs.length > 0) {
+          if (myColumnDefs.length > 0) {
 
-		      var myDataSource = new YAHOO.util.DataSource(resultData);
-		      myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSARRAY;
-		      myDataSource.responseSchema = {
-		          fields: responseSchemaFields
-		      };
+              var myDataSource = new YAHOO.util.DataSource(resultData);
+              myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSARRAY;
+              myDataSource.responseSchema = {
+                  fields: responseSchemaFields
+              };
 
-    		  Dom.setStyle(this.id + "-datatable", "display", "block");
-    		  this.widgets.resultTable = new YAHOO.widget.DataTable(this.id + "-datatable",
-		              myColumnDefs, myDataSource, {draggableColumns:true});
-    		  Dom.setStyle(this.widgets.exportResultsButton, "display", "inline-block");
-   	  }
-    	  else {
-    		  Dom.setStyle(this.id + "-datatable", "display", "none");
-    		  this.widgets.resultTable = null;
-    		  Dom.setStyle(this.widgets.exportResultsButton, "display", "none");
-    	  }
+              Dom.setStyle(this.id + "-datatable", "display", "block");
+              this.widgets.resultTable = new YAHOO.widget.DataTable(this.id + "-datatable",
+                      myColumnDefs, myDataSource, {draggableColumns:true});
+              Dom.setStyle(this.widgets.exportResultsButton, "display", "inline-block");
+      }
+          else {
+              Dom.setStyle(this.id + "-datatable", "display", "none");
+              this.widgets.resultTable = null;
+              Dom.setStyle(this.widgets.exportResultsButton, "display", "none");
+          }
       },
 
       /**
@@ -1252,33 +1252,33 @@ if (typeof String.prototype.startsWith != 'function') {
          * http://stackoverflow.com/questions/2472424/exporting-data-from-a-yui-datatable
          */
       exportResultTableAsCSV : function() {
-    	    var myDataTable = this.widgets.resultTable;
+            var myDataTable = this.widgets.resultTable;
 
-    	    if (myDataTable) {
-	    	    var i, j, oData, newWin = window.open(),
-	    	        aRecs = myDataTable.getRecordSet().getRecords(),
-	    	        aCols = myDataTable.getColumnSet().keys;
+            if (myDataTable) {
+                var i, j, oData, newWin = window.open(),
+                    aRecs = myDataTable.getRecordSet().getRecords(),
+                    aCols = myDataTable.getColumnSet().keys;
 
-	    	    newWin.document.write("<pre>");
+                newWin.document.write("<pre>");
 
-    	        for (j=0; j<aCols.length; j++) {
-    	            newWin.document.write( aCols[j].key + "\t");
-    	        }
-    	        newWin.document.write("\n");
+                for (j=0; j<aCols.length; j++) {
+                    newWin.document.write( aCols[j].key + "\t");
+                }
+                newWin.document.write("\n");
 
-	    	    for (i=0; i<aRecs.length; i++) {
-	    	        oData = aRecs[i].getData();
+                for (i=0; i<aRecs.length; i++) {
+                    oData = aRecs[i].getData();
 
-	    	        for (j=0; j<aCols.length; j++) {
-	    	            newWin.document.write( oData[aCols[j].key] + "\t");
-	    	        }
-	    	        newWin.document.write("\n");
+                    for (j=0; j<aCols.length; j++) {
+                        newWin.document.write( oData[aCols[j].key] + "\t");
+                    }
+                    newWin.document.write("\n");
 
-	    	    }
+                }
 
-	    	    newWin.document.write("</pre>\n");
-	    	    newWin.document.close();
-    	    }
+                newWin.document.write("</pre>\n");
+                newWin.document.close();
+            }
        },
 
       /**
@@ -1290,41 +1290,41 @@ if (typeof String.prototype.startsWith != 'function') {
          */
       onExecuteClick: function ACJC_onExecuteClick(e, p_obj)
       {
-    	// Save any changes done in CodeMirror editor before submitting
-    	this.widgets.codeMirrorScript.save();
-    	this.widgets.codeMirrorTemplate.save();
+        // Save any changes done in CodeMirror editor before submitting
+        this.widgets.codeMirrorScript.save();
+        this.widgets.codeMirrorTemplate.save();
 
-    	// If something is selected, only get the selected part of the script
-    	var scriptCode = "";
-    	if (this.widgets.codeMirrorScript.somethingSelected()) {
-    		scriptCode = this.widgets.codeMirrorScript.getSelection();
-    	}
-    	else {
-    		scriptCode = this.widgets.scriptInput.value;
-    	}
+        // If something is selected, only get the selected part of the script
+        var scriptCode = "";
+        if (this.widgets.codeMirrorScript.somethingSelected()) {
+            scriptCode = this.widgets.codeMirrorScript.getSelection();
+        }
+        else {
+            scriptCode = this.widgets.scriptInput.value;
+        }
 
-    	templateCode = this.widgets.templateInput.value;
+        templateCode = this.widgets.templateInput.value;
 
-    	// Build JSON Object to send to the server
-   	  	var input = {
-     	   "script" : scriptCode,
-     	   "template" : templateCode	,
+        // Build JSON Object to send to the server
+        var input = {
+           "script" : scriptCode,
+           "template" : templateCode    ,
            "spaceNodeRef" : this.widgets.nodeField.value,
            "transaction" : this.widgets.config.transaction.value ? this.widgets.config.transaction.value : "readwrite",
            "runas" : this.widgets.config.runas.value ? this.widgets.config.runas.value : "admin",
            "urlargs" : this.widgets.config.urlargs.value ? this.widgets.config.urlargs.value : "",
            "documentNodeRef" : this.options.documentNodeRef
-   	  	};
+        };
 
-   	  	// Disable the result textarea
-   	  	this.widgets.scriptOutput.disabled = true;
-   	    this.widgets.executeButton.disabled = true;
+        // Disable the result textarea
+        this.widgets.scriptOutput.disabled = true;
+        this.widgets.executeButton.disabled = true;
 
-   	    this.showLoadingAjaxSpinner(true);
+        this.showLoadingAjaxSpinner(true);
 
-   	    this.executeStartTime = new Date();
+        this.executeStartTime = new Date();
 
-   	  	Alfresco.util.Ajax.request(
+        Alfresco.util.Ajax.request(
          {
             url: Alfresco.constants.PROXY_URI + "de/fme/jsconsole/execute",
             method: Alfresco.util.Ajax.POST,
@@ -1333,77 +1333,77 @@ if (typeof String.prototype.startsWith != 'function') {
             successCallback:
             {
                fn: function(res) {
-            	 this.showLoadingAjaxSpinner(false);
-            	 this.printExecutionStats(res.json);
-            	 this.clearOutput();
-            	 this.appendLineArrayToOutput(res.json.printOutput);
-            	 this.widgets.templateOutputHtml.innerHTML = res.json.renderedTemplate;
-            	 this.widgets.templateOutputText.innerHTML = $html(res.json.renderedTemplate);
-            	 this.widgets.codeMirrorJSON.setValue(formatter.formatJson(res.json.renderedTemplate,"  "));
-            	 this.widgets.codeMirrorJSON.focus();
+                 this.showLoadingAjaxSpinner(false);
+                 this.printExecutionStats(res.json);
+                 this.clearOutput();
+                 this.appendLineArrayToOutput(res.json.printOutput);
+                 this.widgets.templateOutputHtml.innerHTML = res.json.renderedTemplate;
+                 this.widgets.templateOutputText.innerHTML = $html(res.json.renderedTemplate);
+                 this.widgets.codeMirrorJSON.setValue(formatter.formatJson(res.json.renderedTemplate,"  "));
+                 this.widgets.codeMirrorJSON.focus();
 
                  if (res.json.spaceNodeRef) {
-                	 this.widgets.nodeField.value = res.json.spaceNodeRef;
+                     this.widgets.nodeField.value = res.json.spaceNodeRef;
                      this.widgets.pathField.innerHTML = res.json.spacePath;
                  }
                  this.widgets.scriptOutput.disabled = false;
                  this.widgets.templateOutputHtml.disabled = false;
                  this.widgets.templateOutputText.disabled = false;
-           	     this.widgets.executeButton.disabled = false;
+                 this.widgets.executeButton.disabled = false;
 
                  this.showResultTable(res.json.result);
-               	 YAHOO.util.Dom.removeClass(this.widgets.scriptOutput, 'jserror');
-               	 Dom.addClass(this.widgets.scriptOutput, 'jsgreen');
+                 YAHOO.util.Dom.removeClass(this.widgets.scriptOutput, 'jserror');
+                 Dom.addClass(this.widgets.scriptOutput, 'jsgreen');
 
-               	 this.runLikeCrazy();
+                 this.runLikeCrazy();
                },
                scope: this
             },
             failureCallback:
             {
                fn: function(res) {
-            	 this.showLoadingAjaxSpinner(false);
-            	 this.printExecutionStats();
+                 this.showLoadingAjaxSpinner(false);
+                 this.printExecutionStats();
 
-            	 var result = YAHOO.lang.JSON.parse(res.serverResponse.responseText);
+                 var result = YAHOO.lang.JSON.parse(res.serverResponse.responseText);
 
-            	 this.markJSError(result);
-            	 this.markFreemarkerError(result);
+                 this.markJSError(result);
+                 this.markFreemarkerError(result);
 
                  this.clearOutput();
                  this.setOutputText(result.status.code + " " +
-                 result.status.name + "\nStacktrace-Details:\n"+result.callstack[1]+"\n\n"+
+                 result.status.name + "\nStacktrace-Details:\n"+result.callstack+"\n\n"+
                  result.status.description + "\n" + result.message);
 
                  this.widgets.scriptOutput.disabled = false;
-           	     this.widgets.executeButton.disabled = false;
+                 this.widgets.executeButton.disabled = false;
                  Dom.removeClass(this.widgets.scriptOutput, 'jsgreen');
-               	 Dom.addClass(this.widgets.scriptOutput, 'jserror');
-               	 this.widgets.outputTabs.selectTab(0); // show console tab
+                 Dom.addClass(this.widgets.scriptOutput, 'jserror');
+                 this.widgets.outputTabs.selectTab(0); // show console tab
 
-               	 this.runLikeCrazy();
+                 this.runLikeCrazy();
                },
                scope: this
             }
          });
-	  },
+      },
 
-	  runLikeCrazy : function() {
-		 var me = this;
-		 if (this.widgets.config.runlikecrazy.value > 0) {
-			 window.setTimeout(function() {
-				 me.onExecuteClick();
-			 }, this.widgets.config.runlikecrazy.value);
-		 };
-	  },
+      runLikeCrazy : function() {
+         var me = this;
+         if (this.widgets.config.runlikecrazy.value > 0) {
+             window.setTimeout(function() {
+                 me.onExecuteClick();
+             }, this.widgets.config.runlikecrazy.value);
+         };
+      },
 
-	  /**
+      /**
          * marks the error in the code mirror editor if there is any line hint
          * in the error message.
          */
-	  markJSError: function(result){
-          var regex= /js#([\d+])+/;
-          var callStackLineIndicator = regex.exec(result.callstack[1]);
+      markJSError: function(result){
+          var regex= /js#(\d+)+/;
+          var callStackLineIndicator = regex.exec(result.callstack);
           if(callStackLineIndicator){
               // show the javascript window
               this.widgets.inputTabs.selectTab(0);
@@ -1411,54 +1411,49 @@ if (typeof String.prototype.startsWith != 'function') {
 
               // create a marker for the editor to indicate that there was an
                 // error!
-              var line = callStackLineIndicator[1]-1;
+              var line = parseInt(callStackLineIndicator[1])+result.scriptOffset-1;
               if(this.widgets.codeMirrorScript.somethingSelected()){
                   line = line + this.widgets.codeMirrorScript.getCursor().line-1;
               }
-			  var handle = this.widgets.codeMirrorScript.getLineHandle(line);
-			  if (handle) {
-				  var selectionEnd = handle.text.length;
-				  var from={"line":line,"ch":0};
-				  var to={"line":line,"ch":selectionEnd};
-				  this.widgets.codeMirrorScript.markText(from,to,{clearOnEnter:"true",className: "CodeMirror-lint-mark-error", __annotation: {from:from, to:to, severity:"error", message:result.callstack[1]}});
-			  }
+              var selectionEnd = this.widgets.codeMirrorScript.getLineHandle(line).text.length;
+              var from={"line":line,"ch":0};
+              var to={"line":line,"ch":selectionEnd};
+              this.widgets.codeMirrorScript.markText(from,to,{clearOnEnter:"true",className: "CodeMirror-lint-mark-error", __annotation: {from:from, to:to, severity:"error", message:result.message}});
           }
-	  },
+      },
 
-	  /**
+      /**
          * marks the error in the code mirror editor if there is any line hint
          * in the error message.
          */
-	  markFreemarkerError: function(result){
-	      var callstack = result.callstack;
-	      if(callstack){
-	          for ( var i = 0; i < callstack.length; i++) {
-
+      markFreemarkerError: function(result){
+          var callstack = result.callstack;
+          if(callstack){
                 regex = /line (\d*), column (\d*)/;
-                callStackLineIndicator = regex.exec(callstack[i]);
+                callStackLineIndicator = regex.exec(callstack);
                 if(callStackLineIndicator){
                     this.widgets.inputTabs.selectTab(1);
                     this.widgets.codeMirrorTemplate.focus();
                     var line = callStackLineIndicator[1]-1;
                     var selectionEnd = this.widgets.codeMirrorTemplate.getLineHandle(line).text.length;
-                    this.widgets.codeMirrorTemplate.markText({"line":line,"ch":0},{"line":line,"ch":selectionEnd},{clearOnEnter:"true",className: "CodeMirror-lint-span-error" ,__annotation: {message:callstack[i]}});
-                    break;
+                    this.widgets.codeMirrorTemplate.markText({"line":line,"ch":0},{"line":line,"ch":selectionEnd},{clearOnEnter:"true",className: "CodeMirror-lint-mark-error" ,__annotation: {message:result.message}});
                 }
-	          }
-	      }
+          }
       },
 
-	  showLoadingAjaxSpinner : function(showSpinner) {
-		  var spinner = Dom.get(this.id + "-spinner");
-		  Dom.setStyle(spinner, "display", showSpinner ? "inline" : "none");
-	  },
+      showLoadingAjaxSpinner : function(showSpinner) {
+          var spinner = Dom.get(this.id + "-spinner");
+          Dom.setStyle(spinner, "display", showSpinner ? "inline" : "none");
+      },
 
-	  printExecutionStats : function(json) {
-		  this.executeEndTime = new Date();
-		  var overallPerf = this.executeEndTime - this.executeStartTime;
+      printExecutionStats : function(json) {
+          this.executeEndTime = new Date();
+          var overallPerf = this.executeEndTime - this.executeStartTime;
 
           var stats = Dom.get(this.id + "-executionStatsSimple");
-          var text = " - "+this.msg("label.stats.executed.last") +" "+ (overallPerf) + "ms";
+          var now  = new Date();
+          var nowAsString = now.getFullYear() + "-"+ (parseInt(now.getMonth())+1) +"-"+now.getDate() + " " + now.getHours() +":"+now.getMinutes()+":"+now.getSeconds();
+          var text = " - "+this.msg("label.stats.executed.last") +" "+ (overallPerf) + "ms (" + nowAsString+")";
           stats.innerHTML = '';
           stats.appendChild(document.createTextNode(text));
 
@@ -1469,30 +1464,30 @@ if (typeof String.prototype.startsWith != 'function') {
               }, null, this);
           };
 
-		  var webscriptPerf="-";
-		  var fmPerf="-";
-		  var scriptPerf="-";
-		  var networkPerf="-";
-		  var serverCodePerf ="-";
+          var webscriptPerf="-";
+          var fmPerf="-";
+          var scriptPerf="-";
+          var networkPerf="-";
+          var serverCodePerf ="-";
 
-		  if(json){
-		      scriptPerf = json.scriptPerf;
-	          fmPerf = json.freemarkerPerf;
+          if(json){
+              scriptPerf = json.scriptPerf;
+              fmPerf = json.freemarkerPerf;
 
-	          if(fmPerf === undefined){
-	              fmPerf = 0;
-	          }
+              if(fmPerf === undefined){
+                  fmPerf = 0;
+              }
 
-	          webscriptPerf = json.webscriptPerf;
-	          serverCodePerf = webscriptPerf - scriptPerf - fmPerf;
+              webscriptPerf = json.webscriptPerf;
+              serverCodePerf = webscriptPerf - scriptPerf - fmPerf;
 
-	          networkPerf = overallPerf - webscriptPerf;
-		  }
+              networkPerf = overallPerf - webscriptPerf;
+          }
 
-		  var overallEl = YAHOO.lang.substitute(this.template, {
-		     name:this.msg("label.stats.executed.in"),
-		     value:overallPerf + "ms"
-		  });
+          var overallEl = YAHOO.lang.substitute(this.template, {
+             name:this.msg("label.stats.executed.in"),
+             value:overallPerf + "ms"
+          });
 
           var scriptEl = YAHOO.lang.substitute(this.template, {
               name:this.msg("label.stats.jscript.executed.in"),
@@ -1514,19 +1509,19 @@ if (typeof String.prototype.startsWith != 'function') {
               value:networkPerf + "ms"
            });
 
-		  var text = overallEl+scriptEl+fmEl+codeEl+networkEl;
+          var text = overallEl+scriptEl+fmEl+codeEl+networkEl;
 
- 		  this.widgets.statsModule.setBody(text);
-	  },
+          this.widgets.statsModule.setBody(text);
+      },
 
-	  loadDemoScript: function ACJC_loadDemoScript() {
-		  this.widgets.codeMirrorScript.setValue(
-			'var nodes = search.luceneSearch(\'@name:alfresco\');\n'+
-			'\n'+
-			'for each(var node in nodes) {\n'+
-	        '    logger.log(node.name + \' (\' + node.typeShort + \'): \' + node.nodeRef);\n'+
-	        '}\n');
-	  },
+      loadDemoScript: function ACJC_loadDemoScript() {
+          this.widgets.codeMirrorScript.setValue(
+            'var nodes = search.luceneSearch(\'@name:alfresco\');\n'+
+            '\n'+
+            'for each(var node in nodes) {\n'+
+            '    logger.log(node.name + \' (\' + node.typeShort + \'): \' + node.nodeRef);\n'+
+            '}\n');
+      },
 
       /**
          * Fired when the user selects a script from the load scripts drop down
@@ -1538,11 +1533,11 @@ if (typeof String.prototype.startsWith != 'function') {
 
           var callback = {
               success : function(o) {
-        	  	  // set the new editor content
-            	  self.widgets.codeMirrorScript.setValue(o.responseText);
+                  // set the new editor content
+                  self.widgets.codeMirrorScript.setValue(o.responseText);
               },
               failure: function(o) {
-            	  text: self.msg("error.script.load", filename)
+                  text: self.msg("error.script.load", filename)
               },
               scope: this
           }
@@ -1560,15 +1555,15 @@ if (typeof String.prototype.startsWith != 'function') {
 
           var nodeRef = p_aArgs[1].value;
 
-    	  if (nodeRef == "NEW") {
-    		  self.loadDemoScript.call(self);
-    	  }
-    	  else {
-    		  var url = Alfresco.constants.PROXY_URI + "api/node/content/" + nodeRef.replace("://","/");
-    		  YAHOO.util.Connect.asyncRequest('GET', url, callback);
-    		  var url = Alfresco.constants.PROXY_URI + "api/node/content;jsc:freemarkerScript/" + nodeRef.replace("://","/");
+          if (nodeRef == "NEW") {
+              self.loadDemoScript.call(self);
+          }
+          else {
+              var url = Alfresco.constants.PROXY_URI + "api/node/content/" + nodeRef.replace("://","/");
+              YAHOO.util.Connect.asyncRequest('GET', url, callback);
+              var url = Alfresco.constants.PROXY_URI + "api/node/content;jsc:freemarkerScript/" + nodeRef.replace("://","/");
               YAHOO.util.Connect.asyncRequest('GET', url, callbackFreemarker);
-    	  }
+          }
        },
 
        /**
@@ -1607,11 +1602,11 @@ if (typeof String.prototype.startsWith != 'function') {
 
        saveAsNewScript : function ACJC_saveAsNewScript(filename) {
            Alfresco.util.Ajax.request({
-        	   url: Alfresco.constants.PROXY_URI + "de/fme/jsconsole/savescript.json?name="+encodeURIComponent(filename)+"&isUpdate=false",
-        	   method: Alfresco.util.Ajax.PUT,
-        	   dataStr: YAHOO.lang.JSON.stringify({'jsScript':this.widgets.codeMirrorScript.getValue(), 'fmScript':this.widgets.codeMirrorTemplate.getValue()}),
-        	   requestContentType: "application/json; charset=utf-8",
-        	   successCallback: {
+               url: Alfresco.constants.PROXY_URI + "de/fme/jsconsole/savescript.json?name="+encodeURIComponent(filename)+"&isUpdate=false",
+               method: Alfresco.util.Ajax.PUT,
+               dataStr: YAHOO.lang.JSON.stringify({'jsScript':this.widgets.codeMirrorScript.getValue(), 'fmScript':this.widgets.codeMirrorTemplate.getValue()}),
+               requestContentType: "application/json; charset=utf-8",
+               successCallback: {
                    fn: function(res) {
                        Alfresco.util.PopupManager.displayMessage({
                            text: this.msg("message.save.successful", filename)
@@ -1622,7 +1617,7 @@ if (typeof String.prototype.startsWith != 'function') {
                    },
                    scope: this
                },
-        	   failureMessage: this.msg("error.script.save", filename)
+               failureMessage: this.msg("error.script.save", filename)
            });
        },
 
@@ -1633,48 +1628,48 @@ if (typeof String.prototype.startsWith != 'function') {
          * @method onLoadScriptClick
          */
        onSaveScriptClick : function ACJC_onSaveScriptClick(p_sType, p_aArgs, self) {
-    	  self.widgets.codeMirrorScript.save();
+          self.widgets.codeMirrorScript.save();
 
-    	  var menuItem = p_aArgs[1];
-    	  var filename = menuItem.cfg.getProperty("text");
-    	  var nodeRef = menuItem.value;
+          var menuItem = p_aArgs[1];
+          var filename = menuItem.cfg.getProperty("text");
+          var nodeRef = menuItem.value;
 
-    	  if (nodeRef == "NEW") {
+          if (nodeRef == "NEW") {
               Alfresco.util.PopupManager.getUserInput(
               {
-            	  title: self.msg("title.save.choose.filename"),
-            	  text: self.msg("message.save.choose.filename"),
-            	  input: "text",
-            	  callback: {
-            		  fn: self.saveAsNewScript,
-            		  obj: [ ],
-            		  scope: self
+                  title: self.msg("title.save.choose.filename"),
+                  text: self.msg("message.save.choose.filename"),
+                  input: "text",
+                  callback: {
+                      fn: self.saveAsNewScript,
+                      obj: [ ],
+                      scope: self
                   }
               });
-    	  } else {
+          } else {
               Alfresco.util.PopupManager.displayPrompt
               ({
                  title: self.msg("title.confirm.save"),
                  text: self.msg("message.confirm.save", filename),
                  buttons: [
                  {
-                	 text: self.msg("button.save"),
-                	 handler: function ACJC_onSaveScriptClick_save()
+                     text: self.msg("button.save"),
+                     handler: function ACJC_onSaveScriptClick_save()
                      {
-                		 this.destroy();
-                		 self.saveAsExistingScript(filename, nodeRef);
+                         this.destroy();
+                         self.saveAsExistingScript(filename, nodeRef);
                      }
                  },
                  {
-                	 text: self.msg("button.cancel"),
-                	 handler: function ACJC_onSaveScriptClick_cancel()
+                     text: self.msg("button.cancel"),
+                     handler: function ACJC_onSaveScriptClick_cancel()
                      {
-                		 this.destroy();
+                         this.destroy();
                      },
                      isDefault: true
                  }]
               });
-    	  }
+          }
        },
 
       /**
@@ -1765,15 +1760,3 @@ if (typeof String.prototype.startsWith != 'function') {
 
 
 })();
-
-
-
-
-
-
-
-
-
-
-
-
