@@ -9,13 +9,11 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
-import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.alfresco.repo.content.MimetypeMap;
-import org.alfresco.repo.jscript.RhinoScriptProcessor;
 import org.alfresco.repo.jscript.ScriptNode;
 import org.alfresco.repo.jscript.ScriptUtils;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
@@ -29,8 +27,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
-import org.springframework.core.io.ClassPathResource;
 import org.json.JSONObject;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.extensions.webscripts.AbstractWebScript;
 import org.springframework.extensions.webscripts.Cache;
@@ -98,8 +96,11 @@ public class ExecuteWebscript extends AbstractWebScript {
 			JavascriptConsoleRequest jsreq = JavascriptConsoleRequest.readJson(request);
 			int scriptLength = jsreq.script.split(LINE_SEPERATOR).length;
 
-			String script = preRollScript + "\n"
-					+ ScriptResourceHelper.resolveScriptImports(jsreq.script, rhinoScriptProcessor, LOG);
+			String script = preRollScript + "\n";
+			
+			// FIXME removed du to dpenedency on rhinoScriptProcessor
+			//		+ ScriptResourceHelper.resolveScriptImports(jsreq.script, rhinoScriptProcessor, LOG);
+					
 			int resolvedScriptLength = script.split(LINE_SEPERATOR).length + 1;
 			scriptOffset = scriptLength - resolvedScriptLength;
 			ScriptContent scriptContent = new StringScriptContent(script + "\n" + postRollScript);
