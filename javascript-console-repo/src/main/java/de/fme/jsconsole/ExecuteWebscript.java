@@ -99,14 +99,14 @@ public class ExecuteWebscript extends AbstractWebScript {
 			JavascriptConsoleRequest jsreq = JavascriptConsoleRequest.readJson(request);
 			
 			// Note: Need to use import here so the user-supplied script may also import scripts
-		    String script = MessageFormat.format("<import resource=\"classpath:{0}\">",
-	                this.preRollScriptResource.getPath()) + "\n" + jsreq.script; 
-	        
-	        ScriptContent scriptContent = new StringScriptContent(script + this.postRollScript);
-	        
-	        int providedScriptLength = countScriptLines(jsreq.script, false);
-	        int resolvedScriptLength = countScriptLines(script, true);
-	        scriptOffset = providedScriptLength - resolvedScriptLength;
+			String script = MessageFormat.format("<import resource=\"classpath:{0}\">", 
+					this.preRollScriptResource.getPath()) + "\n" + jsreq.script;
+
+			ScriptContent scriptContent = new StringScriptContent(script + this.postRollScript);
+
+			int providedScriptLength = countScriptLines(jsreq.script, false);
+			int resolvedScriptLength = countScriptLines(script, true);
+			scriptOffset = providedScriptLength - resolvedScriptLength;
 
 			JavascriptConsoleResult result = runScriptWithTransactionAndAuthentication(request, response, jsreq, scriptContent);
 
@@ -128,19 +128,19 @@ public class ExecuteWebscript extends AbstractWebScript {
 	
 	private int countScriptLines(String script, boolean attemptImportResolution)
 	{
-	    String scriptSource;
-	    
-	    if (attemptImportResolution && this.jsProcessor instanceof RhinoScriptProcessor) {
-	        // resolve any imports
-	        scriptSource = ScriptResourceHelper.resolveScriptImports(script, (RhinoScriptProcessor)this.jsProcessor, LOG);
-	    } else {
-	        // assume this is the literal source
-	        scriptSource = script;
-	    }
-	    
-	    // EOL is not only dependent on the current system but on the environment of the script author, so check for any known EOL styles
-	    String[] scriptLines = scriptSource.split("(\\r?\\n\\r?)|(\\r)");
-	    return scriptLines.length;
+		String scriptSource;
+		
+		if (attemptImportResolution && this.jsProcessor instanceof RhinoScriptProcessor) {
+			// resolve any imports
+			scriptSource = ScriptResourceHelper.resolveScriptImports(script, (RhinoScriptProcessor)this.jsProcessor, LOG);
+		} else {
+			// assume this is the literal source
+			scriptSource = script;
+		}
+		
+		// EOL is not only dependent on the current system but on the environment of the script author, so check for any known EOL styles
+		String[] scriptLines = scriptSource.split("(\\r?\\n\\r?)|(\\r)");
+		return scriptLines.length;
 	}
 
 	/**
