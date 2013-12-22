@@ -406,7 +406,7 @@ public class ExecuteWebscript extends AbstractWebScript {
 	}
 	
 	public void setJsProcessor(org.alfresco.service.cmr.repository.ScriptProcessor jsProcessor) {
-	    this.jsProcessor = jsProcessor;
+		this.jsProcessor = jsProcessor;
 	}
 
 	public void setPostRollScriptResource(ClassPathResource postRollScriptResource) {
