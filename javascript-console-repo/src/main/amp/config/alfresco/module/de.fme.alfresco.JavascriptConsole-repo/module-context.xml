@@ -23,6 +23,13 @@
 		<property name="sysAdminParams" ref="sysAdminParams" />
 		<property name="lockService" ref="LockService" />
 	</bean>
+    
+    <bean id="webscript.de.fme.jsconsole.printOutput.get" class="de.fme.jsconsole.PrintOutputGet" parent="webscript">
+        <property name="backingCache" ref="jconsole.printOutputCache" />
+    </bean>
+    
+    <!-- Standard cache (node-local only) for asynchronous print output retrieval - override for cluster-capable cache -->
+    <bean id="jconsole.printOutputCache" class="org.alfresco.repo.cache.DefaultSimpleCache" />
 	
 	<bean id="jconsole.extension.dictionaryBootstrap" parent="dictionaryModelBootstrap">
 		<property name="models">

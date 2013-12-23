@@ -1383,7 +1383,7 @@ if (typeof String.prototype.startsWith != 'function') {
         // Build JSON Object to send to the server
         var input = {
            "script" : scriptCode,
-           "template" : templateCode    ,
+           "template" : templateCode,
            "spaceNodeRef" : this.widgets.nodeField.value,
            "transaction" : this.widgets.config.transaction.value ? this.widgets.config.transaction.value : "readwrite",
            "runas" : this.widgets.config.runas.value ? this.widgets.config.runas.value : "admin",
@@ -1398,6 +1398,8 @@ if (typeof String.prototype.startsWith != 'function') {
         this.showLoadingAjaxSpinner(true);
 
         this.executeStartTime = new Date();
+        
+        input.printOutputChannel = String(this.executeStartTime.getTime());
 
         Alfresco.util.Ajax.request(
          {
@@ -1408,6 +1410,8 @@ if (typeof String.prototype.startsWith != 'function') {
             successCallback:
             {
                fn: function(res) {
+                 this.printOutputTimer.cancel();
+                 this.printOutputTimer = null;
                  this.showLoadingAjaxSpinner(false);
                  this.printExecutionStats(res.json);
                  this.printDumpInfos(res.json.dumpOutput);
@@ -1438,6 +1442,8 @@ if (typeof String.prototype.startsWith != 'function') {
             failureCallback:
             {
                fn: function(res) {
+                 this.printOutputTimer.cancel();
+                 this.printOutputTimer = null;
                  this.showLoadingAjaxSpinner(false);
                  this.printExecutionStats();
 
@@ -1462,6 +1468,36 @@ if (typeof String.prototype.startsWith != 'function') {
                scope: this
             }
          });
+        
+        // fetch updates to the print output every 5 seconds
+        this.printOutputTimer = YAHOO.lang.later(5000, this, this.fetchPrintOutput, null, true);
+      },
+      
+      fetchPrintOutput : function()
+      {
+          // double check that execution is still ongoing
+          if (this.widgets.executeButton.disabled) {
+              // this is a best-effort update - we do not care about failures
+              Alfresco.util.Ajax.jsonGet(
+              {
+                  url : Alfresco.constants.PROXY_URI + "de/fme/jsconsole/"
+                          + encodeURIComponent(String(this.executeStartTime.getTime())) + "/printOutput",
+                  successCallback :
+                  {
+                      fn : function(response)
+                      {
+                          // double check that execution is still ongoing
+                          if (this.widgets.executeButton.disabled) {
+                              if (YAHOO.lang.isObject(response.json) && YAHOO.lang.isArray(response.json.printOutput)) {
+                                  this.clearOutput();
+                                  this.appendLineArrayToOutput(response.json.printOutput);
+                              }
+                          }
+                      },
+                      scope : this
+                  }
+              });
+          }
       },
 
       runLikeCrazy : function() {

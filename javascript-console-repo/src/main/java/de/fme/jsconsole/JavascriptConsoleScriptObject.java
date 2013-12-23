@@ -145,7 +145,23 @@ public class JavascriptConsoleScriptObject {
 		this.lockService = lockService;
 		this.dumpLimit = dumpLimit;
 	}
-
+	
+	/**
+	 * Default constructor with print output stored in an internal data structure.
+	 */
+	public JavascriptConsoleScriptObject()
+	{
+	    // NO-OP as default constructor
+	}
+	
+	/**
+	 * Alternative constructor that allows clients to provide a specific data structure for print output management.
+	 */
+	public JavascriptConsoleScriptObject(List<String> printOutput)
+    {
+        this.printOutput = printOutput;
+    }
+	
 	public ScriptNode getSpace() {
 		return space;
 	}
@@ -255,7 +271,8 @@ public class JavascriptConsoleScriptObject {
 	}
 
 	public List<String> getPrintOutput() {
-		return printOutput;
+	    // defensive copy
+		return new ArrayList<String>(this.printOutput);
 	}
 
 	public List<JsConsoleDump> getDumpOutput() {

@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.alfresco.repo.admin.SysAdminParams;
+import org.alfresco.repo.cache.SimpleCache;
 import org.alfresco.repo.content.MimetypeMap;
 import org.alfresco.repo.jscript.RhinoScriptProcessor;
 import org.alfresco.repo.jscript.ScriptNode;
@@ -39,6 +40,7 @@ import org.alfresco.service.cmr.workflow.WorkflowService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.transaction.TransactionService;
 import org.alfresco.util.MD5;
+import org.alfresco.util.Pair;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -150,6 +152,10 @@ public class ExecuteWebscript extends AbstractWebScript {
 	public void setAuditService(AuditService auditService) {
 		this.auditService = auditService;
 	}
+	
+	private SimpleCache<Pair<String, Integer>, List<String>> printOutputCache;
+	
+	private int printOutputChunkSize = 5;
 
 	@Override
 	public void init(Container container, Description description) {
@@ -310,21 +316,40 @@ public class ExecuteWebscript extends AbstractWebScript {
 
 	private JavascriptConsoleResult runWithTransactionIfNeeded(final WebScriptRequest request, final WebScriptResponse response,
 			final JavascriptConsoleRequest jsreq, final ScriptContent scriptContent) {
-		if (jsreq.useTransaction) {
-			LOG.debug("Using transction to execute script: " + (jsreq.transactionReadOnly ? "readonly" : "readwrite"));
-			return transactionService.getRetryingTransactionHelper().doInTransaction(
-					new RetryingTransactionCallback<JavascriptConsoleResult>() {
-						public JavascriptConsoleResult execute() throws Exception {
-							return executeScriptContent(request, response, scriptContent, jsreq.template, jsreq.spaceNodeRef,
-									jsreq.urlargs, jsreq.documentNodeRef, jsreq.dumpLimit);
-						}
-					}, jsreq.transactionReadOnly);
-		} else {
-			LOG.debug("Executing script script without transaction.");
-			return executeScriptContent(request, response, scriptContent, jsreq.template, jsreq.spaceNodeRef, jsreq.urlargs,
-					jsreq.documentNodeRef, jsreq.dumpLimit);
-
-		}
+	    
+	    final List<String> printOutput;
+	    if (jsreq.logOutputChannel != null && this.printOutputCache != null) {
+	        printOutput = new CacheBackedChunkedList<String, String>(this.printOutputCache, jsreq.logOutputChannel, this.printOutputChunkSize);
+	    } else {
+	        printOutput = null;
+	    }
+	    
+	    try {
+    		if (jsreq.useTransaction) {
+    			LOG.debug("Using transction to execute script: " + (jsreq.transactionReadOnly ? "readonly" : "readwrite"));
+    			return transactionService.getRetryingTransactionHelper().doInTransaction(
+    					new RetryingTransactionCallback<JavascriptConsoleResult>() {
+    						public JavascriptConsoleResult execute() throws Exception {
+    						    // clear due to potential retry
+    		                    if (printOutput != null) {
+    		                        printOutput.clear();
+    		                    }
+    							return executeScriptContent(request, response, scriptContent, jsreq.template, jsreq.spaceNodeRef,
+    									jsreq.urlargs, jsreq.documentNodeRef, printOutput);
+    						}
+    					}, jsreq.transactionReadOnly);
+    		} else {
+    			LOG.debug("Executing script script without transaction.");
+    			return executeScriptContent(request, response, scriptContent, jsreq.template, jsreq.spaceNodeRef, jsreq.urlargs,
+    					jsreq.documentNodeRef, printOutput);
+    		}
+	    } finally {
+	        // cleanup after completion
+	        if (printOutput != null)
+	        {
+	            printOutput.clear();
+	        }
+	    }
 	}
 
 	/*
@@ -334,7 +359,8 @@ public class ExecuteWebscript extends AbstractWebScript {
 	 * WebScriptRequest, org.alfresco.web.scripts.WebScriptResponse)
 	 */
 	private JavascriptConsoleResult executeScriptContent(WebScriptRequest req, WebScriptResponse res,
-			ScriptContent scriptContent, String template, String spaceNodeRef, Map<String, String> urlargs, String documentNodeRef, Integer dumpLimit) {
+			ScriptContent scriptContent, String template, String spaceNodeRef, Map<String, String> urlargs, String documentNodeRef,
+			List<String> printOutput) {
 		JavascriptConsoleResult output = new JavascriptConsoleResult();
 
 		// retrieve requested format
@@ -356,10 +382,7 @@ public class ExecuteWebscript extends AbstractWebScript {
 			Map<String, Object> returnModel = new HashMap<String, Object>(8, 1.0f);
 			scriptModel.put("model", returnModel);
 
-			JavascriptConsoleScriptObject javascriptConsole = new JavascriptConsoleScriptObject(nodeService, permissionService,
-					namespaceService, versionService, contentService, dictionaryService, ruleService, workflowService,
-					renditionService, tagservice, categoryService, webDavService, auditService, sysAdminParams, dumpLimit, lockService);
-
+			JavascriptConsoleScriptObject javascriptConsole = printOutput == null ? new JavascriptConsoleScriptObject() : new JavascriptConsoleScriptObject(printOutput);
 			scriptModel.put("jsconsole", javascriptConsole);
 
 			if (StringUtils.isNotBlank(spaceNodeRef)) {
@@ -512,7 +535,15 @@ public class ExecuteWebscript extends AbstractWebScript {
 		this.permissionService = permissionService;
 	}
 
-	private static class StringScriptContent implements ScriptContent {
+	public final void setPrintOutputCache(SimpleCache<Pair<String, Integer>, List<String>> printOutputCache) {
+        this.printOutputCache = printOutputCache;
+    }
+
+    public final void setPrintOutputChunkSize(int printOutputChunkSize) {
+        this.printOutputChunkSize = printOutputChunkSize;
+    }
+
+    private static class StringScriptContent implements ScriptContent {
 		private final String content;
 
 		public StringScriptContent(String content) {
