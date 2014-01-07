@@ -28,8 +28,12 @@
         <property name="backingCache" ref="jconsole.printOutputCache" />
     </bean>
     
-    <!-- Standard cache (node-local only) for asynchronous print output retrieval - override for cluster-capable cache -->
-    <bean id="jconsole.printOutputCache" class="org.alfresco.repo.cache.DefaultSimpleCache" />
+    <!-- Version-aware cache for asynchronous print output retrieval -->
+    <bean id="jconsole.printOutputCache" class="de.fme.jsconsole.VersionAwareCacheFactoryBean">
+        <property name="alf42ClassName" value="org.alfresco.repo.cache.DefaultSimpleCache" />
+        <property name="preAlf42ClassName" value="org.alfresco.repo.cache.MemoryCache" />
+        <property name="descriptorService" ref="DescriptorService" />
+    </bean>
 	
 	<bean id="jconsole.extension.dictionaryBootstrap" parent="dictionaryModelBootstrap">
 		<property name="models">
