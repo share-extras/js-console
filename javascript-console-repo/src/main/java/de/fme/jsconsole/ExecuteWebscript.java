@@ -9,16 +9,19 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.alfresco.repo.content.MimetypeMap;
+import org.alfresco.repo.jscript.RhinoScriptProcessor;
 import org.alfresco.repo.jscript.ScriptNode;
 import org.alfresco.repo.jscript.ScriptUtils;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.security.permissions.AccessDeniedException;
 import org.alfresco.repo.transaction.RetryingTransactionHelper.RetryingTransactionCallback;
+import org.alfresco.scripts.ScriptResourceHelper;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.transaction.TransactionService;
 import org.alfresco.util.MD5;
@@ -53,8 +56,6 @@ import org.springframework.extensions.webscripts.WebScriptResponse;
  */
 public class ExecuteWebscript extends AbstractWebScript {
 
-	private static final String LINE_SEPERATOR = System.getProperty("line.separator");
-
 	private static final Log LOG = LogFactory.getLog(ExecuteWebscript.class);
 
 	private ScriptUtils scriptUtils;
@@ -68,6 +69,8 @@ public class ExecuteWebscript extends AbstractWebScript {
 	private ClassPathResource postRollScriptResource;
 
 	private String postRollScript = "";
+	
+	private org.alfresco.service.cmr.repository.ScriptProcessor jsProcessor;
 
 	@Override
 	public void init(Container container, Description description) {
@@ -94,16 +97,17 @@ public class ExecuteWebscript extends AbstractWebScript {
 		try {
 			PerfLog webscriptPerf = new PerfLog().start();
 			JavascriptConsoleRequest jsreq = JavascriptConsoleRequest.readJson(request);
-			int scriptLength = jsreq.script.split(LINE_SEPERATOR).length;
-
-			String script = preRollScript + "\n";
 			
-			// FIXME removed du to dpenedency on rhinoScriptProcessor
-			//		+ ScriptResourceHelper.resolveScriptImports(jsreq.script, rhinoScriptProcessor, LOG);
-					
-			int resolvedScriptLength = script.split(LINE_SEPERATOR).length + 1;
-			scriptOffset = scriptLength - resolvedScriptLength;
-			ScriptContent scriptContent = new StringScriptContent(script + "\n" + postRollScript);
+			// Note: Need to use import here so the user-supplied script may also import scripts
+			String script = MessageFormat.format("<import resource=\"classpath:{0}\">", 
+					this.preRollScriptResource.getPath()) + "\n" + jsreq.script;
+
+			ScriptContent scriptContent = new StringScriptContent(script + this.postRollScript);
+
+			int providedScriptLength = countScriptLines(jsreq.script, false);
+			int resolvedScriptLength = countScriptLines(script, true);
+			scriptOffset = providedScriptLength - resolvedScriptLength;
+
 			JavascriptConsoleResult result = runScriptWithTransactionAndAuthentication(request, response, jsreq, scriptContent);
 
 			if (!result.isStatusResponseSent()) {
@@ -120,6 +124,23 @@ public class ExecuteWebscript extends AbstractWebScript {
 			writeErrorInfosAsJson(response, scriptOffset, e);
 
 		}
+	}
+	
+	private int countScriptLines(String script, boolean attemptImportResolution)
+	{
+		String scriptSource;
+		
+		if (attemptImportResolution && this.jsProcessor instanceof RhinoScriptProcessor) {
+			// resolve any imports
+			scriptSource = ScriptResourceHelper.resolveScriptImports(script, (RhinoScriptProcessor)this.jsProcessor, LOG);
+		} else {
+			// assume this is the literal source
+			scriptSource = script;
+		}
+		
+		// EOL is not only dependent on the current system but on the environment of the script author, so check for any known EOL styles
+		String[] scriptLines = scriptSource.split("(\\r?\\n\\r?)|(\\r)");
+		return scriptLines.length;
 	}
 
 	/**
@@ -382,6 +403,10 @@ public class ExecuteWebscript extends AbstractWebScript {
 
 	public void setTransactionService(TransactionService transactionService) {
 		this.transactionService = transactionService;
+	}
+	
+	public void setJsProcessor(org.alfresco.service.cmr.repository.ScriptProcessor jsProcessor) {
+		this.jsProcessor = jsProcessor;
 	}
 
 	public void setPostRollScriptResource(ClassPathResource postRollScriptResource) {

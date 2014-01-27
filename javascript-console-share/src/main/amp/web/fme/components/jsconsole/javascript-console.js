@@ -1402,23 +1402,27 @@ if (typeof String.prototype.startsWith != 'function') {
          * in the error message.
          */
       markJSError: function(result){
-          var regex= /js#(\d+)+/;
+          // the submitted script will use an MD5 hash as a name which helps us a bit in distinguishing it from other scripts being executed (i.e. a script action)
+          var regex= /\([a-f0-9]+\.js#(\d+)\)/;
           var callStackLineIndicator = regex.exec(result.callstack);
           if(callStackLineIndicator){
               // show the javascript window
               this.widgets.inputTabs.selectTab(0);
               this.widgets.codeMirrorScript.focus();
 
-              // create a marker for the editor to indicate that there was an
-                // error!
+              // create a marker for the editor to indicate that there was an error!
+              // offset by -1 for internal 0-based count
               var line = parseInt(callStackLineIndicator[1])+result.scriptOffset-1;
-              if(this.widgets.codeMirrorScript.somethingSelected()){
-                  line = line + this.widgets.codeMirrorScript.getCursor().line-1;
+              // is the line actually part of the user script? 
+              if (line >= 0) {
+                  if(this.widgets.codeMirrorScript.somethingSelected()){
+                      line = line + this.widgets.codeMirrorScript.getCursor().line-1;
+                  }
+                  var selectionEnd = this.widgets.codeMirrorScript.getLineHandle(line).text.length;
+                  var from={"line":line,"ch":0};
+                  var to={"line":line,"ch":selectionEnd};
+                  this.widgets.codeMirrorScript.markText(from,to,{clearOnEnter:"true",className: "CodeMirror-lint-mark-error", __annotation: {from:from, to:to, severity:"error", message:result.message}});
               }
-              var selectionEnd = this.widgets.codeMirrorScript.getLineHandle(line).text.length;
-              var from={"line":line,"ch":0};
-              var to={"line":line,"ch":selectionEnd};
-              this.widgets.codeMirrorScript.markText(from,to,{clearOnEnter:"true",className: "CodeMirror-lint-mark-error", __annotation: {from:from, to:to, severity:"error", message:result.message}});
           }
       },
 
