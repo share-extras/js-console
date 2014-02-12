@@ -1,4 +1,11 @@
-/javascript-console-repo/bin
-/javascript-console-repo/build
-/javascript-console-share/build
-/javascript-console-share/bin
+/javascript-console-repo/target/
+/javascript-console-repo/.settings/
+/javascript-console-repo/.project
+/javascript-console-repo/.classpath
+
+/javascript-console-share/target/
+/javascript-console-share/.settings/
+/javascript-console-share/.project
+/javascript-console-share/.classpath
+build
+bin
