@@ -24,6 +24,25 @@
 	white-space: pre-wrap;
 }
 
+.javascript-console .dump {
+	margin-top:15px;
+	width: 100%;
+}
+
+.javascript-console .dump table
+{
+	table-layout:fixed
+}
+
+.javascript-console .dumpTab {
+	margin-top:15px;
+}
+
+.javascript-console .different-colors{
+	background-color: red !important;
+	color:white;
+}
+
 .javascript-console .templateInputBox {
 	font-family:"Courier New", Courier, monospace !important;
 	color:black;
@@ -31,6 +50,13 @@
 }
 
 .javascript-console .textOutputBox {
+	font-family:"Courier New", Courier, monospace !important;
+	color:black;
+	padding: 0.5em;
+	white-space: pre-wrap;
+}
+
+.javascript-console .repoInfo {
 	font-family:"Courier New", Courier, monospace !important;
 	color:black;
 	padding: 0.5em;
@@ -52,6 +78,22 @@
 
 .javascript-console .execute-buttonbar {
 	padding-top:0.5em;
+}
+
+.javascript-console .refresh-button {
+	background: url(images/arrow-circle-double.gif) center center no-repeat;
+	text-indent: -4em;
+	overflow: hidden;
+    padding: 0 .75em;
+	width: 2em;
+	*margin-left: 4em;   /* IE only */
+	*padding: 0 1.75em;  /* IE only */
+}
+
+
+.javascript-console .refresh-button-env{
+	float:right;
+	margin:10px;
 }
 
 .javascript-console .scriptmenu {

@@ -105,6 +105,8 @@ if (typeof String.prototype.startsWith != 'function') {
              parent.widgets.nodeField = Dom.get(parent.id + "-nodeRef");
              parent.widgets.scriptInput = Dom.get(parent.id + "-jsinput");
              parent.widgets.scriptOutput = Dom.get(parent.id + "-jsoutput");
+             parent.widgets.repoInfoOutput = Dom.get(parent.id + "-repoInfo");
+             parent.widgets.dumpInfoOutput = Dom.get(parent.id + "-dump");
              parent.widgets.jsonOutput= Dom.get(parent.id + "-jsonOutput");
              parent.widgets.templateInput = Dom.get(parent.id + "-templateinput");
              parent.widgets.templateOutputHtml = Dom.get(parent.id + "-templateoutputhtml");
@@ -119,6 +121,9 @@ if (typeof String.prototype.startsWith != 'function') {
              // Buttons
              parent.widgets.selectDestinationButton = Alfresco.util.createYUIButton(parent, "selectDestination-button", parent.onSelectDestinationClick);
              parent.widgets.executeButton = Alfresco.util.createYUIButton(parent, "execute-button", parent.onExecuteClick);
+             parent.widgets.refreshButton = Alfresco.util.createYUIButton(parent, "refresh-button", parent.onRefreshServerInfoClick);
+//             Dom.addClass(parent.widgets.refreshButton, 'refresh-button');
+             Dom.addClass(parent.widgets.refreshButton._button.parentNode.parentNode, 'refresh-button-env');
          }
       });
       new ListPanelHandler();
@@ -216,6 +221,7 @@ if (typeof String.prototype.startsWith != 'function') {
                    menu: docsMenuItems,
                    container: this.id + "-documentation"
              });
+
 
              this.widgets.docsMenuButton.getMenu().setItemGroupTitle("Javascript", 0);
              this.widgets.docsMenuButton.getMenu().setItemGroupTitle("Freemarker", 1);
@@ -321,6 +327,40 @@ if (typeof String.prototype.startsWith != 'function') {
 
                 this.widgets.themeMenuButton.getMenu().subscribe("click", this.onThemeSelection, this);
             }
+      },
+
+      /**
+       * create the display options menu for dumps
+       */
+      createDumpDisplayMenu: function ACJC_createDumpDisplayMenu(){
+          if(!this.widgets.dumpDisplayMenu){
+
+              var displayMenu = new YAHOO.widget.Menu('nowhere');
+              displayMenu.addItem({text: "Hide equal values",value:"Differences"});
+              displayMenu.addItem({text: "Hide different values",value:"highlightDifferences"});
+              displayMenu.addItem({text: "Hide null values", value:"nullValues"});
+
+              this.widgets.dumpDisplayMenu = new YAHOO.widget.Button({
+                  type: "split",
+                  label: "Display options",
+                  name: "dumpDisplayButton",
+                  menu: displayMenu,
+                  container: "splitButtonContainer",
+                  disabled:true
+                });
+
+              this.widgets.dumpDisplayMenu.on("appendTo", function () {
+                  menu = this.getMenu();
+                  menu.subscribe("click", function onMenuClick(sType, oArgs) {
+                      var oMenuItem = oArgs[1];
+                      if (oMenuItem) {
+                          dt.showColumn(dt.getColumn(oMenuItem.value));
+                          menu.removeItem(oMenuItem.index);
+                          refreshButton();
+                      }
+                  });
+              });
+          }
       },
 
       onEditorKeyEvent : function ACJC_onEditorKeyEvent(i, e) {
@@ -629,24 +669,6 @@ if (typeof String.prototype.startsWith != 'function') {
                 scope: this
             }
          });
-
-         // Read Javascript API Commands for code completion
-         Alfresco.util.Ajax.request(
-         {
-            url: Alfresco.constants.PROXY_URI + "/de/fme/jsconsole/serverInfo",
-            method: Alfresco.util.Ajax.GET,
-            requestContentType: Alfresco.util.Ajax.JSON,
-            successCallback: {
-                fn: function(res) {
-                    var serverInfoAsJson = res.json;
-                    Dom.addClass(this.widgets.scriptOutput, 'jsgreen');
-                    this.widgets.scriptOutput.innerHTML="host:\t\t\t"+serverInfoAsJson.hostName+" ("+serverInfoAsJson.hostAddress+")\nversion:\t\t"+serverInfoAsJson.serverEdition+" "+serverInfoAsJson.serverVersion +" ("+serverInfoAsJson.serverSchema+")"
-                    +"\ndocuments:\t\t"+serverInfoAsJson.docsCount+"(checked out:"+serverInfoAsJson.checkedOutCount+")\nfolder:\t\t\t"+serverInfoAsJson.folderCount+"\ngroups:\t\t\t"+serverInfoAsJson.groupsCount+"\nusers:\t\t\t"+serverInfoAsJson.peopleCount+"\nsites:\t\t\t"+serverInfoAsJson.sitesCount+"\ntags:\t\t\t"+serverInfoAsJson.tagsCount+"\nworkflowDefinitions:\t"+serverInfoAsJson.wflDefinitionCount;
-                },
-                scope: this
-            }
-         });
-
 
 
         /**
@@ -1281,6 +1303,54 @@ if (typeof String.prototype.startsWith != 'function') {
             }
        },
 
+       onRefreshServerInfoClick: function ACJC_onRefreshServerInfoClick(e, p_obj)
+       {
+
+           this.widgets.repoInfoOutput.innerHTML="Loading ...";
+
+           // Read Javascript API Commands for code completion
+           Alfresco.util.Ajax.request(
+           {
+              url: Alfresco.constants.PROXY_URI + "/de/fme/jsconsole/serverInfo",
+              method: Alfresco.util.Ajax.GET,
+              requestContentType: Alfresco.util.Ajax.JSON,
+              successCallback: {
+                  fn: function(res) {
+                      var serverInfoAsJson = res.json;
+                      Dom.addClass(this.widgets.repoInfoOutput, 'jsgreen');
+                      this.widgets.repoInfoOutput.innerHTML=
+                          "host name/ip:\t\t"+serverInfoAsJson.hostName+" ("+serverInfoAsJson.hostAddress+")" +
+                          "\nhost os:\t\t"+serverInfoAsJson.osname+" (arch: "+serverInfoAsJson.arch+", version:"+serverInfoAsJson.osversion+")" +
+                          "\nhost processors:\t"+serverInfoAsJson.processorCount +
+                          "\nhost total memory (MB):\t"+serverInfoAsJson.totalMemory+" (free: "+serverInfoAsJson.freeMemory+")" +
+                          "\nhost current user:\t"+serverInfoAsJson.hostUserInfo+
+                          "\n\njava uptime:\t\t"+serverInfoAsJson.javaUptime+
+                          "\njava version:\t\t"+serverInfoAsJson.java+" ,args:"+serverInfoAsJson.javaArgs+")" +
+                          "\njava threads:\t\t"+serverInfoAsJson.threadCount+" (deadlock: "+serverInfoAsJson.deadlockThreads+")" +
+                          "\n\nalfresco version:\t"+serverInfoAsJson.serverEdition+" "+serverInfoAsJson.serverVersion +" ("+serverInfoAsJson.serverSchema+")"+
+                          "\nlicence valid for:\t"+serverInfoAsJson.licenseDaysLeft+" days " +
+                          "\npatchCount:\t\t"+serverInfoAsJson.patchCount+
+                          "\ninstalled modules:\t"+serverInfoAsJson.modules+
+                          "\ntenantCount:\t\t"+serverInfoAsJson.tenantCount+"" +
+                          "\n\ntransactionsCount:\t"+serverInfoAsJson.transactionsCount+
+                          "\ndocuments:\t\t"+serverInfoAsJson.docsCount+"(checked out:"+serverInfoAsJson.checkedOutCount+")" +
+                          "\nfolder:\t\t\t"+serverInfoAsJson.folderCount+
+                          "\ngroups:\t\t\t"+serverInfoAsJson.groupsCount+
+                          "\nusers:\t\t\t"+serverInfoAsJson.peopleCount+
+                          "\nsites:\t\t\t"+serverInfoAsJson.sitesCount+
+                          "\ntags:\t\t\t"+serverInfoAsJson.tagsCount+
+                          "\nclassifications:\t"+serverInfoAsJson.classifications+
+                          "\n\nworkflow definitions:\t"+serverInfoAsJson.wflDefinitionCount+
+                          "\nworkflow instances:\t"+serverInfoAsJson.workflowCount+
+                          "\n\nrunning actions:\t"+serverInfoAsJson.runningActions+
+                          "\nrunning jobs:\t\t"+serverInfoAsJson.runningJobs;
+                  },
+                  scope: this
+              }
+           });
+
+       },
+
       /**
          * Fired when the user clicks on the execute button. Reads the script
          * from the input textarea and calls the execute webscript in the
@@ -1335,6 +1405,7 @@ if (typeof String.prototype.startsWith != 'function') {
                fn: function(res) {
                  this.showLoadingAjaxSpinner(false);
                  this.printExecutionStats(res.json);
+                 this.printDumpInfos(res.json.dumpOutput);
                  this.clearOutput();
                  this.appendLineArrayToOutput(res.json.printOutput);
                  this.widgets.templateOutputHtml.innerHTML = res.json.renderedTemplate;
@@ -1513,6 +1584,353 @@ if (typeof String.prototype.startsWith != 'function') {
           var text = overallEl+scriptEl+fmEl+codeEl+networkEl;
 
           this.widgets.statsModule.setBody(text);
+      },
+
+      printDumpInfos : function(json) {
+          var now  = new Date();
+          var nowAsString = now.getFullYear() + "-"+ (parseInt(now.getMonth())+1) +"-"+now.getDate() + " " + now.getHours() +":"+now.getMinutes()+":"+now.getSeconds();
+
+          var formatterDispatcher = function (elCell, oRecord, oColumn,oData) {
+//              var meta = oRecord.getData('meta_' + oColumn.key);
+//              oColumn.editorOptions = meta.editorOptions;
+//              switch (meta) {
+//                  case 'Number':
+//                      YAHOO.widget.DataTable.formatNumber.call(this,elCell, oRecord, oColumn,oData);
+//                      break;
+//                  case 'Date':
+//                      YAHOO.widget.DataTable.formatDate.call(this,elCell, oRecord, oColumn,oData);
+//                      break;
+//                  case 'Text':
+//                      YAHOO.widget.DataTable.formatText.call(this,elCell, oRecord, oColumn,oData);
+//                      break;
+//                  case 'YesNoMaybe':
+//                      elCell.innerHTML = oData;
+//                      break;
+//              }
+
+              elCell.innerHTML = oData;
+
+          };
+
+          var editors = {
+              Text: new YAHOO.widget.TextboxCellEditor(),
+              Number:new YAHOO.widget.TextboxCellEditor({validator:function (val) {
+                  val = parseFloat(val);
+                  if (YAHOO.lang.isNumber(val)) {return val;}
+              }}),
+              Date:new YAHOO.widget.DateCellEditor(),
+              YesNoMaybe:new YAHOO.widget.RadioCellEditor({radioOptions:["yes","no","maybe"],disableBtns:true})
+          };
+
+          var myColumnDefs = [{key:"Rows",label:'Data',className:'th', resizeable:true, minWidth: 150}];
+          var ds = new YAHOO.util.DataSource();
+
+          var reponseFields = ['Rows'];
+          var rows = new Map();
+
+          for ( var i = 0; i < json.length; i++) {
+              var dump = JSON.parse(json[i]);
+              myColumnDefs.push({key:i+" "+dump.properties["cm:name"]+" ("+dump.nodeRef+")", resizeable: true, minWidth: 200, formatter:formatterDispatcher,editor:new YAHOO.widget.BaseCellEditor()});
+              reponseFields.push(i+" "+dump.properties["cm:name"]+" ("+dump.nodeRef+")");
+
+              var rowId = i+" "+dump.properties["cm:name"]+" ("+dump.nodeRef+")";
+
+              for(var prop in dump.properties){
+                  if(dump.properties.hasOwnProperty(prop)){
+                      var row = rows.get(prop);
+                      if(row==null){
+                          row={Rows:prop};
+                      }
+                      row[rowId]=dump.properties[prop];
+                      rows.put(prop, row);
+                    }
+              }
+
+              delete dump["properties"];
+
+              var aspects = dump.aspects.join(",<br/>");
+
+              var aspectRow = rows.get("aspects");
+              if(aspectRow==null){
+                  aspectRow={Rows:"aspects"};
+              }
+
+              aspectRow[rowId]=aspects;
+              rows.put("aspects", aspectRow);
+
+              delete dump["aspects"];
+
+              var tags = dump.tags.join(",<br/>");
+
+              var tagsRow = rows.get("tags");
+              if(tagsRow==null){
+                  tagsRow={Rows:"tags"};
+              }
+
+              tagsRow[rowId]=tags;
+              rows.put("tags", tagsRow);
+
+              delete dump["tags"];
+
+
+              for ( var j = 0; j < dump.permissions.length; j++) {
+                var permission = dump.permissions[j];
+                var row = rows.get("permission "+j);
+                if(row==null){
+                    row={Rows:"permission "+j};
+                }
+                row[rowId]=permission.authority +"("+permission.authorityType+") "+permission.accessStatus+" "+permission.permission +" (directly:"+permission.directly+")";
+                rows.put("permission "+j, row);
+
+              }
+
+             delete dump["permissions"];
+
+             for(var prop in dump){
+                  if(dump.hasOwnProperty(prop)){
+                      var row = rows.get(prop);
+                      if(row==null){
+                          row={Rows:prop};
+                      }
+                      row[rowId]=dump[prop];
+                      rows.put(prop, row);
+                  }
+             }
+
+          }
+
+          var columns = [];
+
+          // add the data to the datasource for the table
+          for(var i = 0; i++ < rows.size; rows.next()){
+              columns.push(rows.key());
+          }
+          columns.sort();
+
+          for ( var i = 0; i < columns.length; i++) {
+            ds.liveData.push(rows.get(columns[i]));
+          }
+
+
+          ds.responseType = YAHOO.util.DataSource.TYPE_JSARRAY;
+          ds.responseSchema = {
+              //fields: ['Rows','A','meta_A','B','meta_B','C','meta_C']
+              fields: reponseFields,
+          };
+
+          // this is the filter function
+          ds.doBeforeCallback = function (req,raw,res,cb) {
+              var data     = res.results || [],
+                  filtered = [],
+                  i,l;
+
+              if (req) {
+                  req = req.toLowerCase();
+                  for (i = 0, l = data.length; i < l; ++i) {
+                      var row = data[i];
+                      for(var prop in row){
+                          if(row.hasOwnProperty(prop)){
+                              var value = row[prop];
+                              if(value){
+                                  value = new String(value);
+                                  if (value.toLowerCase().indexOf(req)>-1 && !arrayContains(filtered, data[i])) {
+                                      filtered.push(data[i]);
+                                  }
+                              }
+                            }
+                      }
+                  }
+                  res.results = filtered;
+              }
+
+              return res;
+          }
+
+
+          var dt = new YAHOO.widget.ScrollingDataTable(this.id + "-dump", myColumnDefs,ds,{
+             draggableColumns:true, width: "100%", height: "700px"
+          });
+
+          var filterTimeout = null;
+          var updateFilter  = function () {
+              // Reset timeout
+              filterTimeout = null;
+
+              // Reset sort
+              var state = dt.getState();
+
+              // Get filtered data
+              ds.sendRequest(YAHOO.util.Dom.get('js-filter').value,{
+                  success : dt.onDataReturnInitializeTable,
+                  failure : dt.onDataReturnInitializeTable,
+                  scope   : dt,
+                  argument: state
+              });
+          };
+
+          YAHOO.util.Event.on('js-filter','keyup',function (e) {
+              clearTimeout(filterTimeout);
+              setTimeout(updateFilter,600);
+          });
+
+          if(YAHOO.util.Dom.get('js-filter').value!=null){
+              updateFilter();
+          }
+
+          // Subscribe to events for row selection
+//          dt.subscribe("rowMouseoverEvent", dt.onEventHighlightRow);
+//          dt.subscribe("rowMouseoutEvent", dt.onEventUnhighlightRow);
+//          dt.subscribe("rowClickEvent", dt.onEventSelectRow);
+//
+//          // Programmatically select the first row
+//          dt.selectRow(dt.getTrEl(0));
+//          // Programmatically bring focus to the instance so arrow selection works immediately
+//          dt.focus();
+
+
+          // tooltip support for
+          var showTimer,hideTimer;
+          var tt = new YAHOO.widget.Tooltip("myTooltip");
+
+          dt.on('cellMouseoverEvent', function (oArgs) {
+              if (showTimer) {
+                  window.clearTimeout(showTimer);
+                  showTimer = 0;
+              }
+
+              var target = oArgs.target;
+              var column = this.getColumn(target);
+              if (column.key == 'Rows') {
+                  var record = this.getRecord(target);
+                  var propertyName = CodeMirror.tern.getDef()[1].Properties.prototype[record._oData["Rows"]]
+                  var description;
+                  if(propertyName){
+                      description = propertyName["!doc"];
+                  }else{
+                      description = 'no further description';
+                  }
+                  var xy = [parseInt(oArgs.event.clientX,10) + 10 ,parseInt(oArgs.event.clientY,10) + 10 ];
+                  console.log(xy);
+                  showTimer = window.setTimeout(function() {
+                      tt.setBody(description.replace(/\n/g , "<br/>"));
+                      tt.cfg.setProperty('xy',xy);
+                      tt.show();
+                      hideTimer = window.setTimeout(function() {
+                          tt.hide();
+                      },5000);
+                  },500);
+              }
+          });
+
+          dt.on('cellMouseoutEvent', function (oArgs) {
+              if (showTimer) {
+                  window.clearTimeout(showTimer);
+                  showTimer = 0;
+              }
+              if (hideTimer) {
+                  window.clearTimeout(hideTimer);
+                  hideTimer = 0;
+              }
+              tt.hide();
+          });
+          var that=this;
+          var refreshButton = function() {
+              if (Dom.inDocument('nowhere')) {
+                  menu.render();
+              } else {
+                  menu.render(document.body);
+              }
+              that.showColumns.set('disabled', menu.getItems().length === 0);
+              dt.render();
+          };
+
+          if(this.showColumns!=null){
+              this.showColumns.destroy();
+          }
+
+          var menu = new YAHOO.widget.Menu('nowhere');
+
+          dt.on('headerCellClickEvent' ,function(ev) {
+              var column = this.getColumn(ev.target);
+              this.hideColumn(column);
+              menu.addItem({text: column.label || column.key,value:column.key});
+              refreshButton();
+          });
+
+          this.showColumns = new YAHOO.widget.Button({
+              type: "split",
+              label: "Dump Selection",
+              name: "showColumnsButton",
+              menu: menu,
+              container: "splitButtonContainer",
+              disabled:true
+            });
+
+          this.showColumns.on("click", function () {
+              var m = menu.getItems();
+              for (var i = 0; i < m.length; i++) {
+                  dt.showColumn(dt.getColumn(m[i].value));
+              }
+              menu.clearContent();
+              refreshButton();
+          });
+
+          this.showColumns.on("appendTo", function () {
+              menu = this.getMenu();
+              menu.subscribe("click", function onMenuClick(sType, oArgs) {
+
+                  var oMenuItem = oArgs[1];
+
+                  if (oMenuItem) {
+                      dt.showColumn(dt.getColumn(oMenuItem.value));
+                      menu.removeItem(oMenuItem.index);
+                      refreshButton();
+                  }
+              });
+          });
+
+          // post render event
+          dt.on('postRenderEvent', function() {
+
+              var RS   = this.getRecordSet(),
+                  len  = RS.getLength(),
+                  oRec = null,
+                  data = null,
+                  i    = 0;
+
+              // iterate over all rows in the datatable
+              for(i=0; i<len; i++) {
+                  oRec = RS.getRecord(i);
+                  data = oRec._oData;
+
+                  // inspect all values of a row
+                  var lastValue = null;
+                  for(var prop in data){
+                      if(data.hasOwnProperty(prop) && prop!="Rows" && !dt.getColumn(prop).hidden){
+                         var value = data[prop];
+                         if(lastValue == null || value == null || lastValue == value){
+                             lastValue = value;
+                         }else{
+                             YAHOO.util.Dom.addClass(this.getTrEl(oRec), "different-colors");
+                             break;
+                         }
+                      }
+
+                      YAHOO.util.Dom.removeClass(this.getTrEl(oRec), "different-colors");
+                 }
+              }
+           });
+
+//          dt.subscribe("cellClickEvent", function (oArgs) {
+//              var target = oArgs.target,
+//                  record = this.getRecord(target),
+//                  column = this.getColumn(target),
+//                  type = record.getData('meta_' + column.key);
+//
+//              column.editor = editors[type];
+//              this.showCellEditor(target);
+//          });
+
       },
 
       loadDemoScript: function ACJC_loadDemoScript() {

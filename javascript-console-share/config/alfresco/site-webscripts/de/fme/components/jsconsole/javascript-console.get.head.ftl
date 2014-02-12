@@ -10,6 +10,10 @@
 
 <@link href="http://fonts.googleapis.com/css?family=Source+Code+Pro:300" rel="stylesheet" type="text/css"/>
 
+
+<@script type="text/javascript" src="${page.url.context}/res/fme/components/jsconsole/common/map.js"></@script>
+
+
 <!-------------------------->
 <!-- Codemirror-->
 <!-------------------------->

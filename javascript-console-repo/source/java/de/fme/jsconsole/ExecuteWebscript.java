@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.alfresco.repo.admin.SysAdminParams;
 import org.alfresco.repo.content.MimetypeMap;
 import org.alfresco.repo.jscript.RhinoScriptProcessor;
 import org.alfresco.repo.jscript.ScriptNode;
@@ -21,7 +22,20 @@ import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.security.permissions.AccessDeniedException;
 import org.alfresco.repo.transaction.RetryingTransactionHelper.RetryingTransactionCallback;
 import org.alfresco.scripts.ScriptResourceHelper;
+import org.alfresco.service.cmr.audit.AuditService;
+import org.alfresco.service.cmr.dictionary.DictionaryService;
+import org.alfresco.service.cmr.rendition.RenditionService;
+import org.alfresco.service.cmr.repository.ContentService;
 import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.cmr.repository.NodeService;
+import org.alfresco.service.cmr.rule.RuleService;
+import org.alfresco.service.cmr.search.CategoryService;
+import org.alfresco.service.cmr.security.PermissionService;
+import org.alfresco.service.cmr.tagging.TaggingService;
+import org.alfresco.service.cmr.version.VersionService;
+import org.alfresco.service.cmr.webdav.WebDavService;
+import org.alfresco.service.cmr.workflow.WorkflowService;
+import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.transaction.TransactionService;
 import org.alfresco.util.MD5;
 import org.apache.commons.io.IOUtils;
@@ -71,6 +85,70 @@ public class ExecuteWebscript extends AbstractWebScript {
 	private String postRollScript = "";
 
 	private RhinoScriptProcessor rhinoScriptProcessor;
+
+	private NodeService nodeService;
+
+	private PermissionService permissionService;
+	private NamespaceService namespaceService;
+	private VersionService versionService;
+	private ContentService contentService;
+	private DictionaryService dictionaryService;
+	private RuleService ruleService;
+	private WorkflowService workflowService;
+	private RenditionService renditionService;
+	private TaggingService tagservice;
+	private CategoryService categoryService;
+	private WebDavService webDavService;
+	private AuditService auditService;
+	private SysAdminParams sysAdminParams;
+
+	public void setSysAdminParams(SysAdminParams sysAdminParams) {
+		this.sysAdminParams = sysAdminParams;
+	}
+
+	public void setNamespaceService(NamespaceService namespaceService) {
+		this.namespaceService = namespaceService;
+	}
+
+	public void setVersionService(VersionService versionService) {
+		this.versionService = versionService;
+	}
+
+	public void setContentService(ContentService contentService) {
+		this.contentService = contentService;
+	}
+
+	public void setDictionaryService(DictionaryService dictionaryService) {
+		this.dictionaryService = dictionaryService;
+	}
+
+	public void setRuleService(RuleService ruleService) {
+		this.ruleService = ruleService;
+	}
+
+	public void setWorkflowService(WorkflowService workflowService) {
+		this.workflowService = workflowService;
+	}
+
+	public void setRenditionService(RenditionService renditionService) {
+		this.renditionService = renditionService;
+	}
+
+	public void setTagservice(TaggingService tagservice) {
+		this.tagservice = tagservice;
+	}
+
+	public void setCategoryService(CategoryService categoryService) {
+		this.categoryService = categoryService;
+	}
+
+	public void setWebDavService(WebDavService webDavService) {
+		this.webDavService = webDavService;
+	}
+
+	public void setAuditService(AuditService auditService) {
+		this.auditService = auditService;
+	}
 
 	@Override
 	public void init(Container container, Description description) {
@@ -124,11 +202,13 @@ public class ExecuteWebscript extends AbstractWebScript {
 	}
 
 	/**
-	 * used our own json reponse for errors because you cannot pass your own parameters to the built-in alfresco status templates.
+	 * used our own json reponse for errors because you cannot pass your own
+	 * parameters to the built-in alfresco status templates.
 	 *
 	 * @param response
 	 * @param scriptOffset
-	 * @param e the occured exception
+	 * @param e
+	 *            the occured exception
 	 * @throws IOException
 	 */
 	private void writeErrorInfosAsJson(WebScriptResponse response, int scriptOffset, WebScriptException e) throws IOException {
@@ -142,11 +222,12 @@ public class ExecuteWebscript extends AbstractWebScript {
 			status.put("description", "An error inside the HTTP server which prevented it from fulfilling the request.");
 			jsonOutput.put("status", status);
 
-			// find out the closest error message which is helpful for the user...
+			// find out the closest error message which is helpful for the
+			// user...
 			String errorMessage = e.getMessage();
-			if(e.getCause()!=null){
+			if (e.getCause() != null) {
 				errorMessage = e.getCause().getMessage();
-				if(e.getCause().getCause()!=null){
+				if (e.getCause().getCause() != null) {
 					errorMessage = e.getCause().getCause().getMessage();
 				}
 			}
@@ -159,7 +240,9 @@ public class ExecuteWebscript extends AbstractWebScript {
 			String s = writer.toString();
 			jsonOutput.put("callstack", s);
 
-			// scriptoffset is useful to determine the correct line in case of an error (if you use preroll-scripts or imports in javascript input)
+			// scriptoffset is useful to determine the correct line in case of
+			// an error (if you use preroll-scripts or imports in javascript
+			// input)
 			jsonOutput.put("scriptOffset", scriptOffset);
 
 			response.getWriter().write(jsonOutput.toString(5));
@@ -208,13 +291,13 @@ public class ExecuteWebscript extends AbstractWebScript {
 					new RetryingTransactionCallback<JavascriptConsoleResult>() {
 						public JavascriptConsoleResult execute() throws Exception {
 							return executeScriptContent(request, response, scriptContent, jsreq.template, jsreq.spaceNodeRef,
-									jsreq.urlargs, jsreq.documentNodeRef);
+									jsreq.urlargs, jsreq.documentNodeRef, jsreq.dumpLimit);
 						}
 					}, jsreq.transactionReadOnly);
 		} else {
 			LOG.debug("Executing script script without transaction.");
 			return executeScriptContent(request, response, scriptContent, jsreq.template, jsreq.spaceNodeRef, jsreq.urlargs,
-					jsreq.documentNodeRef);
+					jsreq.documentNodeRef, jsreq.dumpLimit);
 
 		}
 	}
@@ -226,7 +309,7 @@ public class ExecuteWebscript extends AbstractWebScript {
 	 * WebScriptRequest, org.alfresco.web.scripts.WebScriptResponse)
 	 */
 	private JavascriptConsoleResult executeScriptContent(WebScriptRequest req, WebScriptResponse res,
-			ScriptContent scriptContent, String template, String spaceNodeRef, Map<String, String> urlargs, String documentNodeRef) {
+			ScriptContent scriptContent, String template, String spaceNodeRef, Map<String, String> urlargs, String documentNodeRef, Integer dumpLimit) {
 		JavascriptConsoleResult output = new JavascriptConsoleResult();
 
 		// retrieve requested format
@@ -248,7 +331,10 @@ public class ExecuteWebscript extends AbstractWebScript {
 			Map<String, Object> returnModel = new HashMap<String, Object>(8, 1.0f);
 			scriptModel.put("model", returnModel);
 
-			JavascriptConsoleScriptObject javascriptConsole = new JavascriptConsoleScriptObject();
+			JavascriptConsoleScriptObject javascriptConsole = new JavascriptConsoleScriptObject(nodeService, permissionService,
+					namespaceService, versionService, contentService, dictionaryService, ruleService, workflowService,
+					renditionService, tagservice, categoryService, webDavService, auditService, sysAdminParams, dumpLimit);
+
 			scriptModel.put("jsconsole", javascriptConsole);
 
 			if (StringUtils.isNotBlank(spaceNodeRef)) {
@@ -274,6 +360,7 @@ public class ExecuteWebscript extends AbstractWebScript {
 					scriptModel)));
 
 			output.setPrintOutput(javascriptConsole.getPrintOutput());
+			output.setDumpOutput(javascriptConsole.getDumpOutput());
 
 			ScriptNode newSpace = javascriptConsole.getSpace();
 			output.setSpaceNodeRef(newSpace.getNodeRef().toString());
@@ -395,6 +482,14 @@ public class ExecuteWebscript extends AbstractWebScript {
 
 	public void setRhinoScriptProcessor(RhinoScriptProcessor rhinoScriptProcessor) {
 		this.rhinoScriptProcessor = rhinoScriptProcessor;
+	}
+
+	public void setNodeService(NodeService nodeService) {
+		this.nodeService = nodeService;
+	}
+
+	public void setPermissionService(PermissionService permissionService) {
+		this.permissionService = permissionService;
 	}
 
 	private static class StringScriptContent implements ScriptContent {
