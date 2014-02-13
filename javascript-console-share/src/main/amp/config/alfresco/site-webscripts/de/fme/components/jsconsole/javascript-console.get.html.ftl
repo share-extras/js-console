@@ -102,6 +102,8 @@
 		        <li><a href="#otab2"><em>${msg("tab.label.freemarker.text.output")}</em></a></li>
 		        <li><a href="#otab3"><em>${msg("tab.label.json.output")}</em></a></li>
 		        <li><a href="#otab4"><em>${msg("tab.label.performance.output")}</em></a></li>
+		        <li><a href="#otab4"><em>${msg("tab.label.repoinfo.output")}</em></a></li>
+		        <li><a href="#otab5"><em>${msg("tab.label.dump.output")}</em></a></li>
 
 		        <!--<li><a href="#otab3"><em>RepoLogviewer</em></a></li>-->
 		    </ul>
@@ -121,6 +123,19 @@
 				</div>
 				<div>
 					<div id="${el}-executionStats" class="executionStats"></div>
+				</div>
+
+				<div>
+					<button type="submit" name="${el}-refresh-button" id="${el}-refresh-button" class="refresh-button">${msg("button.refresh")}</button>
+					<div id="${el}-repoInfo" class="repoInfo"></div>
+				</div>
+				<div class="dumpTab">
+					<label for="js-filter">Filter by property:</label> <input type="text" id="js-filter" value="">
+					<div style="float:right" id="differentButtonContainer"></div>
+					<div style="float:right" id="equalButtonContainer"></div>
+					<div style="float:right" id="nullButtonContainer"></div>
+					<div style="float:right" id="splitButtonContainer"></div>
+					<div id="${el}-dump" class="dump"></div>
 				</div>
 
 			<!--<div>

@@ -39,6 +39,8 @@ public class JavascriptConsoleResult {
 
 	private int scriptOffset;
 
+	private List<JsConsoleDump> dumpOutput;
+
 	public void setWebscriptPerformance(String webscriptPerformance) {
 		this.webscriptPerformance = webscriptPerformance;
 	}
@@ -92,6 +94,7 @@ public class JavascriptConsoleResult {
 			JSONObject jsonOutput = new JSONObject();
 			jsonOutput.put("renderedTemplate", getRenderedTemplate());
 			jsonOutput.put("printOutput", getPrintOutput());
+			jsonOutput.put("dumpOutput", dumpOutput);
 			jsonOutput.put("spaceNodeRef", getSpaceNodeRef());
 			jsonOutput.put("spacePath", getSpacePath());
 			jsonOutput.put("result", new JSONArray());
@@ -125,6 +128,10 @@ public class JavascriptConsoleResult {
 
 	public void setScriptOffset(int scriptOffset) {
 		this.scriptOffset = scriptOffset;
+	}
+
+	public void setDumpOutput(List<JsConsoleDump> dumpOutput) {
+		this.dumpOutput = dumpOutput;
 	}
 
 

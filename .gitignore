@@ -7,3 +7,5 @@
 /javascript-console-share/.settings/
 /javascript-console-share/.project
 /javascript-console-share/.classpath
+build
+bin

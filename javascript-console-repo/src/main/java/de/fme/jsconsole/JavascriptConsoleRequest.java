@@ -16,11 +16,14 @@ import org.springframework.extensions.webscripts.WebScriptRequest;
 /**
  * Parses and stores the input data for the Javascript Console {@link ExecuteWebscript} and contains
  * the logic to decode the request body JSON data.
- * 
+ *
  * @author Florian Maul (fme AG)
  *
  */
 public class JavascriptConsoleRequest {
+
+	private static final Integer DEFAULT_DUMP_LIMIT = new Integer(10);
+
 	public final String script;
 	public final String template;
 	public final String spaceNodeRef;
@@ -29,21 +32,23 @@ public class JavascriptConsoleRequest {
 	public final boolean transactionReadOnly;
 	public final Map<String, String> urlargs;
 	public final String documentNodeRef;
+	public final Integer dumpLimit;
 
 	private JavascriptConsoleRequest(String script, String template,
-			String spaceNodeRef, String transaction, String runas, String urlargs, String documentNodeRef) {
+			String spaceNodeRef, String transaction, String runas, String urlargs, String documentNodeRef, Integer dumpLimit) {
 		super();
 		this.script = script;
 		this.template = template;
 		this.spaceNodeRef = spaceNodeRef;
 		this.documentNodeRef = documentNodeRef;
+		this.dumpLimit = dumpLimit;
 		this.urlargs = parseQueryString(urlargs);
 		this.transactionReadOnly = "readonly".equalsIgnoreCase(transaction);
 		this.useTransaction = transactionReadOnly || "readwrite".equalsIgnoreCase(transaction);
 		this.runas = runas;
 	}
 
-	/** 
+	/**
      * parses the query string
      * is used because HttpUtils.parseQueryString is deprecated
      * @param queryString
@@ -51,7 +56,7 @@ public class JavascriptConsoleRequest {
      */
     protected static Map<String, String> parseQueryString(String queryString) {
         Map<String, String> map = new HashMap<String, String>();
-        
+
         String[] parameters = queryString.split("&");
         for(int i = 0; i < parameters.length; i++) {
             String[] keyAndValue = parameters[i].split("=");
@@ -63,33 +68,37 @@ public class JavascriptConsoleRequest {
             String value = keyAndValue[1];
             map.put(key, value);
         }
-        
+
         return map;
     }
-    
+
 	public static JavascriptConsoleRequest readJson(WebScriptRequest request) {
 		Content content = request.getContent();
-		
+
 		InputStreamReader br = new InputStreamReader(content.getInputStream(),
 				Charset.forName("UTF-8"));
 		JSONTokener jsonTokener = new JSONTokener(br);
 		try {
 			JSONObject jsonInput = new JSONObject(jsonTokener);
-			
+
 			String script = jsonInput.getString("script");
 			String template = jsonInput.getString("template");
 			String spaceNodeRef = jsonInput.getString("spaceNodeRef");
 			String transaction = jsonInput.getString("transaction");
 			String urlargs = jsonInput.getString("urlargs");
 			String documentNodeRef = jsonInput.getString("documentNodeRef");
+			Integer dumpLimit =DEFAULT_DUMP_LIMIT;
+			if(jsonInput.has("dumpLimit")){
+				dumpLimit = jsonInput.getInt("dumpLimit");
+			}
 
 			String runas = jsonInput.getString("runas");
 			if (runas == null) {
 				runas = "";
 			}
-			
-			return new JavascriptConsoleRequest(script, template, spaceNodeRef, transaction, runas, urlargs, documentNodeRef);
-			
+
+			return new JavascriptConsoleRequest(script, template, spaceNodeRef, transaction, runas, urlargs, documentNodeRef, dumpLimit);
+
 		} catch (JSONException e) {
 			throw new WebScriptException(Status.STATUS_INTERNAL_SERVER_ERROR,
 					"Error reading json request body.", e);
@@ -100,8 +109,7 @@ public class JavascriptConsoleRequest {
 	public String toString() {
 		return "JavascriptConsoleRequest [script=" + script + ", template=" + template + ", spaceNodeRef=" + spaceNodeRef
 				+ ", runas=" + runas + ", useTransaction=" + useTransaction + ", transactionReadOnly=" + transactionReadOnly
-				+ ", urlargs=" + urlargs + ", documentNodeRef=" + documentNodeRef + "]";
+				+ ", urlargs=" + urlargs + ", documentNodeRef=" + documentNodeRef + ", dumpLimit=" + dumpLimit + "]";
 	}
-	
-	
+
 }

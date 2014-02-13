@@ -68,13 +68,17 @@
     result["methods"]["json"].push("isNull(fieldName)");
     result["methods"]["json"].push("getJSONArray(fieldName)");
 
+    result["global"].push("formdata");
+
     // Javascript Console specific commands
     result["global"].push("print");
+    result["global"].push("dump");
     result["global"].push("recurse");
     result["methods"]["logger"].push("setLevel");
 
+    // rhino specific commands
     result["global"].push("Packages");
-    result["global"].push("formdata");
+    result["global"].push("java");
     model.json = jsonUtils.toJSONString(result);
 
 })(this, model);
