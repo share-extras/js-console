@@ -1,0 +1,30 @@
+<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 http://maven.apache.org/xsd/assembly-1.1.0.xsd">
+    <id>overlay</id>
+    <formats>
+        <format>war</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+    <fileSets>
+        <fileSet>
+            <directory>${project.basedir}/src/main/amp/config/alfresco</directory>
+            <outputDirectory>WEB-INF/classes/alfresco</outputDirectory>
+            <excludes>
+                <exclude>**/*.ftl</exclude>
+            </excludes>
+        </fileSet>
+        <fileSet>
+            <directory>${project.basedir}/src/main/amp/config/alfresco</directory>
+            <outputDirectory>WEB-INF/classes/alfresco</outputDirectory>
+            <includes>
+                <include>**/*.ftl</include>
+            </includes>
+            <filtered>false</filtered>
+        </fileSet>
+    </fileSets>
+    <files>
+        <file>
+            <source>${project.build.directory}/${project.build.finalName}.jar</source>
+            <outputDirectory>WEB-INF/lib</outputDirectory>
+        </file>
+    </files>
+</assembly>
