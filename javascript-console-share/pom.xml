@@ -13,7 +13,7 @@
     <version>0.6.0</version>
     <name>JavaScript Console - Share</name>
     <description>Alfresco Share-Extras JavaScript Console - Share Module</description>
-    <packaging>amp</packaging>
+    <packaging>war</packaging>
 
     <developers>
         <developer>
@@ -125,13 +125,29 @@
                 <filtering>${app.filtering.enabled}</filtering>
                 <directory>src/main/resources</directory>
             </resource>
-            <resource>
-                <targetPath>${app.amp.output.folder}</targetPath>
-                <filtering>${app.filtering.enabled}</filtering>
-                <directory>src/main/amp</directory>
-            </resource>
+
         </resources>
         <plugins>
+            <!--
+                 Need to enable filtering for module.properties in the root of the WAR 
+            -->
+			<plugin>
+			    <groupId>org.apache.maven.plugins</groupId>
+			    <artifactId>maven-war-plugin</artifactId>
+			    <configuration>
+			    <webResources>
+			    	<resource>
+			    		<directory>${basedir}/src/main/webapp</directory>
+			    		<filtering>true</filtering>
+			    		<targetPath>/</targetPath>
+			    		<includes>
+			    			<include>module.properties</include>
+			    		</includes>
+			    	</resource>
+			    </webResources>
+			    </configuration>
+			</plugin>
+<!--
             <plugin>
                 <artifactId>maven-clean-plugin</artifactId>
             </plugin>
@@ -144,8 +160,9 @@
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
             </plugin>
-
+-->
             <!-- alfresco-sdk-parent does not take care of creating sources JAR -->
+<!--
             <plugin>
                 <artifactId>maven-source-plugin</artifactId>
                 <version>2.2.1</version>
@@ -156,7 +173,7 @@
                             <goal>jar-no-fork</goal>
                         </goals>
                         <configuration>
-                            <!-- otherwise content from app.amp.output.folder is included -->
+                            <!- - otherwise content from app.amp.output.folder is included - ->
                             <excludeResources>true</excludeResources>
                         </configuration>
                     </execution>
@@ -164,7 +181,7 @@
             </plugin>
             <plugin>
                 <artifactId>maven-jar-plugin</artifactId>
-                <!-- alfresco-sdk-parent does not take care of creating a JAR other modules can depend on / compile against -->
+                <!- - alfresco-sdk-parent does not take care of creating a JAR other modules can depend on / compile against - ->
                 <executions>
                     <execution>
                         <id>make-a-jar</id>
@@ -175,7 +192,8 @@
                     </execution>
                 </executions>
             </plugin>
-
+-->
+<!--
             <plugin>
                 <artifactId>maven-war-plugin</artifactId>
             </plugin>
@@ -187,8 +205,9 @@
             <plugin>
                 <artifactId>maven-install-plugin</artifactId>
             </plugin>
-
+-->
             <!-- alfresco-sdk-parent does not take care of attaching the classes JAR to the project artifacts -->
+<!--
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
@@ -211,11 +230,13 @@
                     </execution>
                 </executions>
             </plugin>
-
+-->
+<!--
             <plugin>
                 <groupId>org.alfresco.maven.plugin</groupId>
                 <artifactId>alfresco-maven-plugin</artifactId>
             </plugin>
+-->
 
             <!-- This is a simple jslint / compression plugin -->
             <!-- com.googlecode.jslint4java:jslint4java-maven-plugin would be a better / more configurable jslint plugin -->
@@ -235,8 +256,10 @@
                         </goals>
                         <configuration>
                             <nomunge>true</nomunge>
-                            <sourceDirectory>${project.basedir}/src/main/amp</sourceDirectory>
+                            <!--
+                            <sourceDirectory>${project.basedir}/src/main/webapp</sourceDirectory>
                             <outputDirectory>${project.build.directory}/${project.build.finalName}</outputDirectory>
+                            -->
                             <excludes>
                                 <exclude>WEB-INF/**/*</exclude>
 								<exclude>**/jshint_fme.js</exclude>
@@ -244,7 +267,7 @@
 								<exclude>**/solarized.css</exclude>
                             </excludes>
                             <excludeResources>true</excludeResources>
-                            <excludeWarSourceDirectory>true</excludeWarSourceDirectory>
+                            <excludeWarSourceDirectory>false</excludeWarSourceDirectory>
                         </configuration>
                     </execution>
                 </executions>
