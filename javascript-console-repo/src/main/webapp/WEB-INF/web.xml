@@ -1,8 +1,0 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/dtd/web-app_2_3.dtd">
-<web-app>
-<!-- 
-     This blank web.xml is here because the maven war plugin requires it be so, this is not used and will not overwrite
-     any existing web.xml when maven or MMT overlaying is performed.
- -->
-</web-app>

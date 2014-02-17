@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+    	<relativePath>..</relativePath>
+        <groupId>org.sharextras</groupId>
+        <artifactId>javascript-console-parent</artifactId>
+        <version>${javascript.console.version}</version>
+    </parent>
+
+    <artifactId>javascript-console-repo-amp</artifactId>
+    <name>JavaScript Console - Repository AMP</name>
+    <description>Alfresco Share-Extras JavaScript Console - Repository AMP</description>
+    <packaging>pom</packaging>
+
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>javascript-console-repo-overlay</artifactId>
+            <version>${javascript.console.version}</version>
+            <type>war</type>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>${project.artifactId}-${project.version}</finalName>
+		<plugins>
+<!-- 			<plugin>
+                <groupId>org.alfresco.maven.plugin</groupId>
+                <artifactId>alfresco-maven-plugin</artifactId>
+            </plugin> -->
+ 			<plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.7</version>
+                <executions>
+                    <execution>
+                        <id>copywartoamp</id>
+                        <phase>default</phase>
+                        <configuration>
+                            <target>
+                                <copy file="../javascript-console-repo-overlay/target/${project.artifactId}-${project.version}.war"
+                                      tofile="${project.build.directory}/${project.artifactId}-${project.version}.amp"/>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

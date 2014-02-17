@@ -1,0 +1,30 @@
+.CodeMirror-templates-variable {
+  outline: solid #4664A5 1px;
+}
+
+.CodeMirror-templates-variable-start {
+}
+
+.CodeMirror-templates-variable-end {
+}
+
+.CodeMirror-templates-variable-selected {
+  background-color: #B4D7FF;
+}
+
+.CodeMirror-hint-template {
+  background:url("data:image/gif;base64,R0lGODlhEAAQANUAAH5weoJ1g4h8kY+EoZaMsZyTv6CYyGd9qWqArG+Fr3aLs3yRuIKXvYmdwY2hxIaUroiVrIyXqoidwZGlx4+aqJScpfr9//f8//b8//n9/9Xz/+v5/5ifovH7/+n5/+36//D7//T8/+r6/+v6//P8//f9//b9//r+//n+/56inqKlm6iol62rlP7xevzndvjQasiYQP///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAADEALAAAAAAQABAAAAaEwJhwSCwOYcikEkmEtZ7QKKzpMhgKhIEgAHBNj6+wePwVsjTotJpFXGk88Hh8RVRpJo4GY6FIIDwqRCkaIxuFIoUjIylEHHd5e30IHxxEFRogIB2ZmpoVRBR3EgsJByGnJBREERolFyWwJhgmJRFEEBonFigoFhYZvRBED8TFxsRGyUVBADs=") no-repeat left center;
+  padding-left: 18px;
+  margin: 3px 0;
+}
+
+.CodeMirror-hint-alfresco{
+  background:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjExR/NCNwAAAtNJREFUOE99kutLU3EYxxWyV4EXLIw5qVeVQf0B5WxrOzu7eJm5o5AESr4IuxBFGigUKKKmLl8EBepupK1soWxubs3pLmc6TVlDN6nQsCIVSlHnzM6v5zePqC/yCx/Ob+d5vt/zex4W9z9RuplEShfOBSjgJKUPs5UDVKQJxVO6UFJBezANTFaAARCwQKmnBOtqbnK0Mz2Bbd8vpS6UAo1dwIrsyehvYY3TrNSEJnBAztNxJK22BNbUGYGohjMCIedZ266gsQk3Y8g6D+I/sCFxrbun4MXHCL/SjmRVvYsrnSdcEICAwIaac5i1bovShsaV2tAUPJfkLX4GBwhrBmlZ08gXfM59aByNaLizUS0EaDmbEHCatYJZH04ja90GaJwQVNlt8lb/W+Lx8IawetAna/TNiCr758c6BMatsWMM8ykVbQWPrrocZ881+gUxcwJc25r/bBKBOXZ1YFHePGqQNvg8uc0+l7eD0DAzqX/QzxQE/P3xlfNaRfOCrTSPi2dPB6J4dsXzAALTOuxgSVLvDV9pD1b0dJeS38YzTGCyfp/j9Hmmz3S1+bI+QwAC7uwJmP6lMOgMkt4yI9lX/C7fVGR8NJR3u9GTXVjhENKlNtF6mV0Uue8UoBZvzIy5uTOCKe+NSk+YJBEAyc0kc88pcJQMEP6SAVHXXadgSGomJ3ENU24XYvO8is7m7CwxtdxOuJRWMbpmE6GqIT6dZyE/KC3izUKLuDunn2Tgy7huhCC/wiK2NHiyL8SWuCNInIKl4OTNEhuBb4OKrcTW1QHiFXtGUF+D+hywCOdTrHVb8KIeCjhgWWqW9GPTLcdlVDPMfwnnDRgLNe/OPqmis/b/peFlEqAGFmB2/XWYk13W8o33Qh3cYBY+sgq/3a1eXiZr26+2kYvxUEys81w6Ds1uaGYAHDLb5OFlwjMZOMS2HyzY8BFolgAKgNtGZ7GVvYqL+we8JsiSqfz/vAAAAABJRU5ErkJggg==") no-repeat left center;
+  padding-left: 18px;
+  margin: 3px 0;
+}
+
+
+
+
+

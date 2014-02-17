@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.alfresco.maven</groupId>
+        <artifactId>alfresco-sdk-parent</artifactId>
+        <version>1.0.2</version>
+    </parent>
+
+    <groupId>org.sharextras</groupId>
+    <artifactId>javascript-console-parent</artifactId>
+    <version>${javascript.console.version}</version>
+    <name>JavaScript Console - Parent</name>
+    <description>Alfresco Share-Extras JavaScript Console - Parent</description>
+    <packaging>pom</packaging>
+
+    <developers>
+        <developer>
+            <id>f.maul</id>
+            <name>Florian Maul</name>
+            <email>f.maul@fme.de</email>
+            <organization>fme AG</organization>
+            <roles>
+                <role>Founder</role>
+                <role>Architect</role>
+                <role>Developer</role>
+            </roles>
+            <properties>
+                <twitter>twitter.com/fmaul</twitter>
+            </properties>
+        </developer>
+    </developers>
+
+    <!-- | SDK properties have sensible defaults in the SDK parent, | but you can override the properties below to use another version. | For more 
+        available properties see the alfresco-sdk-parent POM. -->
+    <properties>
+        <!-- alfresco-sdk-parent POM references 4.2.c still -->
+        <alfresco.groupId>org.alfresco</alfresco.groupId>
+        <alfresco.version>4.2.d</alfresco.version>
+        
+        <javascript.console.version>0.6.0</javascript.console.version>
+    </properties>
+
+    <distributionManagement>
+
+        <repository>
+            <id>${distribution.repo.release.id}</id>
+            <name>${distribution.repo.release.name}</name>
+            <url>${distribution.repo.release.url}</url>
+        </repository>
+
+        <snapshotRepository>
+            <id>${distribution.repo.snapshot.id}</id>
+            <name>${distribution.repo.snapshot.name}</name>
+            <url>${distribution.repo.snapshot.url}</url>
+        </snapshotRepository>
+
+    </distributionManagement>
+
+    <!-- Here we realize the connection with the Alfresco selected platform (e.g.version and edition) -->
+    <dependencyManagement>
+        <dependencies>
+            <!-- This will import the dependencyManagement for all artifacts in the selected Alfresco version/edition (see http://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#Importing_Dependencies) 
+                NOTE: You still need to define dependencies in your POM, but you can omit version as it's enforced by this dependencyManagement. NOTE: It defaults 
+                to the latest version this SDK pom has been tested with, but alfresco version can/should be overridden in your project's pom -->
+            <dependency>
+                <groupId>${alfresco.groupId}</groupId>
+                <artifactId>alfresco-platform-distribution</artifactId>
+                <version>${alfresco.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <!-- This repository is only needed to retrieve Alfresco parent POM. NOTE: This can be removed when/if Alfresco will be on Maven Central -->
+    <repositories>
+        <repository>
+            <id>alfresco-public</id>
+            <url>https://artifacts.alfresco.com/nexus/content/groups/public</url>
+        </repository>
+        <repository>
+            <id>alfresco-public-snapshots</id>
+            <url>https://artifacts.alfresco.com/nexus/content/groups/public-snapshots</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>daily</updatePolicy>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <modules>
+        <module>javascript-console-repo</module>
+		<module>javascript-console-repo-overlay</module>
+        <module>javascript-console-share</module>
+        <module>javascript-console-share-overlay</module>
+    </modules>
+
+    <build>
+		<pluginManagement>
+			<plugins>
+				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.alfresco.maven.plugin
+										</groupId>
+										<artifactId>
+											alfresco-maven-plugin
+										</artifactId>
+										<versionRange>
+											[1.0.2,)
+										</versionRange>
+										<goals>
+											<goal>set-version</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+
+</project>

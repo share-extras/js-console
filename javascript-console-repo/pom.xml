@@ -3,75 +3,16 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.alfresco.maven</groupId>
-        <artifactId>alfresco-sdk-parent</artifactId>
-        <version>1.0.2</version>
+    	<relativePath>..</relativePath>
+        <groupId>org.sharextras</groupId>
+        <artifactId>javascript-console-parent</artifactId>
+        <version>${javascript.console.version}</version>
     </parent>
 
-    <groupId>org.sharextras</groupId>
     <artifactId>javascript-console-repo</artifactId>
-    <version>0.6.0</version>
     <name>JavaScript Console - Repository</name>
     <description>Alfresco Share-Extras JavaScript Console - Repository Module</description>
-    <packaging>war</packaging>
-
-    <developers>
-        <developer>
-            <id>f.maul</id>
-            <name>Florian Maul</name>
-            <email>f.maul@fme.de</email>
-            <organization>fme AG</organization>
-            <roles>
-                <role>Founder</role>
-                <role>Architect</role>
-                <role>Developer</role>
-            </roles>
-            <properties>
-                <twitter>twitter.com/fmaul</twitter>
-            </properties>
-        </developer>
-    </developers>
-
-    <!-- | SDK properties have sensible defaults in the SDK parent, | but you can override the properties below to use another version. | For more 
-        available properties see the alfresco-sdk-parent POM. -->
-    <properties>
-        <!-- alfresco-sdk-parent POM references 4.2.c still -->
-        <alfresco.groupId>org.alfresco</alfresco.groupId>
-        <alfresco.version>4.2.d</alfresco.version>
-
-    </properties>
-
-    <distributionManagement>
-
-        <repository>
-            <id>${distribution.repo.release.id}</id>
-            <name>${distribution.repo.release.name}</name>
-            <url>${distribution.repo.release.url}</url>
-        </repository>
-
-        <snapshotRepository>
-            <id>${distribution.repo.snapshot.id}</id>
-            <name>${distribution.repo.snapshot.name}</name>
-            <url>${distribution.repo.snapshot.url}</url>
-        </snapshotRepository>
-
-    </distributionManagement>
-
-    <!-- Here we realize the connection with the Alfresco selected platform (e.g.version and edition) -->
-    <dependencyManagement>
-        <dependencies>
-            <!-- This will import the dependencyManagement for all artifacts in the selected Alfresco version/edition (see http://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#Importing_Dependencies) 
-                NOTE: You still need to define dependencies in your POM, but you can omit version as it's enforced by this dependencyManagement. NOTE: It defaults 
-                to the latest version this SDK pom has been tested with, but alfresco version can/should be overridden in your project's pom -->
-            <dependency>
-                <groupId>${alfresco.groupId}</groupId>
-                <artifactId>alfresco-platform-distribution</artifactId>
-                <version>${alfresco.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
+    <packaging>jar</packaging>
 
     <!-- Following dependencies are needed for compiling Java code in src/main/java; <scope>provided</scope> is inherited for each of the following; 
         for more info, please refer to alfresco-platform-distribution POM -->
@@ -82,22 +23,6 @@
         </dependency>
     </dependencies>
 
-    <!-- This repository is only needed to retrieve Alfresco parent POM. NOTE: This can be removed when/if Alfresco will be on Maven Central -->
-    <repositories>
-        <repository>
-            <id>alfresco-public</id>
-            <url>https://artifacts.alfresco.com/nexus/content/groups/public</url>
-        </repository>
-        <repository>
-            <id>alfresco-public-snapshots</id>
-            <url>https://artifacts.alfresco.com/nexus/content/groups/public-snapshots</url>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>daily</updatePolicy>
-            </snapshots>
-        </repository>
-    </repositories>
-
     <build>
         <finalName>${project.artifactId}-${project.version}</finalName>
         <resources>
@@ -106,164 +31,6 @@
                 <directory>src/main/resources</directory>
             </resource>
         </resources>
-		<plugins>
-		    <!-- 
-                 In order to be able to directly overlay our WAR fragment ("AMP") we have to put put
-			     module.properties in the final resting place rather than in the root of the WAR/AMP
-			     however MMT requires that this file is also in the root of the WAR/AMP.
-			-->
-			<plugin>
-				<artifactId>maven-resources-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>copy-module-properties</id>
-						<phase>validate</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${basedir}/target/javascript-console-repo-${project.version}</outputDirectory>
-							<resources>
-								<resource>
-									<directory>src/main/resources/alfresco/module/de.fme.alfresco.JavascriptConsole-repo</directory>
-									<includes>
-										<include>module.properties</include>
-									</includes>
-									<filtering>true</filtering>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-<!--
-            <plugin>
-                <artifactId>maven-clean-plugin</artifactId>
-            </plugin>
-
-            <plugin>
-                <artifactId>maven-dependency-plugin</artifactId>
-            </plugin>
-
-            <plugin>
-                <artifactId>maven-resources-plugin</artifactId>
-            </plugin>
-
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-            </plugin>
--->
-
-            <!-- alfresco-sdk-parent does not take care of creating sources JAR -->
-<!--
-            <plugin>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>2.2.1</version>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <goals>
-                            <goal>jar-no-fork</goal>
-                        </goals>
-                        <configuration>
-                            <!- - otherwise content from app.amp.output.folder is included - ->
-                            <excludeResources>true</excludeResources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <artifactId>maven-jar-plugin</artifactId>
-                <!- - alfresco-sdk-parent does not take care of creating a JAR other modules can depend on / compile against - ->
-                <executions>
-                    <execution>
-                        <id>make-a-jar</id>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
--->
-
-<!-- 
-            <plugin>
-                <artifactId>maven-war-plugin</artifactId>
-            </plugin>
-
-            <plugin>
-                <artifactId>maven-surefire-plugin</artifactId>
-            </plugin>
-
-            <plugin>
-                <artifactId>maven-install-plugin</artifactId>
-            </plugin>
--->
-
-            <!-- alfresco-sdk-parent does not take care of attaching the classes JAR to the project artifacts -->
-<!--
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <version>1.8</version>
-                <executions>
-                    <execution>
-                        <id>attach-artifacts</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>attach-artifact</goal>
-                        </goals>
-                        <configuration>
-                            <artifacts>
-                                <artifact>
-                                    <file>${project.build.directory}/${project.build.finalName}.jar</file>
-                                    <type>jar</type>
-                                </artifact>
-                            </artifacts>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
--->
-
-<!--
-            <plugin>
-                <groupId>org.alfresco.maven.plugin</groupId>
-                <artifactId>alfresco-maven-plugin</artifactId>
-            </plugin>
--->
-        </plugins>
-        <pluginManagement>
-            <plugins>
-                <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-                <plugin>
-                    <groupId>org.eclipse.m2e</groupId>
-                    <artifactId>lifecycle-mapping</artifactId>
-                    <version>1.0.0</version>
-                    <configuration>
-                        <lifecycleMappingMetadata>
-                            <pluginExecutions>
-                                <pluginExecution>
-                                    <pluginExecutionFilter>
-                                        <groupId>org.alfresco.maven.plugin</groupId>
-                                        <artifactId>alfresco-maven-plugin</artifactId>
-                                        <versionRange>[1.0.2,)</versionRange>
-                                        <goals>
-                                            <goal>set-version</goal>
-                                        </goals>
-                                    </pluginExecutionFilter>
-                                    <action>
-                                        <ignore></ignore>
-                                    </action>
-                                </pluginExecution>
-                            </pluginExecutions>
-                        </lifecycleMappingMetadata>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
     </build>
 
     <profiles>
