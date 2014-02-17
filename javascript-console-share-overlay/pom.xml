@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+    	<relativePath>..</relativePath>
+        <groupId>org.sharextras</groupId>
+        <artifactId>javascript-console-parent</artifactId>
+        <version>${javascript.console.version}</version>
+    </parent>
+
+    <artifactId>javascript-console-share-overlay</artifactId>
+    <name>JavaScript Console - Share WAR Overlay &amp; AMP</name>
+    <description>Alfresco Share-Extras JavaScript Console - Share WAR Overlay &amp; AMP</description>
+    <packaging>war</packaging>
+
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>javascript-console-share</artifactId>
+            <version>${javascript.console.version}</version>
+            <type>jar</type>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>${project.artifactId}-${project.version}</finalName>
+        <plugins>
+        
+            <!-- Need to enable filtering for module.properties in the root of the WAR -->
+			<plugin>
+			    <groupId>org.apache.maven.plugins</groupId>
+			    <artifactId>maven-war-plugin</artifactId>
+			    <configuration>
+			    <webResources>
+			    	<resource>
+			    		<directory>${basedir}/src/main/webapp</directory>
+			    		<filtering>true</filtering>
+			    		<targetPath>/</targetPath>
+			    		<includes>
+			    			<include>module.properties</include>
+			    		</includes>
+			    	</resource>
+			    </webResources>
+			    </configuration>
+			</plugin>
+            
+			<!-- Make a copy of the final package with the amp extension -->
+			<plugin>
+	              <artifactId>maven-antrun-plugin</artifactId>
+	              <version>1.7</version>
+	              <executions>
+	                  <execution>
+	                      <id>copywartoamp</id>
+	                      <phase>package</phase>
+	                      <configuration>
+	                          <target>
+	                              <copy file="${project.build.directory}/${project.artifactId}-${project.version}.war"
+	                                    tofile="${project.build.directory}/${project.artifactId}-${project.version}.amp"/>
+	                          </target>
+	                      </configuration>
+	                      <goals>
+	                          <goal>run</goal>
+	                      </goals>
+	                  </execution>
+	              </executions>
+	          </plugin>
+			
+        </plugins>
+
+    </build>
+
+</project>

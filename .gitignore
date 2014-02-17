@@ -1,11 +1,26 @@
+/.settings/
+/.project
+/.classpath
+
 /javascript-console-repo/target/
 /javascript-console-repo/.settings/
 /javascript-console-repo/.project
 /javascript-console-repo/.classpath
 
+/javascript-console-repo-overlay/target/
+/javascript-console-repo-overlay/.settings/
+/javascript-console-repo-overlay/.project
+/javascript-console-repo-overlay/.classpath
+
 /javascript-console-share/target/
 /javascript-console-share/.settings/
 /javascript-console-share/.project
 /javascript-console-share/.classpath
+
+/javascript-console-share-overlay/target/
+/javascript-console-share-overlay/.settings/
+/javascript-console-share-overlay/.project
+/javascript-console-share-overlay/.classpath
+
 build
 bin

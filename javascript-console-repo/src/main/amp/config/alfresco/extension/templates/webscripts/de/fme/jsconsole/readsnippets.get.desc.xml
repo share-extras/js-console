@@ -1,6 +1,0 @@
-<webscript>
-  <shortname>fme JSConsole List Javascript Files</shortname>
-  <url>/de/fme/jsconsole/readsnippets</url>
-  <authentication>admin</authentication>
-  <format default="json">extension</format>
-</webscript>

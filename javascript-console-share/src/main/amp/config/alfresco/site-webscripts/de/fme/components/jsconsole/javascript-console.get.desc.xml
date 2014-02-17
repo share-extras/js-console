@@ -1,6 +1,0 @@
-<webscript>
-  <shortname>Admin Console Javascript Console</shortname>
-  <description>Administration Console - Javascript Console</description>
-  <url>/components/console/javascript-console</url>
-  <family>admin-console</family>
-</webscript>

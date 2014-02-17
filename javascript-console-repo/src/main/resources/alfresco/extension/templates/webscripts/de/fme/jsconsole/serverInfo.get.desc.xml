@@ -1,0 +1,6 @@
+<webscript>
+  <shortname>fme JSConsole read server information</shortname>
+  <url>/de/fme/jsconsole/serverInfo</url>
+  <authentication>admin</authentication>
+  <format default="json">extension</format>
+</webscript>

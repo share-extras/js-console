@@ -1,6 +1,0 @@
-<webscript>
-  <shortname>fme JSConsole Javascript Commands</shortname>
-  <url>/de/fme/jsconsole/apicommands</url>
-  <authentication>admin</authentication>
-  <format default="json">extension</format>
-</webscript>
