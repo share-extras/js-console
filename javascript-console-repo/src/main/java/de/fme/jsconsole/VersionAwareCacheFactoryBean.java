@@ -54,7 +54,7 @@ public class VersionAwareCacheFactoryBean extends AbstractFactoryBean<Object>
         }
 
         Object resultObject = null;
-        // need to do this reflectively as 4.2 class is not be available in 4.0/4.1
+        // need to do this reflectively as 4.2 class is not available in 4.0/4.1
         final Class<?> forName = Class.forName(className);
         if (SimpleCache.class.isAssignableFrom(forName))
         {
@@ -71,15 +71,6 @@ public class VersionAwareCacheFactoryBean extends AbstractFactoryBean<Object>
     public Class<?> getObjectType()
     {
         return SimpleCache.class;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean isSingleton()
-    {
-        return false;
     }
 
     /**

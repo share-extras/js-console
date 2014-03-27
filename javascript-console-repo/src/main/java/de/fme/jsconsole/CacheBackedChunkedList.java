@@ -36,13 +36,25 @@ public class CacheBackedChunkedList<K extends Serializable, E extends Serializab
     @Override
     public E get(final int index)
     {
-        return this.backingInMemoryList.get(index);
+        E element;
+        if (index >= ((this.lastChunkTransferred + 1) * this.chunkSize))
+        {
+            element = this.backingInMemoryList.get(index - ((this.lastChunkTransferred + 1) * this.chunkSize));
+        }
+        else
+        {
+            final int chunk = index / this.chunkSize;
+            final Pair<K, Integer> chunkKey = new Pair<K, Integer>(this.primaryCacheKey, Integer.valueOf(chunk));
+            final List<E> chunkList = this.backingCache.get(chunkKey);
+            element = chunkList.get(index - (chunk * this.chunkSize));
+        }
+        return element;
     }
 
     @Override
     public int size()
     {
-        return this.backingInMemoryList.size();
+        return this.backingInMemoryList.size() + ((this.lastChunkTransferred + 1) * this.chunkSize);
     }
 
     /**
@@ -51,17 +63,16 @@ public class CacheBackedChunkedList<K extends Serializable, E extends Serializab
     @Override
     public void add(final int index, final E e)
     {
-        if (index == this.backingInMemoryList.size())
+        if (index == (this.backingInMemoryList.size() + ((this.lastChunkTransferred + 1) * this.chunkSize)))
         {
             this.backingInMemoryList.add(e);
 
-            final int nextChunk = this.lastChunkTransferred + 1;
-            final int startIdx = nextChunk * this.chunkSize;
-            if (this.backingInMemoryList.size() - startIdx >= this.chunkSize)
+            if (this.backingInMemoryList.size() >= this.chunkSize)
             {
-                final int endIdx = (nextChunk + 1) * this.chunkSize;
-                final List<E> toTransfer = this.backingInMemoryList.subList(startIdx, endIdx);
+                final int nextChunk = this.lastChunkTransferred + 1;
+                final List<E> toTransfer = this.backingInMemoryList.subList(0, 5);
                 final List<E> arrToTransfer = new ArrayList<E>(toTransfer);
+                toTransfer.clear();
                 final Pair<K, Integer> chunkKey = new Pair<K, Integer>(this.primaryCacheKey, Integer.valueOf(nextChunk));
 
                 this.backingCache.put(chunkKey, arrToTransfer);

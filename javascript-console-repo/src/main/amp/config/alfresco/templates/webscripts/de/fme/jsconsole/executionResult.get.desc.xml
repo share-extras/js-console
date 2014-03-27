@@ -1,0 +1,7 @@
+<webscript>
+    <shortname>fme JSConsole Execute Javascript - Execution Result Retrieval</shortname>
+    <url>/de/fme/jsconsole/{resultChannel}/executionResult</url>
+    <authentication>admin</authentication>
+    <format default="json">extension</format>
+    <transaction>none</transaction>
+</webscript>

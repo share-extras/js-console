@@ -155,6 +155,8 @@ public class ExecuteWebscript extends AbstractWebScript {
 	
 	private SimpleCache<Pair<String, Integer>, List<String>> printOutputCache;
 	
+	private SimpleCache<String, JavascriptConsoleResultBase> resultCache;
+	
 	private int printOutputChunkSize = 5;
 
 	@Override
@@ -318,16 +320,17 @@ public class ExecuteWebscript extends AbstractWebScript {
 			final JavascriptConsoleRequest jsreq, final ScriptContent scriptContent) {
 	    
 	    final List<String> printOutput;
-	    if (jsreq.logOutputChannel != null && this.printOutputCache != null) {
-	        printOutput = new CacheBackedChunkedList<String, String>(this.printOutputCache, jsreq.logOutputChannel, this.printOutputChunkSize);
+	    if (jsreq.resultChannel != null && this.printOutputCache != null) {
+	        printOutput = new CacheBackedChunkedList<String, String>(this.printOutputCache, jsreq.resultChannel, this.printOutputChunkSize);
 	    } else {
 	        printOutput = null;
 	    }
 	    
+	    JavascriptConsoleResult result = null;
 	    try {
     		if (jsreq.useTransaction) {
     			LOG.debug("Using transction to execute script: " + (jsreq.transactionReadOnly ? "readonly" : "readwrite"));
-    			return transactionService.getRetryingTransactionHelper().doInTransaction(
+    			result = transactionService.getRetryingTransactionHelper().doInTransaction(
     					new RetryingTransactionCallback<JavascriptConsoleResult>() {
     						public JavascriptConsoleResult execute() throws Exception {
     						    // clear due to potential retry
@@ -338,18 +341,24 @@ public class ExecuteWebscript extends AbstractWebScript {
     									jsreq.urlargs, jsreq.documentNodeRef, printOutput);
     						}
     					}, jsreq.transactionReadOnly);
-    		} else {
-    			LOG.debug("Executing script script without transaction.");
-    			return executeScriptContent(request, response, scriptContent, jsreq.template, jsreq.spaceNodeRef, jsreq.urlargs,
-    					jsreq.documentNodeRef, printOutput);
+    			return result;
     		}
+		
+			LOG.debug("Executing script script without transaction.");
+			result = executeScriptContent(request, response, scriptContent, jsreq.template, jsreq.spaceNodeRef, jsreq.urlargs,
+					jsreq.documentNodeRef, printOutput);
+			return result;
 	    } finally {
-	        // cleanup after completion
-	        if (printOutput != null)
-	        {
-	            printOutput.clear();
-	        }
-	    }
+            if (jsreq.resultChannel != null && ExecuteWebscript.this.resultCache != null) {
+                if (result != null) {
+                    ExecuteWebscript.this.resultCache.put(jsreq.resultChannel, result.toBaseResult());
+                } else {
+                    // dummy response as indicator for "error"
+                    ExecuteWebscript.this.resultCache.put(jsreq.resultChannel, new JavascriptConsoleResultBase());
+                }
+                
+            }
+        }
 	}
 
 	/*
@@ -537,6 +546,10 @@ public class ExecuteWebscript extends AbstractWebScript {
 
 	public final void setPrintOutputCache(SimpleCache<Pair<String, Integer>, List<String>> printOutputCache) {
         this.printOutputCache = printOutputCache;
+    }
+	
+	public final void setResultCache(SimpleCache<String, JavascriptConsoleResultBase> resultCache) {
+        this.resultCache = resultCache;
     }
 
     public final void setPrintOutputChunkSize(int printOutputChunkSize) {
