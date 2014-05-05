@@ -61,7 +61,7 @@ public final class JavascriptConsoleScriptLogger
     @ScriptMethod
     (
             help="Returns true if logging is enabled.",
-            code="var loggerStatus = logger.isLogginEnabled();",
+            code="var loggerStatus = logger.isLoggingEnabled();",
             output="true if logging is enabled"
     )
     public boolean isLoggingEnabled()
@@ -76,13 +76,55 @@ public final class JavascriptConsoleScriptLogger
     public void log(@ScriptParameter(help="Message to log") String str)
     {
         logger.debug(str);
-    	jsConsole.print(str);
+        jsConsole.print(str);
     }
-    
+
+    @ScriptMethod
+    (
+            help="Returns true if debug logging is enabled.",
+            code="var loggerStatus = logger.isDebugEnabled();",
+            output="true if debug logging is enabled"
+    )
+    public boolean isDebugLoggingEnabled()
+    {
+        return logger.isDebugEnabled();
+    }
+
+    @ScriptMethod
+    (
+            help="Logs a debug message"
+    )
+    public void debug(@ScriptParameter(help="Message to log") String str)
+    {
+        logger.debug(str);
+        jsConsole.print(str);
+    }
+
+    @ScriptMethod
+    (
+            help="Returns true if info logging is enabled.",
+            code="var loggerStatus = logger.isInfoEnabled();",
+            output="true if info logging is enabled"
+    )
+    public boolean isInfoLoggingEnabled()
+    {
+        return logger.isInfoEnabled();
+    }
+
+    @ScriptMethod
+    (
+            help="Logs an info message"
+    )
+    public void info(@ScriptParameter(help="Message to log") String str)
+    {
+        logger.info(str);
+        jsConsole.print(str);
+    }
+
     @ScriptMethod
     (
             help="Returns true if warn logging is enabled.",
-            code="var loggerStatus = logger.isWarnLogginEnabled();",
+            code="var loggerStatus = logger.isWarnLoggingEnabled();",
             output="true if warn logging is enabled"
     )
     public boolean isWarnLoggingEnabled()
@@ -97,9 +139,30 @@ public final class JavascriptConsoleScriptLogger
     public void warn(@ScriptParameter(help="Message to log") String str)
     {
         logger.warn(str);
-    	jsConsole.print(str);
+        jsConsole.print(str);
     }
-    
+
+    @ScriptMethod
+    (
+            help="Returns true if error logging is enabled.",
+            code="var loggerStatus = logger.isErrorLoggingEnabled();",
+            output="true if error logging is enabled"
+    )
+    public boolean isErrorLoggingEnabled()
+    {
+        return logger.isErrorEnabled();
+    }
+
+    @ScriptMethod
+    (
+            help="Logs an error message"
+    )
+    public void error(@ScriptParameter(help="Message to log") String str)
+    {
+        logger.error(str);
+        jsConsole.print(str);
+    }
+
     public SystemOut getSystem()
     {
         return systemOut;
