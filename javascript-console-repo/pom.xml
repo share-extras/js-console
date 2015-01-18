@@ -123,6 +123,11 @@
 
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <!-- override alfresco-sdk-parent with 1.6 for Alfresco 4.0/4.1 compatibility -->
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
             </plugin>
 
             <!-- alfresco-sdk-parent does not take care of creating sources JAR -->

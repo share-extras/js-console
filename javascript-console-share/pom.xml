@@ -131,14 +131,22 @@
             <plugin>
                 <artifactId>maven-clean-plugin</artifactId>
             </plugin>
+
             <plugin>
                 <artifactId>maven-dependency-plugin</artifactId>
             </plugin>
+
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
             </plugin>
+
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <!-- override alfresco-sdk-parent with 1.6 for Alfresco 4.0/4.1 compatibility -->
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
             </plugin>
 
             <!-- alfresco-sdk-parent does not take care of creating sources JAR -->
@@ -158,6 +166,7 @@
                     </execution>
                 </executions>
             </plugin>
+
             <plugin>
                 <artifactId>maven-jar-plugin</artifactId>
                 <!-- alfresco-sdk-parent does not take care of creating a JAR other modules can depend on / compile against -->
