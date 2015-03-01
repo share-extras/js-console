@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.alfresco.maven</groupId>
         <artifactId>alfresco-sdk-parent</artifactId>
-        <version>1.0.2</version>
+        <version>1.1.1</version>
     </parent>
 
     <groupId>org.sharextras</groupId>
@@ -32,12 +31,11 @@
         </developer>
     </developers>
 
-    <!-- | SDK properties have sensible defaults in the SDK parent, | but you can override the properties below to use another version. | For more 
-        available properties see the alfresco-sdk-parent POM. -->
+    <!-- | SDK properties have sensible defaults in the SDK parent, | but you can override the properties below to use another version. | For more available properties see the alfresco-sdk-parent POM. -->
     <properties>
         <!-- alfresco-sdk-parent POM references 4.2.c still -->
         <alfresco.groupId>org.alfresco</alfresco.groupId>
-        <alfresco.version>4.2.d</alfresco.version>
+        <alfresco.version>4.2.f</alfresco.version>
         <alfresco.client.war>share</alfresco.client.war>
     </properties>
 
@@ -60,9 +58,8 @@
     <!-- Here we realize the connection with the Alfresco selected platform (e.g.version and edition) -->
     <dependencyManagement>
         <dependencies>
-            <!-- This will import the dependencyManagement for all artifacts in the selected Alfresco version/edition (see http://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#Importing_Dependencies) 
-                NOTE: You still need to define dependencies in your POM, but you can omit version as it's enforced by this dependencyManagement. NOTE: It defaults 
-                to the latest version this SDK pom has been tested with, but alfresco version can/should be overridden in your project's pom -->
+            <!-- This will import the dependencyManagement for all artifacts in the selected Alfresco version/edition (see http://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#Importing_Dependencies) NOTE: You still need to define dependencies in your POM, 
+                but you can omit version as it's enforced by this dependencyManagement. NOTE: It defaults to the latest version this SDK pom has been tested with, but alfresco version can/should be overridden in your project's pom -->
             <dependency>
                 <groupId>${alfresco.groupId}</groupId>
                 <artifactId>alfresco-platform-distribution</artifactId>
@@ -73,8 +70,7 @@
         </dependencies>
     </dependencyManagement>
 
-    <!-- Following dependencies are needed for compiling Java code in src/main/java; <scope>provided</scope> is inherited for each of the following; 
-        for more info, please refer to alfresco-platform-distribution POM -->
+    <!-- Following dependencies are needed for compiling Java code in src/main/java; <scope>provided</scope> is inherited for each of the following; for more info, please refer to alfresco-platform-distribution POM -->
     <dependencies>
         <dependency>
             <!-- alfresco-share is not contained as JAR dependency in alfresco-platform-distribution -->
@@ -135,14 +131,22 @@
             <plugin>
                 <artifactId>maven-clean-plugin</artifactId>
             </plugin>
+
             <plugin>
                 <artifactId>maven-dependency-plugin</artifactId>
             </plugin>
+
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
             </plugin>
+
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <!-- override alfresco-sdk-parent with 1.6 for Alfresco 4.0/4.1 compatibility -->
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
             </plugin>
 
             <!-- alfresco-sdk-parent does not take care of creating sources JAR -->
@@ -162,6 +166,7 @@
                     </execution>
                 </executions>
             </plugin>
+
             <plugin>
                 <artifactId>maven-jar-plugin</artifactId>
                 <!-- alfresco-sdk-parent does not take care of creating a JAR other modules can depend on / compile against -->
@@ -172,6 +177,41 @@
                         <goals>
                             <goal>jar</goal>
                         </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Build alternative artifacts (installable JAR, overlay WAR) -->
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <appendAssemblyId>false</appendAssemblyId>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-installable-jar</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <classifier>installable</classifier>
+                            <finalName>${project.build.finalName}-installable</finalName>
+                            <descriptor>src/main/assembly/installable-jar.xml</descriptor>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>make-overlay-war</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <classifier>overlay</classifier>
+                            <finalName>${project.build.finalName}-overlay</finalName>
+                            <descriptor>src/main/assembly/overlay-war.xml</descriptor>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -188,7 +228,7 @@
                 <artifactId>maven-install-plugin</artifactId>
             </plugin>
 
-            <!-- alfresco-sdk-parent does not take care of attaching the classes JAR to the project artifacts -->
+            <!-- Attach alternative artifacts -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
@@ -202,9 +242,20 @@
                         </goals>
                         <configuration>
                             <artifacts>
+                                <!-- alfresco-sdk-parent does not take care of attaching the classes JAR to the project artifacts -->
                                 <artifact>
                                     <file>${project.build.directory}/${project.build.finalName}.jar</file>
                                     <type>jar</type>
+                                </artifact>
+                                <artifact>
+                                    <file>${project.build.directory}/${project.build.finalName}-installable.jar</file>
+                                    <type>jar</type>
+                                    <classifier>installable</classifier>
+                                </artifact>
+                                <artifact>
+                                    <file>${project.build.directory}/${project.build.finalName}-overlay.war</file>
+                                    <type>war</type>
+                                    <classifier>overlay</classifier>
                                 </artifact>
                             </artifacts>
                         </configuration>
@@ -219,8 +270,7 @@
 
             <!-- This is a simple jslint / compression plugin -->
             <!-- com.googlecode.jslint4java:jslint4java-maven-plugin would be a better / more configurable jslint plugin -->
-            <!-- com.samaxes.maven:minify-maven-plugin would be a better compressor, but requires Java 7 and min-suffix pattern is non-standard for 
-                Alfresco -->
+            <!-- com.samaxes.maven:minify-maven-plugin would be a better compressor, but requires Java 7 and min-suffix pattern is non-standard for Alfresco -->
 
             <plugin>
                 <groupId>net.alchim31.maven</groupId>
@@ -235,13 +285,13 @@
                         </goals>
                         <configuration>
                             <nomunge>true</nomunge>
-                            <sourceDirectory>${project.basedir}/src/main/amp</sourceDirectory>
-                            <outputDirectory>${project.build.directory}/${project.build.finalName}</outputDirectory>
+                            <sourceDirectory>${project.basedir}/src/main/amp/web</sourceDirectory>
+                            <outputDirectory>${project.build.directory}/${project.build.finalName}/web</outputDirectory>
                             <excludes>
                                 <exclude>WEB-INF/**/*</exclude>
-								<exclude>**/jshint_fme.js</exclude>
-								<exclude>**/ambiance.css</exclude>
-								<exclude>**/solarized.css</exclude>
+                                <exclude>**/jshint_fme.js</exclude>
+                                <exclude>**/ambiance.css</exclude>
+                                <exclude>**/solarized.css</exclude>
                             </excludes>
                             <excludeResources>true</excludeResources>
                             <excludeWarSourceDirectory>true</excludeWarSourceDirectory>
@@ -249,7 +299,7 @@
                     </execution>
                 </executions>
             </plugin>
-			
+
         </plugins>
 
         <pluginManagement>
