@@ -1,4 +1,4 @@
-Javascript Console Admin Console component for Alfresco 4.0-4.2
+Javascript Console Admin Console component for Alfresco 4.x-5.0
 ===============================================================
 
 Author: Florian Maul (fme AG)  
