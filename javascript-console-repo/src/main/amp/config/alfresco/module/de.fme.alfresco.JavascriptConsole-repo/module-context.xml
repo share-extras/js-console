@@ -6,8 +6,6 @@
 		<property name="scriptUtils" ref="utilsScript"/>
 		<property name="transactionService" ref="transactionService"/>
 		<property name="jsProcessor" ref="javaScriptProcessor" />
-		<property name="preRollScriptResource" value="de/fme/jsconsole/jsconsole-pre-roll-script.js" />
-		<property name="postRollScriptResource" value="de/fme/jsconsole/jsconsole-post-roll-script.js" />
 		<property name="nodeService" ref="NodeService" />
 		<property name="permissionService" ref="PermissionService" />
 		<property name="namespaceService" ref="NamespaceService" />
@@ -29,7 +27,7 @@
 	<bean id="jconsole.extension.dictionaryBootstrap" parent="dictionaryModelBootstrap">
 		<property name="models">
 			<list>
-				<value>alfresco/extension/model/fme-jsconsole-model.xml</value>
+				<value>alfresco/module/de.fme.alfresco.JavascriptConsole-repo/model/fme-jsconsole-model.xml</value>
 			</list>
 		</property>
 	</bean>

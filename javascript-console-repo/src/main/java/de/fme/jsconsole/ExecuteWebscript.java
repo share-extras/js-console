@@ -9,7 +9,6 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
-import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,8 +45,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.extensions.webscripts.AbstractWebScript;
 import org.springframework.extensions.webscripts.Cache;
 import org.springframework.extensions.webscripts.Container;
@@ -73,18 +70,16 @@ public class ExecuteWebscript extends AbstractWebScript {
 
 	private static final Log LOG = LogFactory.getLog(ExecuteWebscript.class);
 
+	private static final String PRE_ROLL_SCRIPT_RESOURCE_NAME = "jsconsole-pre-roll-script.js";
+	private static final String PRE_ROLL_SCRIPT_RESOURCE = "/de/fme/jsconsole/" + PRE_ROLL_SCRIPT_RESOURCE_NAME;
+	private static final String POST_ROLL_SCRIPT_RESOURCE_NAME = "jsconsole-post-roll-script.js";
+
 	private ScriptUtils scriptUtils;
 
 	private TransactionService transactionService;
 
-	private ClassPathResource preRollScriptResource;
-
-	private String preRollScript = "";
-
-	private ClassPathResource postRollScriptResource;
-
 	private String postRollScript = "";
-	
+
 	private org.alfresco.service.cmr.repository.ScriptProcessor jsProcessor;
 
 	private NodeService nodeService;
@@ -160,8 +155,7 @@ public class ExecuteWebscript extends AbstractWebScript {
 	public void init(Container container, Description description) {
 		super.init(container, description);
 		try {
-			preRollScript = readScriptFromResource(preRollScriptResource, true);
-			postRollScript = readScriptFromResource(postRollScriptResource, false);
+			postRollScript = readScriptFromResource(POST_ROLL_SCRIPT_RESOURCE_NAME, false);
 		} catch (IOException e) {
 			LOG.error("Could not read base import script.");
 		}
@@ -182,10 +176,9 @@ public class ExecuteWebscript extends AbstractWebScript {
 		try {
 			PerfLog webscriptPerf = new PerfLog().start();
 			JavascriptConsoleRequest jsreq = JavascriptConsoleRequest.readJson(request);
-			
+
 			// Note: Need to use import here so the user-supplied script may also import scripts
-			String script = MessageFormat.format("<import resource=\"classpath:{0}\">", 
-					this.preRollScriptResource.getPath()) + "\n" + jsreq.script;
+			String script = "<import resource=\"classpath:" + PRE_ROLL_SCRIPT_RESOURCE + "\">\n" + jsreq.script;
 
 			ScriptContent scriptContent = new StringScriptContent(script + this.postRollScript);
 
@@ -213,7 +206,7 @@ public class ExecuteWebscript extends AbstractWebScript {
 	private int countScriptLines(String script, boolean attemptImportResolution)
 	{
 		String scriptSource;
-		
+
 		if (attemptImportResolution && this.jsProcessor instanceof RhinoScriptProcessor) {
 			// resolve any imports
 			scriptSource = ScriptResourceHelper.resolveScriptImports(script, (RhinoScriptProcessor)this.jsProcessor, LOG);
@@ -221,7 +214,7 @@ public class ExecuteWebscript extends AbstractWebScript {
 			// assume this is the literal source
 			scriptSource = script;
 		}
-		
+
 		// EOL is not only dependent on the current system but on the environment of the script author, so check for any known EOL styles
 		String[] scriptLines = scriptSource.split("(\\r?\\n\\r?)|(\\r)");
 		return scriptLines.length;
@@ -284,9 +277,9 @@ public class ExecuteWebscript extends AbstractWebScript {
 		}
 	}
 
-	private String readScriptFromResource(Resource resource, boolean unwrapLines) throws IOException {
+	private String readScriptFromResource(String resource, boolean unwrapLines) throws IOException {
 		@SuppressWarnings("unchecked")
-		List<String> lines = (List<String>) IOUtils.readLines(resource.getInputStream());
+        List<String> lines = IOUtils.readLines(getClass().getResourceAsStream(resource));
 
 		StringBuffer script = new StringBuffer();
 		for (String line : lines) {
@@ -506,17 +499,9 @@ public class ExecuteWebscript extends AbstractWebScript {
 	public void setTransactionService(TransactionService transactionService) {
 		this.transactionService = transactionService;
 	}
-	
+
 	public void setJsProcessor(org.alfresco.service.cmr.repository.ScriptProcessor jsProcessor) {
 		this.jsProcessor = jsProcessor;
-	}
-
-	public void setPostRollScriptResource(ClassPathResource postRollScriptResource) {
-		this.postRollScriptResource = postRollScriptResource;
-	}
-
-	public void setPreRollScriptResource(ClassPathResource preRollScriptResource) {
-		this.preRollScriptResource = preRollScriptResource;
 	}
 
 	public void setNodeService(NodeService nodeService) {
