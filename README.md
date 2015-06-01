@@ -40,7 +40,7 @@ Installation
 ------------
 
 The component has been developed to install on top of an existing Alfresco
-4.0, 4.1 or 4.2 installation. The `javascript-console-repo-<version>.amp` or
+4.0, 4.1, 4.2 or 5.0 installation. The `javascript-console-repo-<version>.amp` or
 `javascript-console-share-<version>.amp` needs to be installed into the Alfresco
 Repository / Share webapp using the Alfresco Module Management Tool:
 
