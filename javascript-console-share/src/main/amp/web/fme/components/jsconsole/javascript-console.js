@@ -1631,77 +1631,78 @@ if (typeof String.prototype.startsWith != 'function') {
           var reponseFields = ['Rows'];
           var rows = new Map();
 
-          for ( var i = 0; i < json.length; i++) {
-              var dump = JSON.parse(json[i]);
-              myColumnDefs.push({key:i+" "+dump.properties["cm:name"]+" ("+dump.nodeRef+")", resizeable: true, minWidth: 200, formatter:formatterDispatcher,editor:new YAHOO.widget.BaseCellEditor()});
-              reponseFields.push(i+" "+dump.properties["cm:name"]+" ("+dump.nodeRef+")");
+          if (json) {
+            for ( var i = 0; i < json.length; i++) {
+                var dump = JSON.parse(json[i]);
+                myColumnDefs.push({key:i+" "+dump.properties["cm:name"]+" ("+dump.nodeRef+")", resizeable: true, minWidth: 200, formatter:formatterDispatcher,editor:new YAHOO.widget.BaseCellEditor()});
+                reponseFields.push(i+" "+dump.properties["cm:name"]+" ("+dump.nodeRef+")");
 
-              var rowId = i+" "+dump.properties["cm:name"]+" ("+dump.nodeRef+")";
+                var rowId = i+" "+dump.properties["cm:name"]+" ("+dump.nodeRef+")";
 
-              for(var prop in dump.properties){
-                  if(dump.properties.hasOwnProperty(prop)){
-                      var row = rows.get(prop);
-                      if(row==null){
-                          row={Rows:prop};
+                for(var prop in dump.properties){
+                    if(dump.properties.hasOwnProperty(prop)){
+                        var row = rows.get(prop);
+                        if(row==null){
+                            row={Rows:prop};
+                        }
+                        row[rowId]=dump.properties[prop];
+                        rows.put(prop, row);
                       }
-                      row[rowId]=dump.properties[prop];
-                      rows.put(prop, row);
-                    }
-              }
-
-              delete dump["properties"];
-
-              var aspects = dump.aspects.join(",<br/>");
-
-              var aspectRow = rows.get("aspects");
-              if(aspectRow==null){
-                  aspectRow={Rows:"aspects"};
-              }
-
-              aspectRow[rowId]=aspects;
-              rows.put("aspects", aspectRow);
-
-              delete dump["aspects"];
-
-              var tags = dump.tags.join(",<br/>");
-
-              var tagsRow = rows.get("tags");
-              if(tagsRow==null){
-                  tagsRow={Rows:"tags"};
-              }
-
-              tagsRow[rowId]=tags;
-              rows.put("tags", tagsRow);
-
-              delete dump["tags"];
-
-
-              for ( var j = 0; j < dump.permissions.length; j++) {
-                var permission = dump.permissions[j];
-                var row = rows.get("permission "+j);
-                if(row==null){
-                    row={Rows:"permission "+j};
                 }
-                row[rowId]=permission.authority +"("+permission.authorityType+") "+permission.accessStatus+" "+permission.permission +" (directly:"+permission.directly+")";
-                rows.put("permission "+j, row);
 
-              }
+                delete dump["properties"];
 
-             delete dump["permissions"];
+                var aspects = dump.aspects.join(",<br/>");
 
-             for(var prop in dump){
-                  if(dump.hasOwnProperty(prop)){
-                      var row = rows.get(prop);
-                      if(row==null){
-                          row={Rows:prop};
-                      }
-                      row[rowId]=dump[prop];
-                      rows.put(prop, row);
+                var aspectRow = rows.get("aspects");
+                if(aspectRow==null){
+                    aspectRow={Rows:"aspects"};
+                }
+
+                aspectRow[rowId]=aspects;
+                rows.put("aspects", aspectRow);
+
+                delete dump["aspects"];
+
+                var tags = dump.tags.join(",<br/>");
+
+                var tagsRow = rows.get("tags");
+                if(tagsRow==null){
+                    tagsRow={Rows:"tags"};
+                }
+
+                tagsRow[rowId]=tags;
+                rows.put("tags", tagsRow);
+
+                delete dump["tags"];
+
+
+                for ( var j = 0; j < dump.permissions.length; j++) {
+                  var permission = dump.permissions[j];
+                  var row = rows.get("permission "+j);
+                  if(row==null){
+                      row={Rows:"permission "+j};
                   }
-             }
+                  row[rowId]=permission.authority +"("+permission.authorityType+") "+permission.accessStatus+" "+permission.permission +" (directly:"+permission.directly+")";
+                  rows.put("permission "+j, row);
 
+                }
+
+               delete dump["permissions"];
+
+               for(var prop in dump){
+                    if(dump.hasOwnProperty(prop)){
+                        var row = rows.get(prop);
+                        if(row==null){
+                            row={Rows:prop};
+                        }
+                        row[rowId]=dump[prop];
+                        rows.put(prop, row);
+                    }
+               }
+            }
           }
-
+          
           var columns = [];
 
           // add the data to the datasource for the table
