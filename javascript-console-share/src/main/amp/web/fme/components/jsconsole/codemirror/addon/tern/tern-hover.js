@@ -1,82 +1,53 @@
-CodeMirror.registerHelper("textHover", "javascript", function(cm, node, e) {
-    if (node.className != 'cm-variable')
-	return;
+(function() {
+  "use strict";
 
-    var server = CodeMirror.tern.getServer(cm);
-    
-    function getSignature(prefix, f) {
-	var label = f.name;
-	if (prefix != null) {
-	    label = prefix + ':' + label;
-	}
-	label += '(';
-	var params = f.params;
-	if (params) {
-	    for ( var i = 0; i < params.length; i++) {
-		if (i > 0)
-		    label += ', ';
-		var param = params[i];
-		label += '$' + param.name;
-		var as = param.as;
-		if (as && as.length > 0)
-		    label += ' as ' + as;
-	    }
-	}
-	label += ')';
-	var as = f.as;
-	if (as && as.length > 0)
-	    label += ' as ' + as;
-	return label;
+     function elt(tagname, cls /*, ... elts*/) {
+    var e = document.createElement(tagname);
+    if (cls) e.className = cls;
+    for (var i = 2; i < arguments.length; ++i) {
+      var elt = arguments[i];
+      if (typeof elt == "string") elt = document.createTextNode(elt);
+      e.appendChild(elt);
     }
+    return e;
+  }
 
-    var s = node.innerText || node.textContent;
-    var prefixIndex = s.lastIndexOf(':');
-    if (prefixIndex != -1) {
-	var lineCount = cm.lineCount();
-	var token = cm.getTokenAt(CodeMirror.Pos(lineCount, cm
-		.getLine(lineCount - 1).length));
-	if (!token.state)
-	    return;
-	var importedModules = token.state.importedModules;
-	var prefix = s.substring(0, prefixIndex);
-	var funcName = s.substring(prefixIndex + 1, s.length);
-	var module = CodeMirror.XQuery.findModuleByPrefix(prefix,
-		importedModules);
-	if (module) {
-	    // loop for each function
-	    var functions = module.functions;
-	    for ( var i = 0; i < functions.length; i++) {
-		var f = functions[i];
-		var name = f.name;
-		if (name == funcName) {
-		    var result = document.createElement('div');
-		    var html = '';
-		    if (module.resource) {
-			html += 'File: ' + module.resource;
-		    }
-		    if (html != '') {
-			html += '<br/>';
-			html += getSignature(prefix, f);
-		    }
-		    if (f.doc) {
-			if (html != '') {
-			    html += '<br/>';
-			}
-			html += f.doc;
-		    }
-		    /*
-		     * var html = '<ul>'; html+='<li>'; html+='prefix: ';
-		     * html+=prefix; html+='</li>'; html+='<li>';
-		     * html+='namespace: '; html+=module.namespace; html+='</li>';
-		     * html+='<li>'; html+='name: '; html+=funcName; html+='</li>';
-		     * html+='</ul>'; html+='<li>'; html+='signature: ';
-		     * html+=getSignature(prefix, f); html+='</li>'; html+='</ul>';
-		     */
-		    result.innerHTML = html;
-		    return result;
-		}
-	    }
-	}
-    }
-    return;
-});
+  function showType(showTooltipFor, d, e, node, state, cm) {
+  	var ts = CodeMirror.tern.getServer(cm);
+  	var pos = d.pos;
+  	ts.request(cm, "type", function(error, data) {
+      //if (error) return showError(ts, cm, error);
+        if (!data)
+          return;
+        var tip = elt("span", null, elt("strong", null, data.type || "not found"));
+        if (data.doc)
+          tip.appendChild(document.createTextNode(" — " + data.doc));
+        if (data.url) {
+          tip.appendChild(document.createTextNode(" "));
+          tip.appendChild(elt("a", null, "[docs]")).href = data.url;
+        }
+ 		showTooltipFor(e, tip, node, state, cm);
+    }, pos);
+
+  }
+
+  function getTextHover(cm, data) {
+  	if (!data)
+      return;
+    //var server = CodeMirror.tern.getServer(cm);
+    //var token = data.token, html = '';
+    return showType;
+
+    /*server.showType(cm, data.pos);
+   	if (html === '')
+	  return null;
+	var result = document.createElement('div');
+	result.innerHTML = html;
+	return result;*/
+  }
+
+  CodeMirror.registerHelper("textHover", "javascript", function(cm, data) {
+    return getTextHover(cm, data);
+  });
+
+})();

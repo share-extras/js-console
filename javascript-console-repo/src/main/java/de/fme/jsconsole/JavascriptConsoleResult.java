@@ -91,24 +91,32 @@ public class JavascriptConsoleResult {
 		response.setContentType(MimetypeMap.MIMETYPE_JSON);
 
 		try {
-			JSONObject jsonOutput = new JSONObject();
-			jsonOutput.put("renderedTemplate", getRenderedTemplate());
-			jsonOutput.put("printOutput", getPrintOutput());
-			jsonOutput.put("dumpOutput", dumpOutput);
-			jsonOutput.put("spaceNodeRef", getSpaceNodeRef());
-			jsonOutput.put("spacePath", getSpacePath());
-			jsonOutput.put("result", new JSONArray());
-			jsonOutput.put("scriptPerf", scriptPerformance);
-			jsonOutput.put("freemarkerPerf", freemarkerPerformance);
-			jsonOutput.put("webscriptPerf", webscriptPerformance);
-			jsonOutput.put("scriptOffset", scriptOffset);
-
+			JSONObject jsonOutput = generateJsonOutput();
 			response.getWriter().write(jsonOutput.toString());
 
 		} catch (JSONException e) {
 			throw new WebScriptException(Status.STATUS_INTERNAL_SERVER_ERROR,
 					"Error writing json response.", e);
 		}
+	}
+
+	/**
+	 * @return
+	 * @throws JSONException
+	 */
+	public JSONObject generateJsonOutput() throws JSONException {
+		JSONObject jsonOutput = new JSONObject();
+		jsonOutput.put("renderedTemplate", getRenderedTemplate());
+		jsonOutput.put("printOutput", getPrintOutput());
+		jsonOutput.put("dumpOutput", dumpOutput);
+		jsonOutput.put("spaceNodeRef", getSpaceNodeRef());
+		jsonOutput.put("spacePath", getSpacePath());
+		jsonOutput.put("result", new JSONArray());
+		jsonOutput.put("scriptPerf", scriptPerformance);
+		jsonOutput.put("freemarkerPerf", freemarkerPerformance);
+		jsonOutput.put("webscriptPerf", webscriptPerformance);
+		jsonOutput.put("scriptOffset", scriptOffset);
+		return jsonOutput;
 	}
 
 	public boolean isStatusResponseSent() {

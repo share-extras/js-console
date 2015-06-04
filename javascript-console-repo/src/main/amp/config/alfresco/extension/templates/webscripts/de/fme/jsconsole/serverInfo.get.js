@@ -149,8 +149,8 @@ model.hostName = java.net.InetAddress.getLocalHost().getHostName();
 model.edition = server.edition;
 model.schema = server.schema;
 model.version = server.version;
-model.licenseDaysLeft = getLicenseRemainingDays();
-model.modules =getModules();
+//model.licenseDaysLeft = getLicenseRemainingDays();
+//model.modules =getModules();
 
 model.sitesCount = siteService.listSites("", "").length;
 model.groupsCount = groups.getGroups("", utils.createPaging(100000, 0)).length;
@@ -166,16 +166,24 @@ model.docsCount = getSearchCount("TYPE:content");
 model.checkedOutCount = getSearchCount("ASPECT:checkedOut");
 model.classifications= classification.allClassificationAspects.length;
 model.runningActions = actionTrackingService.allExecutingActions.length;
-model.runningJobs = getCurrentRunningJobs();
+//model.runningJobs = getCurrentRunningJobs();
+model.runningJobs = "";
 
-model.scheduledActions = getScheduledActionsCount();
-model.registeredPolicies = getPolicyComponentCount();
+//model.scheduledActions = getScheduledActionsCount();
+//model.registeredPolicies = getPolicyComponentCount();
+model.scheduledActions = "";
+model.registeredPolicies = "";
 
 
-model.transactionsCount = getRunningTransactions();
-model.transactionInfos = getTransactionInfos(8);
-model.tenantCount = getTenantSize();
-model.patchCount=getAppliedPatches();
+//model.transactionsCount = getRunningTransactions();
+//model.transactionInfos = getTransactionInfos(8);
+//model.tenantCount = getTenantSize();
+//model.patchCount=getAppliedPatches();
+
+model.transactionsCount = ""
+model.transactionInfos = ""
+model.tenantCount = ""
+model.patchCount=""
 
 
 model.threadCount = java.lang.management.ManagementFactory.getThreadMXBean().getThreadCount();

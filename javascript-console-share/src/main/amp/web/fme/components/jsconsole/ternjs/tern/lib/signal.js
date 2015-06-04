@@ -1,6 +1,6 @@
-(function(mod) {
-  mod((self.tern || (self.tern = {})).signal = {}); // Plain browser env
-})(function(exports) {
+(function(root, mod) {
+  mod((root.tern || (root.tern = {})).signal = {}); // Plain browser env
+})(this, function(exports) {
   function on(type, f) {
     var handlers = this._handlers || (this._handlers = Object.create(null));
     (handlers[type] || (handlers[type] = [])).push(f);

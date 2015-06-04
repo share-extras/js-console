@@ -25,6 +25,7 @@ import org.alfresco.repo.transaction.RetryingTransactionHelper.RetryingTransacti
 import org.alfresco.scripts.ScriptResourceHelper;
 import org.alfresco.service.cmr.audit.AuditService;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
+import org.alfresco.service.cmr.lock.LockService;
 import org.alfresco.service.cmr.rendition.RenditionService;
 import org.alfresco.service.cmr.repository.ContentService;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -101,6 +102,11 @@ public class ExecuteWebscript extends AbstractWebScript {
 	private WebDavService webDavService;
 	private AuditService auditService;
 	private SysAdminParams sysAdminParams;
+	private LockService lockService;
+	
+	public void setLockService(LockService lockService) {
+		this.lockService = lockService;
+	}
 
 	public void setSysAdminParams(SysAdminParams sysAdminParams) {
 		this.sysAdminParams = sysAdminParams;
@@ -172,6 +178,7 @@ public class ExecuteWebscript extends AbstractWebScript {
 	public void execute(WebScriptRequest request, WebScriptResponse response) throws IOException {
 		int scriptOffset = 0;
 
+		JavascriptConsoleResult result = null;
 		try {
 			PerfLog webscriptPerf = new PerfLog().start();
 			JavascriptConsoleRequest jsreq = JavascriptConsoleRequest.readJson(request);
@@ -186,7 +193,7 @@ public class ExecuteWebscript extends AbstractWebScript {
 			int resolvedScriptLength = countScriptLines(script, true);
 			scriptOffset = providedScriptLength - resolvedScriptLength;
 
-			JavascriptConsoleResult result = runScriptWithTransactionAndAuthentication(request, response, jsreq, scriptContent);
+			result = runScriptWithTransactionAndAuthentication(request, response, jsreq, scriptContent);
 
 			if (!result.isStatusResponseSent()) {
 				result.setWebscriptPerformance(String.valueOf(webscriptPerf.stop("Execute Webscript with {0} - result: {1} ",
@@ -199,8 +206,7 @@ public class ExecuteWebscript extends AbstractWebScript {
 			response.setContentEncoding("UTF-8");
 			response.setContentType(MimetypeMap.MIMETYPE_JSON);
 
-			writeErrorInfosAsJson(response, scriptOffset, e);
-
+			writeErrorInfosAsJson(response, result, scriptOffset, e);
 		}
 	}
 	
@@ -226,12 +232,13 @@ public class ExecuteWebscript extends AbstractWebScript {
 	 * parameters to the built-in alfresco status templates.
 	 *
 	 * @param response
+	 * @param result 
 	 * @param scriptOffset
 	 * @param e
 	 *            the occured exception
 	 * @throws IOException
 	 */
-	private void writeErrorInfosAsJson(WebScriptResponse response, int scriptOffset, WebScriptException e) throws IOException {
+	private void writeErrorInfosAsJson(WebScriptResponse response, JavascriptConsoleResult result, int scriptOffset, WebScriptException e) throws IOException {
 		try {
 			JSONObject jsonOutput = new JSONObject();
 
@@ -259,6 +266,11 @@ public class ExecuteWebscript extends AbstractWebScript {
 			e.printStackTrace(printWriter);
 			String s = writer.toString();
 			jsonOutput.put("callstack", s);
+
+			// always print the result into the error stream because we want to have all outputs before the exceptions occurs
+			if(result!=null){
+				jsonOutput.put("result", result.generateJsonOutput().toString());
+			}
 
 			// scriptoffset is useful to determine the correct line in case of
 			// an error (if you use preroll-scripts or imports in javascript
@@ -353,7 +365,7 @@ public class ExecuteWebscript extends AbstractWebScript {
 
 			JavascriptConsoleScriptObject javascriptConsole = new JavascriptConsoleScriptObject(nodeService, permissionService,
 					namespaceService, versionService, contentService, dictionaryService, ruleService, workflowService,
-					renditionService, tagservice, categoryService, webDavService, auditService, sysAdminParams, dumpLimit);
+					renditionService, tagservice, categoryService, webDavService, auditService, sysAdminParams, dumpLimit, lockService);
 
 			scriptModel.put("jsconsole", javascriptConsole);
 
@@ -374,13 +386,16 @@ public class ExecuteWebscript extends AbstractWebScript {
 			}
 
 			PerfLog jsPerf = new PerfLog(LOG).start();
-			ScriptProcessor scriptProcessor = getContainer().getScriptProcessorRegistry().getScriptProcessorByExtension("js");
-			scriptProcessor.executeScript(scriptContent, scriptModel);
-			output.setScriptPerformance(String.valueOf(jsPerf.stop("Executed the script {0} with model {1}", scriptContent,
-					scriptModel)));
+			try{
+				ScriptProcessor scriptProcessor = getContainer().getScriptProcessorRegistry().getScriptProcessorByExtension("js");
+				scriptProcessor.executeScript(scriptContent, scriptModel);
+			}finally{
+				output.setScriptPerformance(String.valueOf(jsPerf.stop("Executed the script {0} with model {1}", scriptContent,
+						scriptModel)));
+				output.setPrintOutput(javascriptConsole.getPrintOutput());
+				output.setDumpOutput(javascriptConsole.getDumpOutput());
+			}
 
-			output.setPrintOutput(javascriptConsole.getPrintOutput());
-			output.setDumpOutput(javascriptConsole.getDumpOutput());
 
 			ScriptNode newSpace = javascriptConsole.getSpace();
 			output.setSpaceNodeRef(newSpace.getNodeRef().toString());

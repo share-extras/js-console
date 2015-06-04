@@ -11,19 +11,19 @@
 }
 
 .Tern-completion-fn {
-  background:url("data:image/gif;base64,R0lGODlhEAAQAMQAAAOASByKVCmPWi2UXkGZZ0qgbj+XYF+oej+YX0qbZVancGywgmywg2mrf3CxhV+qdGKqcHGxdnGxdYS/hIK9goS+hIK1f4i5gYi4gYm4gZjGkJe9iKvPmavPmLTSnf///yH5BAEAAB8ALAAAAAAQABAAAAU/4CeOZGmeaKqupAMMzlo8nvYUKaNwfKcsKAClQpxQAKgAJBKRRCAB1AFxwWQuhkOKkNhYEoRVAyBosM7otDoEADs=") no-repeat left center;  
+  background:url("data:image/gif;base64,R0lGODlhEAAQAMQAAAOASByKVCmPWi2UXkGZZ0qgbj+XYF+oej+YX0qbZVancGywgmywg2mrf3CxhV+qdGKqcHGxdnGxdYS/hIK9goS+hIK1f4i5gYi4gYm4gZjGkJe9iKvPmavPmLTSnf///yH5BAEAAB8ALAAAAAAQABAAAAU/4CeOZGmeaKqupAMMzlo8nvYUKaNwfKcsKAClQpxQAKgAJBKRRCAB1AFxwWQuhkOKkNhYEoRVAyBosM7otDoEADs=") no-repeat left center;
   padding-left: 18px!important;
   margin: 3px 0!important;
 }
 
 .Tern-completion-array {
-  background:url("data:image/gif;base64,R0lGODlhEAAQAMQAAOdgYcgpMMgwNMgpMcgdLPJNXPFNXPV2gMgZKueTi8lDPMlHPsk+OvaSjudgYPV8fO2Dg////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAABEALAAAAAAQABAAAAU0YCSOZGmeaKqubKsucLykSmPbSso0T98wKcHBUDAcBKkBxAEAQAIpQmI6JaQQ2CzCxe2eQgA7") no-repeat left center;   
+  background:url("data:image/gif;base64,R0lGODlhEAAQAMQAAOdgYcgpMMgwNMgpMcgdLPJNXPFNXPV2gMgZKueTi8lDPMlHPsk+OvaSjudgYPV8fO2Dg////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAABEALAAAAAAQABAAAAU0YCSOZGmeaKqubKsucLykSmPbSso0T98wKcHBUDAcBKkBxAEAQAIpQmI6JaQQ2CzCxe2eQgA7") no-repeat left center;
   padding-left: 18px!important;
   margin: 3px 0!important;
 }
 
 .Tern-completion-number {
-  background:url("data:image/gif;base64,R0lGODlhEAAQAMQAAFSBtkF3r1KGulOGuh5koyNnpDl3sDl4sBBcnBJenRVfnhZgnxljoBxkohxlohxkoRxloR5loyJopSZrpydsp////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAABUALAAAAAAQABAAAAUtYCWOZGmeaKqubMtSU1sIg8QShxGtzONADYZKESgGFqkEYMlMoBDQKNRFrZ5CADs=") no-repeat left center;  
+  background:url("data:image/gif;base64,R0lGODlhEAAQAMQAAFSBtkF3r1KGulOGuh5koyNnpDl3sDl4sBBcnBJenRVfnhZgnxljoBxkohxlohxkoRxloR5loyJopSZrpydsp////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAABUALAAAAAAQABAAAAUtYCWOZGmeaKqubMtSU1sIg8QShxGtzONADYZKESgGFqkEYMlMoBDQKNRFrZ5CADs=") no-repeat left center;
   padding-left: 18px!important;
   margin: 3px 0!important;
 }

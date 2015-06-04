@@ -22,6 +22,7 @@
 		<property name="webDavService" ref="webdavService" />
 		<property name="auditService" ref="AuditService" />
 		<property name="sysAdminParams" ref="sysAdminParams" />
+		<property name="lockService" ref="LockService" />
 
 	</bean>
 	

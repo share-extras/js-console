@@ -12,9 +12,9 @@
       return {
         getText : options
       };
-    else if (!options || !options.getText)
+    /*else if (!options || !options.getText)
       throw new Error(
-          "Required option 'getText' missing (tern-extension addon)");
+          "Required option 'getText' missing (tern-extension addon)");*/
     return options;
   }
 
@@ -63,7 +63,6 @@
           var firstParam = inserText.firstParam
           if (firstParam != null) {
             var name = ternCompletion.name;
-            name=name.replace(/[0-9]/g, '');
             // the function to insert has parameters, select the first
             // parameter.
             cm.setSelection(
@@ -112,11 +111,6 @@
     server.rename(cm);
   }
 
-  CodeMirror.tern.updateArgHints = function(cm) {
-      var server = getServer(cm);
-      server.updateArgHints(cm);
-    }
-
   function fileFilter(value, docName, doc) {
     var cm = doc.cm;
     var state = cm.state.ternExt;
@@ -128,8 +122,14 @@
 
   function getServer(cm) {
     if (defaultServer == null) {
+      var plugins = {};
+      var state = cm.state.ternExt;
+      if (state && state.options.plugins) {
+        plugins = state.options.plugins;
+      }
       defaultServer = new CodeMirror.TernServer({
         defs : defs,
+        plugins: plugins,
         fileFilter : fileFilter,
         completionTip : function(data) {
           if (data.info)
@@ -234,9 +234,6 @@
       }
       text += ')';
     }
-
-    text=text.replace(/[0-9]/g, '');
-
     return {
       "text" : text,
       "firstParam" : firstParam

@@ -9,19 +9,19 @@
   function moveLines(cm, start, end, dist) {
     if (!dist || start > end) return 0;
 
-    var from = cm.clipPos(Pos(start, 0)), to = cm.clipPos(Pos(end));
+    var from = cm.clipPos(new Pos(start, 0)), to = cm.clipPos(new Pos(end));
     var text = cm.getRange(from, to);
 
     if (start <= cm.firstLine())
-      cm.replaceRange("", from, Pos(to.line + 1, 0));
+      cm.replaceRange("", from, new Pos(to.line + 1, 0));
     else
-      cm.replaceRange("", Pos(from.line - 1), to);
+      cm.replaceRange("", new Pos(from.line - 1), to);
     var target = from.line + dist;
     if (target <= cm.firstLine()) {
-      cm.replaceRange(text + "\n", Pos(target, 0));
+      cm.replaceRange(text + "\n", new Pos(target, 0));
       return cm.firstLine() - from.line;
     } else {
-      var targetPos = cm.clipPos(Pos(target - 1));
+      var targetPos = cm.clipPos(new Pos(target - 1));
       cm.replaceRange("\n" + text, targetPos);
       return targetPos.line + 1 - from.line;
     }
@@ -31,7 +31,7 @@
     var head = cm.getCursor("head"), anchor = cm.getCursor("anchor");
     cm.operation(function() {
       var moved = moveLines(cm, Math.min(head.line, anchor.line), Math.max(head.line, anchor.line), dist);
-      cm.setSelection(Pos(anchor.line + moved, anchor.ch), Pos(head.line + moved, head.ch));
+      cm.setSelection(new Pos(anchor.line + moved, anchor.ch), Pos(head.line + moved, head.ch));
     });
   }
 
@@ -44,10 +44,9 @@
               currentLine=1;
           }
           cm.setLine(previousLine, cm.getLine(previousLine)+"\n"+cm.getLine(currentLine));
-          if(previousLine==0){
+          if(previousLine===0){
               cm.setCursor(previousLine);
-              cm.setSelection
-          }else{              
+          }else{
               cm.setCursor(currentLine);
           }
       }else{

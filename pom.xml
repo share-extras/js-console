@@ -1,0 +1,57 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.sharextras</groupId>
+    <artifactId>javascript-console-parent</artifactId>
+    <version>1.0</version>
+    <name>JavaScript Console - Parent</name>
+    <packaging>pom</packaging>
+
+    <properties>
+    </properties>
+
+	<parent>
+        <groupId>org.alfresco.maven</groupId>
+        <artifactId>alfresco-sdk-parent</artifactId>
+        <version>2.1.0</version>
+    </parent>
+
+    <modules>
+        <module>javascript-console-repo</module>
+        <module>javascript-console-share</module>
+    </modules>
+
+       <distributionManagement>
+
+        <repository>
+            <id>${distribution.repo.release.id}</id>
+            <name>${distribution.repo.release.name}</name>
+            <url>${distribution.repo.release.url}</url>
+        </repository>
+
+        <snapshotRepository>
+            <id>${distribution.repo.snapshot.id}</id>
+            <name>${distribution.repo.snapshot.name}</name>
+            <url>${distribution.repo.snapshot.url}</url>
+        </snapshotRepository>
+
+    </distributionManagement>
+	
+	<!-- This repository is only needed to retrieve Alfresco parent POM. NOTE: This can be removed when/if Alfresco will be on Maven Central -->
+    <repositories>
+        <repository>
+            <id>alfresco-public</id>
+            <url>https://artifacts.alfresco.com/nexus/content/groups/public</url>
+        </repository>
+        <repository>
+            <id>alfresco-public-snapshots</id>
+            <url>https://artifacts.alfresco.com/nexus/content/groups/public-snapshots</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>daily</updatePolicy>
+            </snapshots>
+        </repository>
+    </repositories>
+
+</project>

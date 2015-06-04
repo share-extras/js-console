@@ -1,4 +1,14 @@
+// CodeMirror, copyright (c) by Marijn Haverbeke and others
+// Distributed under an MIT license: http://codemirror.net/LICENSE
+
 // Depends on jsonlint.js from https://github.com/zaach/jsonlint
+
+// declare global: jsonlint
+
+(function(mod) {
+    mod(CodeMirror);
+})(function(CodeMirror) {
+"use strict";
 
 CodeMirror.registerHelper("lint", "json", function(text) {
   var found = [];
@@ -12,4 +22,5 @@ CodeMirror.registerHelper("lint", "json", function(text) {
   catch(e) {}
   return found;
 });
-CodeMirror.jsonValidator = CodeMirror.lint.json; // deprecated
+
+});
