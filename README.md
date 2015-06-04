@@ -1,5 +1,6 @@
 Javascript Console Admin Console component for Alfresco 4.x-5.0
 ===============================================================
+[![Build Status](https://travis-ci.org/share-extras/js-console.svg?branch=master)](https://travis-ci.org/share-extras/js-console)
 
 Author: Florian Maul (fme AG)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Jens Goldhammer (fme AG)
