@@ -19,6 +19,9 @@
   list-style-type: none;
   cursor: pointer;
   white-space: nowrap;
+  display: inline-block;
+  clear: left;
+  float: left;
 }
 
 .CodeMirror-hint-active {

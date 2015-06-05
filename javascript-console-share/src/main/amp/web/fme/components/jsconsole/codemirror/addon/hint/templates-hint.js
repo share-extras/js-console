@@ -248,17 +248,16 @@
           var template = templates[j];
           if (startsWith(template.name, text)) {
             var label = template.name;
-
+            if (template.description) {
+              label += '- ' + template.description;
+            }
             var className = "CodeMirror-hint-template";
             if (template.className)
               className = template.className;
-
-
-
             var completion = {
               "className" : className,
               "text" : label,
-              "template" :template,
+              "template" : template,
             };
             completion.data = completion;
             completion.hint = function(cm, data, completion) {
@@ -266,9 +265,6 @@
             };
             completion.info = function(completion) {
               var content = '';
-              if (completion.template.description) {
-                  content= completion.template.description+"\n----------------------------------------\n";
-               }
               var tokens = parseTemplate(completion.template);
               for ( var i = 0; i < tokens.length; i++) {
                 var token = tokens[i];

@@ -1,29 +1,19 @@
 (function() {
-    "use strict";
-    
-    function jumpToDef(cm, open) {
-	var server = CodeMirror.tern.getServer(cm);
-	server.jumpToDef(cm);
-    }
-    
-    CodeMirror.commands.ternHyperlinkProcessor = function(cm) {
-	var open = cm.options.hyperlink.open;
-	jumpToDef(cm, open);
-    }
+  "use strict";
 
-    CodeMirror.registerHelper("hyperlink", "javascript", function() {
-	return {
-	    hasHyperlink : function(cm, node, e) {
-		if (node.className == 'cm-variable cm-def')
-		    return true;
-		if (node.className == 'cm-variable')
-		    return true;
-		return false;
-	    },
-	    processHyperlink : function(cm, node, e) {
-		cm.execCommand("ternHyperlinkProcessor");
-	    }
-	}
-	
-    });
+  function getHyperlink(cm, data) {
+    if (!data)
+      return;
+    var token = data.token, pos = data.pos;
+    var ts = CodeMirror.tern.getServer(cm);
+    return {
+        open : function() {
+          ts.jumpToDef(cm, pos);
+        }
+    }
+  }
+
+  CodeMirror.registerHelper("hyperlink", "javascript", function(cm, data) {
+    return getHyperlink(cm, data)
+  });
 })();

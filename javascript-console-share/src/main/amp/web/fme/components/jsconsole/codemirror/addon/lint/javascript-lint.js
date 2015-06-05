@@ -1,4 +1,11 @@
-(function() {
+// CodeMirror, copyright (c) by Marijn Haverbeke and others
+// Distributed under an MIT license: http://codemirror.net/LICENSE
+
+(function(mod) {
+    mod(CodeMirror);
+})(function(CodeMirror) {
+  "use strict";
+  // declare global: JSHINT
 
   var bogus = [ "Dangerous comment" ];
 
@@ -10,14 +17,14 @@
                  "Unclosed string", "Stopping, unable to continue" ];
 
   function validator(text, options) {
-    JSHINT(text, {undef: true, curly:true, unused:true, trailing:true,debug:true, sub:false}, options);
+    if (!window.JSHINT) return [];
+    JSHINT(text, options);
     var errors = JSHINT.data().errors, result = [];
     if (errors) parseErrors(errors, result);
     return result;
   }
 
   CodeMirror.registerHelper("lint", "javascript", validator);
-  CodeMirror.javascriptValidator = CodeMirror.lint.javascript; // deprecated
 
   function cleanup(error) {
     // All problems are warnings by default
@@ -121,4 +128,4 @@
       }
     }
   }
-})();
+});

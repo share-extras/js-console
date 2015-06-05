@@ -172,6 +172,7 @@ if (typeof String.prototype.startsWith != 'function') {
           this.createScriptsLoadMenu(listOfScripts);
           this.createScriptsSaveMenu(listOfScripts);
           this.createDocsMenu();
+          this.createDumpDisplayMenu();
 
           this.widgets.exportResultsButton = Alfresco.util.createYUIButton(this,
                   "exportResults-button", this.exportResultTableAsCSV);
@@ -192,6 +193,9 @@ if (typeof String.prototype.startsWith != 'function') {
                  { text : "Alfresco 4.1 Javascript Services API", url : "http://docs.alfresco.com/4.1/topic/com.alfresco.enterprise.doc/references/API-JS-Services.html", target:"_blank" },
                  { text : "Alfresco 4.2 Javascript API", url : "http://docs.alfresco.com/4.2/topic/com.alfresco.enterprise.doc/references/API-JS-Scripting-API.html", target:"_blank" },
                  { text : "Alfresco 4.2 Javascript Services API", url : "http://docs.alfresco.com/4.2/topic/com.alfresco.enterprise.doc/references/API-JS-Services.html", target:"_blank" },
+                 { text : "Alfresco 5.0 Javascript Scripting API", url : "http://docs.alfresco.com/5.0/references/API-JS-Scripting-API.html", target:"_blank" },
+                 { text : "Alfresco 5.0 Javascript Services API", url : "http://docs.alfresco.com/5.0/references/API-JS-Services.html", target:"_blank" },
+                 { text : "Alfresco 5.0 Javascript Root Objects", url : "http://docs.alfresco.com/5.0/references/API-JS-rootscoped.html", target:"_blank" },
                  { text : "Alfresco Javascript Cookbook", url : "http://wiki.alfresco.com/wiki/JavaScript_API_Cookbook", target:"_blank" }
                ],
                [
@@ -200,9 +204,11 @@ if (typeof String.prototype.startsWith != 'function') {
                  { text : "Alfresco 4.0 API Reference", url : "http://docs.alfresco.com/4.0/index.jsp?topic=%2Fcom.alfresco.enterprise.doc%2Freferences%2FAPI-FreeMarker-intro.html", target:"_blank"},
                  { text : "Alfresco 4.1 API Reference", url : "http://docs.alfresco.com/4.1/index.jsp?topic=%2Fcom.alfresco.enterprise.doc%2Freferences%2FAPI-FreeMarker-intro.html", target:"_blank"},
                  { text : "Alfresco 4.2 API Reference", url : "http://docs.alfresco.com/4.2/index.jsp?topic=%2Fcom.alfresco.enterprise.doc%2Freferences%2FAPI-FreeMarker-intro.html", target:"_blank"},
+                 { text : "Alfresco 5.0 API Reference", url : "http://docs.alfresco.com/5.0/references/API-FreeMarker-intro.html", target:"_blank"},
                  { text : "Freemarker Manual", url : "http://freemarker.sourceforge.net/docs/index.html", target:"_blank"}
                ],
                [
+				 { text : "Fulltext Search Reference", url : "http://docs.alfresco.com/5.0/concepts/rm-searchsyntax-intro.html", target:"_blank" },
                  { text : "Lucene Search Reference", url : "http://wiki.alfresco.com/wiki/Search", target:"_blank" },
                  { text : "Alfresco XPath Search", url : "http://wiki.alfresco.com/wiki/Search_Documentation", target:"_blank" }
                ],
@@ -346,7 +352,7 @@ if (typeof String.prototype.startsWith != 'function') {
                   name: "dumpDisplayButton",
                   menu: displayMenu,
                   container: "splitButtonContainer",
-                  disabled:true
+                  disabled: false
                 });
 
               this.widgets.dumpDisplayMenu.on("appendTo", function () {
@@ -370,22 +376,7 @@ if (typeof String.prototype.startsWith != 'function') {
                    i.owner.onExecuteClick(i.owner, e);
              }
 
-          // Hook into ctrl-z for Undo
-          if (e.keyCode == 76 && (e.ctrlKey || e.metaKey) && !e.altKey) {
-             e.stop();
-             i.owner.widgets.codeMirrorScript.undo(i.owner, e);
-          }
 
-         // Hook into ctrl-z for Undo
-         if (e.keyCode == 122 && (e.ctrlKey || e.metaKey) && !e.altKey) {
-            e.stop();
-            i.owner.widgets.codeMirrorScript.undo(i.owner, e);
-         }
-         // Hook into ctrl-y for Redo
-         if (e.keyCode == 123 && (e.ctrlKey || e.metaKey) && !e.altKey) {
-            e.stop();
-            i.owner.widgets.codeMirrorScript.redo(i.owner, e);
-         }
          // Hook into ctrl+/ for Comment/Uncomment
          if (e.type=="keydown" && e.keyCode == 55 && (e.ctrlKey || e.metaKey) && !e.altKey) {
             e.stop();
@@ -432,17 +423,17 @@ if (typeof String.prototype.startsWith != 'function') {
 
          CodeMirror.commands.autocomplete = function(cm) {
              CodeMirror.showHint(cm, myHint);
-           }
+           };
 
          // Attach the CodeMirror highlighting
          var uiMirrorScript = new CodeMirrorUI(this.widgets.scriptInput, {imagePath:Alfresco.constants.URL_RESCONTEXT+'fme/components/jsconsole/codemirror-ui/images', searchMode:'no'} ,{
              mode : "javascript",
              styleActiveLine: true,
              showCursorWhenSelecting :true,
-             gutters: ["CodeMirror-linenumbers", "CodeMirror-lint-markers"],
-             lintWith: function(text){
-                 return CodeMirror.lint.javascript(text, self.javascriptCommands.globalMap);
-             },
+            // gutters: ["CodeMirror-linenumbers", "CodeMirror-lint-markers"],
+          //   lintWith: function(text){
+          //       return CodeMirror.lint.javascript(text, self.javascriptCommands.globalMap);
+          //   },
              lineNumbers: true,
              lineWrapping: true,
              matchBrackets: true,
@@ -454,7 +445,10 @@ if (typeof String.prototype.startsWith != 'function') {
              extraKeys: {
                  "'.'": passAndHint,
                  "Ctrl-I": function(cm) { CodeMirror.tern.showType(cm); },
-                 "Ctrl-Space": "autocomplete"
+                 "Ctrl-Space": "autocomplete",
+                 "Ctrl-Enter": function(cm){
+                   cm.owner.onExecuteClick(cm.owner);
+                 }
              }
          });
 
@@ -462,7 +456,8 @@ if (typeof String.prototype.startsWith != 'function') {
          this.widgets.codeMirrorScript.on("cursorActivity", function(cm){
              var currentLine = cm.getCursor().line+1;
              var column = cm.getCursor().ch;
-             var results = CodeMirror.lint.javascript(cm.getDoc().getValue(), self.javascriptCommands.globalMap);
+             //var results = CodeMirror.lint.javascript(cm.getDoc().getValue(), self.javascriptCommands.globalMap);
+             var results =[];
              var info = "Line "+currentLine +" \t - Column "+column+" \t - Errors/Warnings " +results.length;
              var text = YAHOO.util.Selector.query('.scriptStatusLine', null, true);
              text.innerHTML=info;
@@ -1117,6 +1112,16 @@ if (typeof String.prototype.startsWith != 'function') {
              Dom.setStyle(Dom.get(this.id + "-documentDisplay"), "display", "inline");
              this.widgets.documentField.innerHTML = this.options.documentName + " (" + this.options.documentNodeRef +")";
          }
+         
+         this.options.documentDump = getQueryVariable("dump");
+         if(this.options.documentDump){
+         	// replace text in content editor and freemarker editor
+         	// execute call to server onExecute
+         	// handle the success call to jump to the dumpTab to see the result
+         	this.widgets.codeMirrorScript.setValue("dump(document);");
+         	this.onExecuteClick();
+         	this.widgets.outputTabs.selectTab(6);
+         }
 
 // var help = [
 // '%+r **** termlib.js text wrap sample **** %-r',
@@ -1484,7 +1489,7 @@ if (typeof String.prototype.startsWith != 'function') {
               // create a marker for the editor to indicate that there was an error!
               // offset by -1 for internal 0-based count
               var line = parseInt(callStackLineIndicator[1])+result.scriptOffset-1;
-              // is the line actually part of the user script? 
+              // is the line actually part of the user script?
               if (line >= 0) {
                   if(this.widgets.codeMirrorScript.somethingSelected()){
                       line = line + this.widgets.codeMirrorScript.getCursor().line-1;
@@ -1751,7 +1756,7 @@ if (typeof String.prototype.startsWith != 'function') {
 
 
           var dt = new YAHOO.widget.ScrollingDataTable(this.id + "-dump", myColumnDefs,ds,{
-             draggableColumns:true, width: "100%", height: "700px"
+             draggableColumns:true, width: "100%", height: "1350px"
           });
 
           var filterTimeout = null;
@@ -1837,6 +1842,7 @@ if (typeof String.prototype.startsWith != 'function') {
               tt.hide();
           });
           var that=this;
+
           var refreshButton = function() {
               if (Dom.inDocument('nowhere')) {
                   menu.render();

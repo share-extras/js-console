@@ -16,8 +16,6 @@
 	"serverEdition" : "${edition}",
 	"serverSchema" : "${schema}",
 	"serverVersion" : "${version}",
-	"licenseDaysLeft" : "${licenseDaysLeft}",
-	"modules" : "${modules}",
 	"transactionsCount" : "${transactionsCount}",
 	"transactionInfos" : "${transactionInfos}",
 	"tenantCount" : "${tenantCount}",

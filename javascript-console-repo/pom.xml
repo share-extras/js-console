@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>org.alfresco.maven</groupId>
-        <artifactId>alfresco-sdk-parent</artifactId>
-        <version>1.1.1</version>
-    </parent>
-
-    <groupId>org.sharextras</groupId>
     <artifactId>javascript-console-repo</artifactId>
-    <version>0.6.0</version>
     <name>JavaScript Console - Repository</name>
     <description>Alfresco Share-Extras JavaScript Console - Repository Module</description>
     <packaging>amp</packaging>
+	
+ 	<parent>
+        <groupId>org.sharextras</groupId>
+        <artifactId>javascript-console-parent</artifactId>
+        <version>1.0</version>
+    </parent>
 
+	
     <developers>
         <developer>
             <id>f.maul</id>
@@ -31,35 +31,43 @@
         </developer>
     </developers>
 
-    <!-- | SDK properties have sensible defaults in the SDK parent, | but you can override the properties below to use another version. | For more available properties see the alfresco-sdk-parent POM. -->
+    <!-- 
+       | SDK properties have sensible defaults in the SDK parent,
+       | but you can override the properties below to use another version. 
+       | For more available properties see the alfresco-sdk-parent POM. 
+       -->
     <properties>
-        <!-- alfresco-sdk-parent POM references 4.2.c still -->
-        <alfresco.groupId>org.alfresco</alfresco.groupId>
-        <alfresco.version>4.2.f</alfresco.version>
-
+        <!--
+            | Defines the groupId for the Alfresco Artifacts to work against. As of 4.2 the only allowed value is: org.alfresco
+            | NOTE: See http://docs.alfresco.com/4.2/concepts/dev-extensions-maven-sdk-tutorials-alfresco-enterprise.html for details
+        -->
+        <!-- <alfresco.groupId>org.alfresco</alfresco.groupId> -->
+        <!-- Defines the Alfresco version to work against.
+             Community versions are typically identified by major.minor.character (4.2.a) while Enterprise versions are identified by major.minor.digit (4.2.0)  -->
+        <!-- <alfresco.version>5.0.d</alfresco.version>-->
+        <!-- <app.log.root.level>ERROR</app.log.root.level>-->
+        <!-- <alfresco.data.location>alf_data_dev</alfresco.data.location>-->
+        <!-- This controls which properties will be picked in src/test/properties for embedded run -->
+        <!--<env>local</env>-->
+        <!-- Defines the target WAR artifactId to run this amp, only used with the -Pamp-to-war profile
+             | Defaults to a vanilla repository AMP, but could point to your foundation / aggregator WAR 
+        .    | Allowed values for Community: alfresco | share
+             | Allowed values for Enterprise: alfresco-enterprise | share-enterprise
+             <alfresco.client.war>${alfresco.repo.artifactId}</alfresco.client.war> -->
+        <!-- Defines the target WAR groupId to run this amp, only used with the -Pamp-to-war switch
+        .    | Could be org.alfresco or your corporate groupId -->
+        <!-- <alfresco.client.war.groupId>${alfresco.groupId}</alfresco.client.war.groupId> -->
+        
+        <!-- Defines the target WAR version to run this amp, only used with the -Pamp-to-war switch -->
+        <!-- <alfresco.client.war.version>${alfresco.version}</alfresco.client.war.version>-->
     </properties>
-
-    <distributionManagement>
-
-        <repository>
-            <id>${distribution.repo.release.id}</id>
-            <name>${distribution.repo.release.name}</name>
-            <url>${distribution.repo.release.url}</url>
-        </repository>
-
-        <snapshotRepository>
-            <id>${distribution.repo.snapshot.id}</id>
-            <name>${distribution.repo.snapshot.name}</name>
-            <url>${distribution.repo.snapshot.url}</url>
-        </snapshotRepository>
-
-    </distributionManagement>
 
     <!-- Here we realize the connection with the Alfresco selected platform (e.g.version and edition) -->
     <dependencyManagement>
         <dependencies>
-            <!-- This will import the dependencyManagement for all artifacts in the selected Alfresco version/edition (see http://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#Importing_Dependencies) NOTE: You still need to define dependencies in your POM, 
-                but you can omit version as it's enforced by this dependencyManagement. NOTE: It defaults to the latest version this SDK pom has been tested with, but alfresco version can/should be overridden in your project's pom -->
+            <!-- This will import the dependencyManagement for all artifacts in the selected Alfresco version/edition (see http://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#Importing_Dependencies)
+                NOTE: You still need to define dependencies in your POM, but you can omit version as it's enforced by this dependencyManagement. NOTE: It defaults
+                to the latest version this SDK pom has been tested with, but alfresco version can/should be overridden in your project's pom -->
             <dependency>
                 <groupId>${alfresco.groupId}</groupId>
                 <artifactId>alfresco-platform-distribution</artifactId>
@@ -70,7 +78,8 @@
         </dependencies>
     </dependencyManagement>
 
-    <!-- Following dependencies are needed for compiling Java code in src/main/java; <scope>provided</scope> is inherited for each of the following; for more info, please refer to alfresco-platform-distribution POM -->
+    <!-- Following dependencies are needed for compiling Java code in src/main/java; <scope>provided</scope> is inherited for each of the following;
+        for more info, please refer to alfresco-platform-distribution POM -->
     <dependencies>
         <dependency>
             <groupId>${alfresco.groupId}</groupId>
@@ -78,232 +87,32 @@
         </dependency>
     </dependencies>
 
-    <!-- This repository is only needed to retrieve Alfresco parent POM. NOTE: This can be removed when/if Alfresco will be on Maven Central -->
-    <repositories>
-        <repository>
-            <id>alfresco-public</id>
-            <url>https://artifacts.alfresco.com/nexus/content/groups/public</url>
-        </repository>
-        <repository>
-            <id>alfresco-public-snapshots</id>
-            <url>https://artifacts.alfresco.com/nexus/content/groups/public-snapshots</url>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>daily</updatePolicy>
-            </snapshots>
-        </repository>
-    </repositories>
-
-    <build>
-        <finalName>${project.artifactId}-${project.version}</finalName>
-        <resources>
-            <resource>
-                <filtering>${app.filtering.enabled}</filtering>
-                <directory>src/main/resources</directory>
-            </resource>
-            <resource>
-                <targetPath>${app.amp.output.folder}</targetPath>
-                <filtering>${app.filtering.enabled}</filtering>
-                <directory>src/main/amp</directory>
-            </resource>
-        </resources>
-        <plugins>
-
-            <plugin>
-                <artifactId>maven-clean-plugin</artifactId>
-            </plugin>
-
-            <plugin>
-                <artifactId>maven-dependency-plugin</artifactId>
-            </plugin>
-
-            <plugin>
-                <artifactId>maven-resources-plugin</artifactId>
-            </plugin>
-
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <!-- override alfresco-sdk-parent with 1.6 for Alfresco 4.0/4.1 compatibility -->
-                    <source>1.6</source>
-                    <target>1.6</target>
-                </configuration>
-            </plugin>
-
-            <!-- alfresco-sdk-parent does not take care of creating sources JAR -->
-            <plugin>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>2.2.1</version>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <goals>
-                            <goal>jar-no-fork</goal>
-                        </goals>
-                        <configuration>
-                            <!-- otherwise content from app.amp.output.folder is included -->
-                            <excludeResources>true</excludeResources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <artifactId>maven-jar-plugin</artifactId>
-                <!-- alfresco-sdk-parent does not take care of creating a JAR other modules can depend on / compile against -->
-                <executions>
-                    <execution>
-                        <id>make-a-jar</id>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <!-- Build alternative artifacts (installable JAR, overlay WAR) -->
-            <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.4</version>
-                <configuration>
-                    <appendAssemblyId>false</appendAssemblyId>
-                    <attach>false</attach>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>make-installable-jar</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <configuration>
-                            <classifier>installable</classifier>
-                            <finalName>${project.build.finalName}-installable</finalName>
-                            <descriptor>src/main/assembly/installable-jar.xml</descriptor>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>make-overlay-war</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <configuration>
-                            <classifier>overlay</classifier>
-                            <finalName>${project.build.finalName}-overlay</finalName>
-                            <descriptor>src/main/assembly/overlay-war.xml</descriptor>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <artifactId>maven-war-plugin</artifactId>
-            </plugin>
-
-            <plugin>
-                <artifactId>maven-surefire-plugin</artifactId>
-            </plugin>
-
-            <plugin>
-                <artifactId>maven-install-plugin</artifactId>
-            </plugin>
-
-            <!-- Attach alternative artifacts -->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <version>1.8</version>
-                <executions>
-                    <execution>
-                        <id>attach-artifacts</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>attach-artifact</goal>
-                        </goals>
-                        <configuration>
-                            <artifacts>
-                                <!-- alfresco-sdk-parent does not take care of attaching the classes JAR to the project artifacts -->
-                                <artifact>
-                                    <file>${project.build.directory}/${project.build.finalName}.jar</file>
-                                    <type>jar</type>
-                                </artifact>
-                                <artifact>
-                                    <file>${project.build.directory}/${project.build.finalName}-installable.jar</file>
-                                    <type>jar</type>
-                                    <classifier>installable</classifier>
-                                </artifact>
-                                <artifact>
-                                    <file>${project.build.directory}/${project.build.finalName}-overlay.war</file>
-                                    <type>war</type>
-                                    <classifier>overlay</classifier>
-                                </artifact>
-                            </artifacts>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.alfresco.maven.plugin</groupId>
-                <artifactId>alfresco-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
-        <pluginManagement>
-            <plugins>
-                <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself. -->
-                <plugin>
-                    <groupId>org.eclipse.m2e</groupId>
-                    <artifactId>lifecycle-mapping</artifactId>
-                    <version>1.0.0</version>
-                    <configuration>
-                        <lifecycleMappingMetadata>
-                            <pluginExecutions>
-                                <pluginExecution>
-                                    <pluginExecutionFilter>
-                                        <groupId>org.alfresco.maven.plugin</groupId>
-                                        <artifactId>alfresco-maven-plugin</artifactId>
-                                        <versionRange>[1.0.2,)</versionRange>
-                                        <goals>
-                                            <goal>set-version</goal>
-                                        </goals>
-                                    </pluginExecutionFilter>
-                                    <action>
-                                        <ignore></ignore>
-                                    </action>
-                                </pluginExecution>
-                            </pluginExecutions>
-                        </lifecycleMappingMetadata>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-    </build>
 
     <profiles>
-
+		
+		<!-- Enterprise profile, manually activated, automatically adds support for Enterprise edition development (dependencies) -->
         <profile>
-            <!-- Compilation against Java 6 is required for compatibility with Alfresco 3.4 - 4.1 -->
-            <!-- This profile allows cross-compilation when Maven runs in a Java environment other than Java 6 -->
-            <id>Java6-crossCompile</id>
-            <build>
-                <pluginManagement>
-                    <plugins>
-                        <plugin>
-                            <artifactId>maven-compiler-plugin</artifactId>
-                            <configuration>
-                                <fork>true</fork>
-                                <source>1.6</source>
-                                <target>1.6</target>
-                                <ompilerVersion>1.6</ompilerVersion>
-                                <executable>${jdk6.executable}</executable>
-                            </configuration>
-                        </plugin>
-                    </plugins>
-                </pluginManagement>
-            </build>
+            <id>enterprise</id>
+            <dependencies>
+                <dependency>
+                    <groupId>${alfresco.groupId}</groupId>
+                    <artifactId>alfresco-enterprise-repository</artifactId>
+                    <version>${alfresco.version}</version>
+                    <scope>provided</scope>
+                </dependency>
+            </dependencies>
         </profile>
+		
+		<profile>
+			<id>amp-to-war</id>
+			<dependencies>
+				<dependency>
+					<groupId>org.alfresco.maven</groupId>
+					<artifactId>alfresco-rad</artifactId>
+					<version>${maven.alfresco.version}</version>
+				</dependency>
+			</dependencies>
+		</profile>
 
     </profiles>
 
