@@ -159,14 +159,14 @@ var FreemarkerParser = Editor.Parser = (function() {
             })();
 
         // The parser. The structure of this function largely follows that of
-        // parseXML in parsexml.js 
+        // parseXML in parsexml.js
         function parseFreemarker(source) {
             var tokens = tokenizeFreemarker(source), token;
             var cc = [base];
             var tokenNr = 0, indented = 0;
             var currentTag = null, context = null;
             var consume;
-            
+
             function push(fs) {
                 for (var i = fs.length - 1; i >= 0; i--)
                     cc.push(fs[i]);
@@ -179,7 +179,7 @@ var FreemarkerParser = Editor.Parser = (function() {
                 push(arguments);
                 consume = false;
             }
-            
+
             function markErr() {
                 token.style += " freemarker-error";
             }
@@ -208,7 +208,7 @@ var FreemarkerParser = Editor.Parser = (function() {
                     if ((context && /^<\/\#/.test(nextChars)) ||
                         (context && /^\[\/\#/.test(nextChars))) {
                         context = context.prev;
-                    } 
+                    }
 
                     while (context && !context.startOfLine) {
                         context = context.prev;
@@ -250,7 +250,7 @@ var FreemarkerParser = Editor.Parser = (function() {
             function element(style, content) {
                 if (content == "<#") {
                     cont(tagname, notEndTag, endtag("/>", ">", tokenNr == 1));
-                } else if (content == "</#") { 
+                } else if (content == "</#") {
                     cont(closetagname, expect(">"));
                 } else if(content == "[" && style == "freemarker-boundary") {
                     cont(hashOrCloseHash);
@@ -288,7 +288,7 @@ var FreemarkerParser = Editor.Parser = (function() {
                     pass();
                 }
             }
-            
+
             function closetagname(style, content) {
                 if (style == "freemarker-identifier") {
                     token.style = "freemarker-directive";
@@ -303,7 +303,7 @@ var FreemarkerParser = Editor.Parser = (function() {
 
             function notEndTag(style, content) {
                 if (content == "/>" || content == ">") {
-                    pass(); 
+                    pass();
                 } else {
                     cont(notEndTag);
                 }
@@ -311,7 +311,7 @@ var FreemarkerParser = Editor.Parser = (function() {
 
             function notHashEndTag(style, content) {
                 if (content == "/]" || content == "]") {
-                    pass(); 
+                    pass();
                 } else {
                     cont(notHashEndTag);
                 }
@@ -322,19 +322,19 @@ var FreemarkerParser = Editor.Parser = (function() {
                     if (content == closeTagPattern || (content == endTagPattern && autoSelfClosers.hasOwnProperty(currentTag))) {
                         cont();
                     } else if (content == endTagPattern) {
-                        pushContext(currentTag, startOfLine); 
+                        pushContext(currentTag, startOfLine);
                         cont();
                     } else {
-                        markErr(); 
+                        markErr();
                         cont(arguments.callee);
                     }
                 };
             }
-            
-            
+
+
             return {
                 indentation: function() { return indented; },
-                    
+
                 next: function() {
                     token = tokens.next();
                     if (token.style == "whitespace" && tokenNr == 0)
@@ -345,10 +345,10 @@ var FreemarkerParser = Editor.Parser = (function() {
                         indented = tokenNr = 0;
                         token.indentation = computeIndentation(context);
                     }
-                    
+
                     if (token.style == "whitespace" || token.type == "freemarker-comment")
                         return token;
-                    
+
                     while(true) {
                         consume = false;
                         cc.pop()(token.style, token.content);
@@ -357,11 +357,11 @@ var FreemarkerParser = Editor.Parser = (function() {
                         }
                     }
                 },
-                    
+
                 copy: function(){
                     var _cc = cc.concat([]), _tokenState = tokens.state, _context = context;
                     var parser = this;
-                    
+
                     return function(input){
                         cc = _cc.concat([]);
                         tokenNr = indented = 0;

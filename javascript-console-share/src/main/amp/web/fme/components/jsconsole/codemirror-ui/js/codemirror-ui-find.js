@@ -22,26 +22,26 @@ function find(){
         alert('You must enter something to search for.');
         return;
     }
-	
+
 	if(document.getElementById('regex').checked){
 		findString = new RegExp(findString);
 	}
-	
+
 	cursor = codeMirrorUI.mirror.getSearchCursor(findString, true);
     var found = moveCursor(cursor);
-	
+
 	//if we didn't find anything, let's check to see if we should start from the top
 	if(!found && document.getElementById('wrap').checked){
 		cursor = codeMirrorUI.mirror.getSearchCursor(findString, false);
 		found = moveCursor(cursor);
 	}
-	
+
 	if(found){
 		cursor.select();
 	}else{
 		alert("No instances found. (Maybe you need to enable 'Wrap Search'?)");
 	}
-	
+
 }
 
 function moveCursor(cursor){
@@ -57,15 +57,15 @@ function moveCursor(cursor){
 
 function getFindDirection(){
     var dRadio = document.forms[0].elements['direction'];
-    
+
     for (var i = 0; i < dRadio.length; i++) {
         if (dRadio[i].checked) {
             return dRadio[i].value;
         }
     }
-    
+
     return 'no-value?';
-    
+
 }
 
 

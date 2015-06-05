@@ -22,6 +22,14 @@
       this.minChars = options.minChars;
       this.style = options.style;
       this.showToken = options.showToken;
+      if (options.showTokenTypes) {
+        this.showTokenTypes = [];
+        for ( var i = 0; i < options.showTokenTypes.length; i++) {
+          var showTokenType = options.showTokenTypes[i];
+          var type = showTokenType.type || showTokenType, style = showTokenType.style || null;
+          this.showTokenTypes.push({type : type, style : style});
+        }
+      }
       this.delay = options.delay;
     }
     if (this.style == null) this.style = DEFAULT_TOKEN_STYLE;
@@ -57,6 +65,18 @@
       if (state.overlay) {
         cm.removeOverlay(state.overlay);
         state.overlay = null;
+      }
+      if (state.showTokenTypes) {
+        var pos = cm.getCursor(), type = cm.getTokenTypeAt(pos);
+        for (var i = 0; i < state.showTokenTypes.length; i++) {
+          if (type === state.showTokenTypes[i].type) {
+            var token = cm.getTokenAt(pos);
+            if (token.string)
+              cm.addOverlay(state.overlay = makeOverlay(token.string, false, state.showTokenTypes[i].style || state.style));
+            break;
+          }
+        }
+        return;
       }
       if (!cm.somethingSelected() && state.showToken) {
         var re = state.showToken === true ? /[\w$]/ : state.showToken;

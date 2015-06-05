@@ -65,7 +65,7 @@ CodeMirrorUI.prototype = {
     if (this.saveButton) this.addClass(this.saveButton,'inactive');
     if (this.undoButton) this.addClass(this.undoButton,'inactive');
     if (this.redoButton) this.addClass(this.redoButton,'inactive');
-    
+
   },
   setDefaults: function(object, defaults) {
     for (var option in defaults) {
@@ -128,17 +128,17 @@ CodeMirrorUI.prototype = {
     this.findButton.value = "Find";
     this.findButton.onclick = function(){this.find()}.cmuiBind(this);
 
-    this.connect(this.findString, "keyup", function(e){ 
+    this.connect(this.findString, "keyup", function(e){
       var code = e.keyCode;
       if (code == 13){
-        this.find(this.mirror.getCursor(false)) 
+        this.find(this.mirror.getCursor(false))
       }else{
         if(!this.findString.value == ""){
           this.find(this.mirror.getCursor(true))
-        } 
+        }
       }
       this.findString.focus();
-      
+
     }.cmuiBind(this) );
 
     var regLabel = document.createElement("label");
@@ -161,7 +161,7 @@ CodeMirrorUI.prototype = {
     this.replaceString.type = "text";
     this.replaceString.size = 8;
 
-    this.connect(this.replaceString, "keyup", function(e){ 
+    this.connect(this.replaceString, "keyup", function(e){
       var code = e.keyCode;
       if (code == 13){
         this.replace()
@@ -433,12 +433,12 @@ CodeMirrorUI.prototype = {
                       this.mirror.setSelection({line:Number(line-1),ch:0},{line:Number(line),ch:0});
                       this.mirror.focus();
                     }
-                  
+
               },
               obj: [ ],
               scope: this
           }
-      });     
+      });
   },
   /*
    line: function(){

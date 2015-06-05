@@ -60,7 +60,7 @@
   background-color: white;
   white-space: pre-wrap;
 
-  max-width: 150em;
+  max-width: 40em;
   position: absolute;
   z-index: 10;
   -webkit-box-shadow: 2px 3px 5px rgba(0,0,0,.2);
@@ -76,6 +76,7 @@
 
 .CodeMirror-Tern-hint-doc {
   max-width: 25em;
+  margin-top: -3px;
 }
 
 .CodeMirror-Tern-fname { color: black; }
