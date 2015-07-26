@@ -222,7 +222,7 @@ if (typeof String.prototype.startsWith != 'function') {
              this.widgets.docsMenuButton = new YAHOO.widget.Button({
                    id: "docsButton",
                    name: "docsButton",
-                   label: this.msg("button.docs"),
+                   label: this.msg("button.docs") + (Alfresco.constants.MENU_ARROW_SYMBOL !== undefined ? ('&nbsp;' + Alfresco.constants.MENU_ARROW_SYMBOL) : ''),
                    type: "menu",
                    menu: docsMenuItems,
                    container: this.id + "-documentation"
@@ -252,7 +252,7 @@ if (typeof String.prototype.startsWith != 'function') {
               this.widgets.saveMenuButton  = new YAHOO.widget.Button({
                   id: "saveButton",
                   name: "saveButton",
-                  label: this.msg("button.save.script"),
+                  label: this.msg("button.save.script") + (Alfresco.constants.MENU_ARROW_SYMBOL !== undefined ? ('&nbsp;' + Alfresco.constants.MENU_ARROW_SYMBOL) : ''),
                   type: "menu",
                   menu: saveMenuItems,
                   container: this.id + "-scriptsave"
@@ -279,7 +279,7 @@ if (typeof String.prototype.startsWith != 'function') {
               this.widgets.loadMenuButton = new YAHOO.widget.Button({
                   id: "loadButton",
                   name: "loadButton",
-                  label: this.msg("button.load.script"),
+                  label: this.msg("button.load.script") + (Alfresco.constants.MENU_ARROW_SYMBOL !== undefined ? ('&nbsp;' + Alfresco.constants.MENU_ARROW_SYMBOL) : ''),
                   type: "menu",
                   menu: loadMenuItems,
                   container: this.id + "-scriptload"
@@ -310,7 +310,7 @@ if (typeof String.prototype.startsWith != 'function') {
                 this.widgets.themeMenuButton = new YAHOO.widget.Button({
                       id: "themeButton",
                       name: "themeButton",
-                      label: this.msg("button.codemirror.theme"),
+                      label: this.msg("button.codemirror.theme") + (Alfresco.constants.MENU_ARROW_SYMBOL !== undefined ? ('&nbsp;' + Alfresco.constants.MENU_ARROW_SYMBOL) : ''),
                       type: "menu",
                       menu: themeMenuItems,
                       container: this.id + "-theme"
