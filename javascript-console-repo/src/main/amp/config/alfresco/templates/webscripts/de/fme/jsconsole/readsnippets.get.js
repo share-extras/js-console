@@ -14,7 +14,7 @@ var prepareOutput= function prepareOutput(folder) {
 }
 
 var findAvailableSnippets= function findAvailableScripts(){
-    var snippetsFolder = search.xpathSearch("/app:company_home/app:dictionary/cm:jsconsole/cm:snippets")[0];
+    var snippetsFolder = search.selectNodes("/app:company_home/app:dictionary/cm:jsconsole/cm:snippets")[0];
     if (snippetsFolder) {
     	model.scripts = jsonUtils.toJSONString(prepareOutput(snippetsFolder));
     }

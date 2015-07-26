@@ -3,7 +3,7 @@
 var isUpdate = args.isUpdate;
 
 var saveScript = function saveScript(){
-    var scriptFolder = search.xpathSearch("/app:company_home/app:dictionary/app:scripts")[0];
+    var scriptFolder = search.selectNodes("/app:company_home/app:dictionary/app:scripts")[0];
     if (scriptFolder) {
         var scriptNode;
         if(isUpdate && isUpdate=="true"){
