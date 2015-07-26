@@ -1,6 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
-<beans>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+           http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
 	<bean id="webscript.de.fme.jsconsole.execute.post" class="de.fme.jsconsole.ExecuteWebscript" parent="webscript">
 		<property name="scriptUtils" ref="utilsScript"/>
@@ -21,7 +22,6 @@
 		<property name="auditService" ref="AuditService" />
 		<property name="sysAdminParams" ref="sysAdminParams" />
 		<property name="lockService" ref="LockService" />
-
 	</bean>
 	
 	<bean id="jconsole.extension.dictionaryBootstrap" parent="dictionaryModelBootstrap">
