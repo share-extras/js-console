@@ -168,6 +168,11 @@
 	font-size:10pt;
 }
 
+.javascript-console .CodeMirror pre
+{
+    /* fix z-index so pre isn't at same z-index layer as container div of drop-down menus */
+    z-index: 1;
+}
 
 .javascript-console .yui-nav {
 	margin-top: 0.5em;
