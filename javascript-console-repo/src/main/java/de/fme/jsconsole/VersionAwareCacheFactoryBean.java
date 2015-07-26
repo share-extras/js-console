@@ -3,6 +3,8 @@
  */
 package de.fme.jsconsole;
 
+import java.lang.reflect.Method;
+
 import org.alfresco.repo.cache.SimpleCache;
 import org.alfresco.service.descriptor.Descriptor;
 import org.alfresco.service.descriptor.DescriptorService;
@@ -15,8 +17,10 @@ import org.springframework.beans.factory.config.AbstractFactoryBean;
  */
 public class VersionAwareCacheFactoryBean extends AbstractFactoryBean<Object>
 {
-    protected String alf42ClassName;
+
     protected String preAlf42ClassName;
+
+    protected String cacheName;
 
     protected DescriptorService descriptorService;
 
@@ -25,8 +29,8 @@ public class VersionAwareCacheFactoryBean extends AbstractFactoryBean<Object>
     {
         PropertyCheck.mandatory(this, "descriptorService", this.descriptorService);
 
-        PropertyCheck.mandatory(this, "alf42ClassName", this.alf42ClassName);
         PropertyCheck.mandatory(this, "preAlf42ClassName", this.preAlf42ClassName);
+        PropertyCheck.mandatory(this, "cacheName", this.cacheName);
 
         super.afterPropertiesSet();
     }
@@ -42,23 +46,22 @@ public class VersionAwareCacheFactoryBean extends AbstractFactoryBean<Object>
 
         final VersionNumber alf42Version = new VersionNumber("4.2");
 
-        final String className;
+        Object resultObject = null;
 
+        // need to do most of this reflectively as classes may not be available between 4.0/4.1 and 4.2/5.0
         if (alf42Version.compareTo(versionNumber) <= 0)
         {
-            className = this.alf42ClassName;
+            final Object cacheFactory = getBeanFactory().getBean("cacheFactory");
+            Method createCacheMethod = cacheFactory.getClass().getMethod("createCache", String.class);
+            resultObject = createCacheMethod.invoke(cacheFactory, this.cacheName);
         }
         else
         {
-            className = this.preAlf42ClassName;
-        }
-
-        Object resultObject = null;
-        // need to do this reflectively as 4.2 class is not available in 4.0/4.1
-        final Class<?> forName = Class.forName(className);
-        if (SimpleCache.class.isAssignableFrom(forName))
-        {
-            resultObject = forName.newInstance();
+            final Class<?> forName = Class.forName(this.preAlf42ClassName);
+            if (SimpleCache.class.isAssignableFrom(forName))
+            {
+                resultObject = forName.newInstance();
+            }
         }
 
         return resultObject;
@@ -74,21 +77,21 @@ public class VersionAwareCacheFactoryBean extends AbstractFactoryBean<Object>
     }
 
     /**
-     * @param alf42ClassName
-     *            the alf42ClassName to set
-     */
-    public final void setAlf42ClassName(final String alf42ClassName)
-    {
-        this.alf42ClassName = alf42ClassName;
-    }
-
-    /**
      * @param preAlf42ClassName
      *            the preAlf42ClassName to set
      */
     public final void setPreAlf42ClassName(final String preAlf42ClassName)
     {
         this.preAlf42ClassName = preAlf42ClassName;
+    }
+
+    /**
+     * @param cacheName
+     *            the cacheName to set
+     */
+    public void setCacheName(String cacheName)
+    {
+        this.cacheName = cacheName;
     }
 
     /**

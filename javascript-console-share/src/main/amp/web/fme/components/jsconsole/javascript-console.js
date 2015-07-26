@@ -1514,20 +1514,20 @@ if (typeof String.prototype.startsWith != 'function') {
                                       this.showLoadingAjaxSpinner(false);
                                       
                                       if (YAHOO.lang.isArray(response.json.result)) {
-                                          this.printExecutionStats(res.json);
+                                          this.printExecutionStats(response.json);
                                       } else {
                                           this.printExecutionStats();
                                       }
                                       
                                       if (YAHOO.lang.isArray(response.json.result)) {
-                                          this.widgets.templateOutputHtml.innerHTML = res.json.renderedTemplate;
-                                          this.widgets.templateOutputText.innerHTML = $html(res.json.renderedTemplate);
-                                          this.widgets.codeMirrorJSON.setValue(formatter.formatJson(res.json.renderedTemplate,"  "));
+                                          this.widgets.templateOutputHtml.innerHTML = response.json.renderedTemplate;
+                                          this.widgets.templateOutputText.innerHTML = $html(response.json.renderedTemplate);
+                                          this.widgets.codeMirrorJSON.setValue(formatter.formatJson(response.json.renderedTemplate,"  "));
                                           this.widgets.codeMirrorJSON.focus();
                                           
-                                          if (res.json.spaceNodeRef) {
-                                              this.widgets.nodeField.value = res.json.spaceNodeRef;
-                                              this.widgets.pathField.innerHTML = res.json.spacePath;
+                                          if (response.json.spaceNodeRef) {
+                                              this.widgets.nodeField.value = response.json.spaceNodeRef;
+                                              this.widgets.pathField.innerHTML = response.json.spacePath;
                                           }
                                       }
             
@@ -1537,7 +1537,7 @@ if (typeof String.prototype.startsWith != 'function') {
                                       this.widgets.executeButton.disabled = false;
             
                                       if (YAHOO.lang.isArray(response.json.result)) {
-                                          this.showResultTable(res.json.result);
+                                          this.showResultTable(response.json.result);
                                           Dom.removeClass(this.widgets.scriptOutput, 'jserror');
                                           Dom.addClass(this.widgets.scriptOutput, 'jsgreen');
                                           this.runLikeCrazy();
@@ -1644,14 +1644,14 @@ if (typeof String.prototype.startsWith != 'function') {
           var serverCodePerf ="-";
 
           if(json){
-              scriptPerf = json.scriptPerf;
-              fmPerf = json.freemarkerPerf;
+              scriptPerf = parseInt(json.scriptPerf || '0', 10);
+              fmPerf = parseInt(json.freemarkerPerf || '0', 10);
 
               if(fmPerf === undefined){
                   fmPerf = 0;
               }
 
-              webscriptPerf = json.webscriptPerf;
+              webscriptPerf = parseInt(json.webscriptPerf || '0', 10);
               serverCodePerf = webscriptPerf - scriptPerf - fmPerf;
 
               networkPerf = overallPerf - webscriptPerf;

@@ -27,27 +27,7 @@ public class JavascriptConsoleResult extends JavascriptConsoleResultBase {
 
 	private boolean statusResponseSent = false;
 
-	private String scriptPerformance;
-
-	private String freemarkerPerformance;
-
-	private String webscriptPerformance;
-
-	private int scriptOffset;
-
 	private List<JsConsoleDump> dumpOutput;
-
-	public void setWebscriptPerformance(String webscriptPerformance) {
-		this.webscriptPerformance = webscriptPerformance;
-	}
-
-	public void setScriptPerformance(String scriptPerformance) {
-		this.scriptPerformance = scriptPerformance;
-	}
-
-	public void setFreemarkerPerformance(String freemarkerPerformance) {
-		this.freemarkerPerformance = freemarkerPerformance;
-	}
 
 	public void setPrintOutput(List<String> printOutput) {
 		this.printOutput = printOutput;
@@ -80,14 +60,14 @@ public class JavascriptConsoleResult extends JavascriptConsoleResultBase {
 		JSONObject jsonOutput = new JSONObject();
 		jsonOutput.put("renderedTemplate", getRenderedTemplate());
 		jsonOutput.put("printOutput", getPrintOutput());
-		jsonOutput.put("dumpOutput", dumpOutput);
+		jsonOutput.put("dumpOutput", this.dumpOutput);
 		jsonOutput.put("spaceNodeRef", getSpaceNodeRef());
 		jsonOutput.put("spacePath", getSpacePath());
 		jsonOutput.put("result", new JSONArray());
-		jsonOutput.put("scriptPerf", scriptPerformance);
-		jsonOutput.put("freemarkerPerf", freemarkerPerformance);
-		jsonOutput.put("webscriptPerf", webscriptPerformance);
-		jsonOutput.put("scriptOffset", scriptOffset);
+		jsonOutput.put("scriptPerf", getScriptPerformance());
+		jsonOutput.put("freemarkerPerf", getFreemarkerPerformance());
+		jsonOutput.put("webscriptPerf", getWebscriptPerformance());
+		jsonOutput.put("scriptOffset", getScriptPerformance());
 		return jsonOutput;
 	}
 
@@ -97,13 +77,6 @@ public class JavascriptConsoleResult extends JavascriptConsoleResultBase {
 
 	public void setStatusResponseSent(boolean statusResponseSent) {
 		this.statusResponseSent = statusResponseSent;
-	}
-
-	@Override
-	public String toString() {
-		return "JavascriptConsoleResult [renderedTemplate=" + getRenderedTemplate() + ", printOutput=" + getPrintOutput()
-				+ ", spaceNodeRef=" + getSpaceNodeRef() + ", spacePath=" + getSpacePath() + ", statusResponseSent=" + isStatusResponseSent()
-				+ ", scriptPerformance=" + getScriptPerformance() + ", freemarkerPerformance=" + getFreemarkerPerformance() + "]";
 	}
 
 	public void setDumpOutput(List<JsConsoleDump> dumpOutput) {

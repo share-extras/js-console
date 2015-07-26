@@ -182,6 +182,7 @@ public class ExecuteWebscript extends AbstractWebScript {
 
 		JavascriptConsoleResult result = null;
 		try {
+		    // this isn't very precise since there is some bit of processing until here that we can't measure
 			PerfLog webscriptPerf = new PerfLog().start();
 			JavascriptConsoleRequest jsreq = JavascriptConsoleRequest.readJson(request);
 
@@ -194,14 +195,30 @@ public class ExecuteWebscript extends AbstractWebScript {
 			int resolvedScriptLength = countScriptLines(script, true);
 			scriptOffset = providedScriptLength - resolvedScriptLength;
 
-			result = runScriptWithTransactionAndAuthentication(request, response, jsreq, scriptContent);
-
-			if (!result.isStatusResponseSent()) {
-				result.setWebscriptPerformance(String.valueOf(webscriptPerf.stop("Execute Webscript with {0} - result: {1} ",
-						jsreq, result)));
-				result.setScriptOffset(scriptOffset);
-				result.writeJson(response);
+			try {
+			    result = runScriptWithTransactionAndAuthentication(request, response, jsreq, scriptContent);
+			    
+			    result.setScriptOffset(scriptOffset);
+			
+			    // this won't be very precise since there is still some post-processing, but we can't delay it any longer
+			    result.setWebscriptPerformance(String.valueOf(webscriptPerf.stop("Execute Webscript with {0} - result: {1} ",
+                        jsreq, result)));
+			    
+    			if (!result.isStatusResponseSent()) {
+    			    result.writeJson(response);
+    			}
+			} finally {
+			    if (jsreq.resultChannel != null && ExecuteWebscript.this.resultCache != null) {
+			        if (result != null) {
+			            ExecuteWebscript.this.resultCache.put(jsreq.resultChannel, result.toBaseResult());
+			        } else {
+			            // dummy response as indicator for "error"
+			            ExecuteWebscript.this.resultCache.put(jsreq.resultChannel, new JavascriptConsoleResultBase());
+			        }
+			        
+			    }
 			}
+
 		} catch (WebScriptException e) {
 			response.setStatus(500);
 			response.setContentEncoding("UTF-8");
@@ -327,38 +344,27 @@ public class ExecuteWebscript extends AbstractWebScript {
 	    }
 	    
 	    JavascriptConsoleResult result = null;
-	    try {
-    		if (jsreq.useTransaction) {
-    			LOG.debug("Using transction to execute script: " + (jsreq.transactionReadOnly ? "readonly" : "readwrite"));
-    			result = transactionService.getRetryingTransactionHelper().doInTransaction(
-    					new RetryingTransactionCallback<JavascriptConsoleResult>() {
-    						public JavascriptConsoleResult execute() throws Exception {
-    						    // clear due to potential retry
-    		                    if (printOutput != null) {
-    		                        printOutput.clear();
-    		                    }
-    							return executeScriptContent(request, response, scriptContent, jsreq.template, jsreq.spaceNodeRef,
-    									jsreq.urlargs, jsreq.documentNodeRef, printOutput);
-    						}
-    					}, jsreq.transactionReadOnly);
-    			return result;
-    		}
-		
-			LOG.debug("Executing script script without transaction.");
-			result = executeScriptContent(request, response, scriptContent, jsreq.template, jsreq.spaceNodeRef, jsreq.urlargs,
-					jsreq.documentNodeRef, printOutput);
+	    
+		if (jsreq.useTransaction) {
+			LOG.debug("Using transction to execute script: " + (jsreq.transactionReadOnly ? "readonly" : "readwrite"));
+			result = this.transactionService.getRetryingTransactionHelper().doInTransaction(
+					new RetryingTransactionCallback<JavascriptConsoleResult>() {
+						public JavascriptConsoleResult execute() throws Exception {
+						    // clear due to potential retry
+		                    if (printOutput != null) {
+		                        printOutput.clear();
+		                    }
+							return executeScriptContent(request, response, scriptContent, jsreq.template, jsreq.spaceNodeRef,
+									jsreq.urlargs, jsreq.documentNodeRef, printOutput);
+						}
+					}, jsreq.transactionReadOnly);
 			return result;
-	    } finally {
-            if (jsreq.resultChannel != null && ExecuteWebscript.this.resultCache != null) {
-                if (result != null) {
-                    ExecuteWebscript.this.resultCache.put(jsreq.resultChannel, result.toBaseResult());
-                } else {
-                    // dummy response as indicator for "error"
-                    ExecuteWebscript.this.resultCache.put(jsreq.resultChannel, new JavascriptConsoleResultBase());
-                }
-                
-            }
-        }
+		}
+	
+		LOG.debug("Executing script script without transaction.");
+		result = executeScriptContent(request, response, scriptContent, jsreq.template, jsreq.spaceNodeRef, jsreq.urlargs,
+				jsreq.documentNodeRef, printOutput);
+		return result;
 	}
 
 	/*
@@ -395,11 +401,11 @@ public class ExecuteWebscript extends AbstractWebScript {
 			scriptModel.put("jsconsole", javascriptConsole);
 
 			if (StringUtils.isNotBlank(spaceNodeRef)) {
-				javascriptConsole.setSpace(scriptUtils.getNodeFromString(spaceNodeRef));
+				javascriptConsole.setSpace(this.scriptUtils.getNodeFromString(spaceNodeRef));
 			} else {
 				Object ch = scriptModel.get("companyhome");
 				if (ch instanceof NodeRef) {
-					javascriptConsole.setSpace(scriptUtils.getNodeFromString(ch.toString()));
+					javascriptConsole.setSpace(this.scriptUtils.getNodeFromString(ch.toString()));
 				} else {
 					javascriptConsole.setSpace((ScriptNode) ch);
 				}
@@ -407,14 +413,14 @@ public class ExecuteWebscript extends AbstractWebScript {
 			scriptModel.put("space", javascriptConsole.getSpace());
 
 			if (StringUtils.isNotBlank(documentNodeRef)) {
-				scriptModel.put("document", scriptUtils.getNodeFromString(documentNodeRef));
+				scriptModel.put("document", this.scriptUtils.getNodeFromString(documentNodeRef));
 			}
 
 			PerfLog jsPerf = new PerfLog(LOG).start();
-			try{
+			try {
 				ScriptProcessor scriptProcessor = getContainer().getScriptProcessorRegistry().getScriptProcessorByExtension("js");
 				scriptProcessor.executeScript(scriptContent, scriptModel);
-			}finally{
+			} finally {
 				output.setScriptPerformance(String.valueOf(jsPerf.stop("Executed the script {0} with model {1}", scriptContent,
 						scriptModel)));
 				output.setPrintOutput(javascriptConsole.getPrintOutput());

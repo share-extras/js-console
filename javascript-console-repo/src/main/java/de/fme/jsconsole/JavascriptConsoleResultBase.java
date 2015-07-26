@@ -96,10 +96,10 @@ public class JavascriptConsoleResultBase implements Serializable {
 			jsonOutput.put("spaceNodeRef", getSpaceNodeRef());
 			jsonOutput.put("spacePath", getSpacePath());
 			jsonOutput.put("result", new JSONArray());
-			jsonOutput.put("scriptPerf", scriptPerformance);
-			jsonOutput.put("freemarkerPerf", freemarkerPerformance);
-			jsonOutput.put("webscriptPerf", webscriptPerformance);
-			jsonOutput.put("scriptOffset", scriptOffset);
+			jsonOutput.put("scriptPerf", this.scriptPerformance);
+			jsonOutput.put("freemarkerPerf", this.freemarkerPerformance);
+			jsonOutput.put("webscriptPerf", this.webscriptPerformance);
+			jsonOutput.put("scriptOffset", this.scriptOffset);
 
 			response.getWriter().write(jsonOutput.toString());
 
@@ -124,9 +124,9 @@ public class JavascriptConsoleResultBase implements Serializable {
 
 	@Override
 	public String toString() {
-		return "JavascriptConsoleResultBase [renderedTemplate=" + renderedTemplate
-				+ ", spaceNodeRef=" + spaceNodeRef + ", spacePath=" + spacePath
-				+ ", scriptPerformance=" + scriptPerformance + ", freemarkerPerformance=" + freemarkerPerformance + "]";
+		return "JavascriptConsoleResultBase [renderedTemplate=" + this.renderedTemplate
+				+ ", spaceNodeRef=" + this.spaceNodeRef + ", spacePath=" + this.spacePath
+				+ ", scriptPerformance=" + this.scriptPerformance + ", freemarkerPerformance=" + this.freemarkerPerformance + "]";
 	}
 
 	public void setScriptOffset(int scriptOffset) {
@@ -141,13 +141,13 @@ public class JavascriptConsoleResultBase implements Serializable {
     {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((freemarkerPerformance == null) ? 0 : freemarkerPerformance.hashCode());
-        result = prime * result + ((renderedTemplate == null) ? 0 : renderedTemplate.hashCode());
-        result = prime * result + scriptOffset;
-        result = prime * result + ((scriptPerformance == null) ? 0 : scriptPerformance.hashCode());
-        result = prime * result + ((spaceNodeRef == null) ? 0 : spaceNodeRef.hashCode());
-        result = prime * result + ((spacePath == null) ? 0 : spacePath.hashCode());
-        result = prime * result + ((webscriptPerformance == null) ? 0 : webscriptPerformance.hashCode());
+        result = prime * result + ((this.freemarkerPerformance == null) ? 0 : this.freemarkerPerformance.hashCode());
+        result = prime * result + ((this.renderedTemplate == null) ? 0 : this.renderedTemplate.hashCode());
+        result = prime * result + this.scriptOffset;
+        result = prime * result + ((this.scriptPerformance == null) ? 0 : this.scriptPerformance.hashCode());
+        result = prime * result + ((this.spaceNodeRef == null) ? 0 : this.spaceNodeRef.hashCode());
+        result = prime * result + ((this.spacePath == null) ? 0 : this.spacePath.hashCode());
+        result = prime * result + ((this.webscriptPerformance == null) ? 0 : this.webscriptPerformance.hashCode());
         return result;
     }
 
@@ -170,73 +170,73 @@ public class JavascriptConsoleResultBase implements Serializable {
             return false;
         }
         JavascriptConsoleResultBase other = (JavascriptConsoleResultBase) obj;
-        if (freemarkerPerformance == null)
+        if (this.freemarkerPerformance == null)
         {
             if (other.freemarkerPerformance != null)
             {
                 return false;
             }
         }
-        else if (!freemarkerPerformance.equals(other.freemarkerPerformance))
+        else if (!this.freemarkerPerformance.equals(other.freemarkerPerformance))
         {
             return false;
         }
-        if (renderedTemplate == null)
+        if (this.renderedTemplate == null)
         {
             if (other.renderedTemplate != null)
             {
                 return false;
             }
         }
-        else if (!renderedTemplate.equals(other.renderedTemplate))
+        else if (!this.renderedTemplate.equals(other.renderedTemplate))
         {
             return false;
         }
-        if (scriptOffset != other.scriptOffset)
+        if (this.scriptOffset != other.scriptOffset)
         {
             return false;
         }
-        if (scriptPerformance == null)
+        if (this.scriptPerformance == null)
         {
             if (other.scriptPerformance != null)
             {
                 return false;
             }
         }
-        else if (!scriptPerformance.equals(other.scriptPerformance))
+        else if (!this.scriptPerformance.equals(other.scriptPerformance))
         {
             return false;
         }
-        if (spaceNodeRef == null)
+        if (this.spaceNodeRef == null)
         {
             if (other.spaceNodeRef != null)
             {
                 return false;
             }
         }
-        else if (!spaceNodeRef.equals(other.spaceNodeRef))
+        else if (!this.spaceNodeRef.equals(other.spaceNodeRef))
         {
             return false;
         }
-        if (spacePath == null)
+        if (this.spacePath == null)
         {
             if (other.spacePath != null)
             {
                 return false;
             }
         }
-        else if (!spacePath.equals(other.spacePath))
+        else if (!this.spacePath.equals(other.spacePath))
         {
             return false;
         }
-        if (webscriptPerformance == null)
+        if (this.webscriptPerformance == null)
         {
             if (other.webscriptPerformance != null)
             {
                 return false;
             }
         }
-        else if (!webscriptPerformance.equals(other.webscriptPerformance))
+        else if (!this.webscriptPerformance.equals(other.webscriptPerformance))
         {
             return false;
         }

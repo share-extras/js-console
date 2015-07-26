@@ -1,7 +1,0 @@
-<webscript>
-    <shortname>fme JSConsole Execute Javascript - Print Output Retrieval</shortname>
-    <url>/de/fme/jsconsole/{outputChannel}/printOutput</url>
-    <authentication>admin</authentication>
-    <format default="json">extension</format>
-    <transaction>none</transaction>
-</webscript>
