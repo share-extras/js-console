@@ -1,12 +1,11 @@
-/javascript-console-repo/target/
-/javascript-console-repo/.settings/
-/javascript-console-repo/.project
-/javascript-console-repo/.classpath
+target/
+.settings/
+.project
+.classpath
 
-/javascript-console-share/target/
-/javascript-console-share/.settings/
-/javascript-console-share/.project
-/javascript-console-share/.classpath
-build
-bin
-alf_data_dev
+build/
+bin/
+alf_data_dev/
+
+alfresco.log
+share.log
