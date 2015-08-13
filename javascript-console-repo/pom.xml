@@ -37,6 +37,7 @@
        | For more available properties see the alfresco-sdk-parent POM. 
        -->
     <properties>
+        <alfresco.client.contextPath>/alfresco</alfresco.client.contextPath>
         <!--
             | Defines the groupId for the Alfresco Artifacts to work against. As of 4.2 the only allowed value is: org.alfresco
             | NOTE: See http://docs.alfresco.com/4.2/concepts/dev-extensions-maven-sdk-tutorials-alfresco-enterprise.html for details
