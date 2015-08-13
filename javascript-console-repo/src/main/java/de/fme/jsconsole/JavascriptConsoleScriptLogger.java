@@ -51,7 +51,7 @@ public final class JavascriptConsoleScriptLogger
 {
     // NOTE: keep compatibility with repository script logger
     private static final Log logger = LogFactory.getLog("org.alfresco.repo.jscript.ScriptLogger");
-    private static final SystemOut systemOut = new SystemOut();
+    private final SystemOut systemOut = new SystemOut();
 	private final JavascriptConsoleScriptObject jsConsole;
     
     public JavascriptConsoleScriptLogger(JavascriptConsoleScriptObject jsConsole) {
@@ -76,7 +76,7 @@ public final class JavascriptConsoleScriptLogger
     public void log(@ScriptParameter(help="Message to log") String str)
     {
         logger.debug(str);
-        jsConsole.print(str);
+    	jsConsole.print("DEBUG - " + str);
     }
 
     @ScriptMethod
@@ -97,7 +97,7 @@ public final class JavascriptConsoleScriptLogger
     public void debug(@ScriptParameter(help="Message to log") String str)
     {
         logger.debug(str);
-        jsConsole.print(str);
+        jsConsole.print("DEBUG - " + str);
     }
 
     @ScriptMethod
@@ -139,7 +139,7 @@ public final class JavascriptConsoleScriptLogger
     public void warn(@ScriptParameter(help="Message to log") String str)
     {
         logger.warn(str);
-        jsConsole.print(str);
+    	jsConsole.print("WARN - " + str);
     }
 
     @ScriptMethod
@@ -160,7 +160,7 @@ public final class JavascriptConsoleScriptLogger
     public void error(@ScriptParameter(help="Message to log") String str)
     {
         logger.error(str);
-        jsConsole.print(str);
+        jsConsole.print("ERROR - " + str);
     }
 
     public SystemOut getSystem()
@@ -168,11 +168,12 @@ public final class JavascriptConsoleScriptLogger
         return systemOut;
     }
     
-    public static class SystemOut
+    public class SystemOut
     {
         public void out(String str)
         {
             System.out.println(str);
+            jsConsole.print(str);
         }
     }
     

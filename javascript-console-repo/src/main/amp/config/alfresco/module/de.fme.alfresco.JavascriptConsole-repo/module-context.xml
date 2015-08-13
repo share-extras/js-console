@@ -22,7 +22,15 @@
 		<property name="auditService" ref="AuditService" />
 		<property name="sysAdminParams" ref="sysAdminParams" />
 		<property name="lockService" ref="LockService" />
+        
+        <property name="printOutputCache" ref="jconsole.printOutputCache" />
+        <property name="resultCache" ref="jconsole.resultCache" />
 	</bean>
+    
+    <bean id="webscript.de.fme.jsconsole.executionResult.get" class="de.fme.jsconsole.ExecutionResultGet" parent="webscript">
+        <property name="printOutputCache" ref="jconsole.printOutputCache" />
+        <property name="resultCache" ref="jconsole.resultCache" />
+    </bean>
 	
 	<bean id="jconsole.extension.dictionaryBootstrap" parent="dictionaryModelBootstrap">
 		<property name="models">
@@ -32,5 +40,18 @@
 		</property>
 	</bean>
 
+    <!-- Version-aware cache for asynchronous print output retrieval - cluster support only on Alfresco 4.2+ -->
+    <bean id="jconsole.printOutputCache" class="de.fme.jsconsole.VersionAwareCacheFactoryBean">
+        <property name="cacheName" value="cache.jsConsoleOutput" />
+        <property name="preAlf42ClassName" value="org.alfresco.repo.cache.MemoryCache" />
+        <property name="descriptorService" ref="DescriptorService" />
+    </bean>
+    
+    <!-- Version-aware cache for asynchronous result retrieval - cluster support only on Alfresco 4.2+ -->
+    <bean id="jconsole.resultCache" class="de.fme.jsconsole.VersionAwareCacheFactoryBean">
+        <property name="cacheName" value="cache.jsConsoleResult" />
+        <property name="preAlf42ClassName" value="org.alfresco.repo.cache.MemoryCache" />
+        <property name="descriptorService" ref="DescriptorService" />
+    </bean>
 </beans>
 

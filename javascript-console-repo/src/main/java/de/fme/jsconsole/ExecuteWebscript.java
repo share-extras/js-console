@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.alfresco.repo.admin.SysAdminParams;
+import org.alfresco.repo.cache.SimpleCache;
 import org.alfresco.repo.content.MimetypeMap;
 import org.alfresco.repo.jscript.RhinoScriptProcessor;
 import org.alfresco.repo.jscript.ScriptNode;
@@ -39,6 +40,7 @@ import org.alfresco.service.cmr.workflow.WorkflowService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.transaction.TransactionService;
 import org.alfresco.util.MD5;
+import org.alfresco.util.Pair;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -150,6 +152,12 @@ public class ExecuteWebscript extends AbstractWebScript {
 	public void setAuditService(AuditService auditService) {
 		this.auditService = auditService;
 	}
+	
+	private SimpleCache<Pair<String, Integer>, List<String>> printOutputCache;
+	
+	private SimpleCache<String, JavascriptConsoleResultBase> resultCache;
+	
+	private int printOutputChunkSize = 5;
 
 	@Override
 	public void init(Container container, Description description) {
@@ -174,6 +182,7 @@ public class ExecuteWebscript extends AbstractWebScript {
 
 		JavascriptConsoleResult result = null;
 		try {
+		    // this isn't very precise since there is some bit of processing until here that we can't measure
 			PerfLog webscriptPerf = new PerfLog().start();
 			JavascriptConsoleRequest jsreq = JavascriptConsoleRequest.readJson(request);
 
@@ -186,14 +195,30 @@ public class ExecuteWebscript extends AbstractWebScript {
 			int resolvedScriptLength = countScriptLines(script, true);
 			scriptOffset = providedScriptLength - resolvedScriptLength;
 
-			result = runScriptWithTransactionAndAuthentication(request, response, jsreq, scriptContent);
-
-			if (!result.isStatusResponseSent()) {
-				result.setWebscriptPerformance(String.valueOf(webscriptPerf.stop("Execute Webscript with {0} - result: {1} ",
-						jsreq, result)));
-				result.setScriptOffset(scriptOffset);
-				result.writeJson(response);
+			try {
+			    result = runScriptWithTransactionAndAuthentication(request, response, jsreq, scriptContent);
+			    
+			    result.setScriptOffset(scriptOffset);
+			
+			    // this won't be very precise since there is still some post-processing, but we can't delay it any longer
+			    result.setWebscriptPerformance(String.valueOf(webscriptPerf.stop("Execute Webscript with {0} - result: {1} ",
+                        jsreq, result)));
+			    
+    			if (!result.isStatusResponseSent()) {
+    			    result.writeJson(response);
+    			}
+			} finally {
+			    if (jsreq.resultChannel != null && ExecuteWebscript.this.resultCache != null) {
+			        if (result != null) {
+			            ExecuteWebscript.this.resultCache.put(jsreq.resultChannel, result.toBaseResult());
+			        } else {
+			            // dummy response as indicator for "error"
+			            ExecuteWebscript.this.resultCache.put(jsreq.resultChannel, new JavascriptConsoleResultBase());
+			        }
+			        
+			    }
 			}
+
 		} catch (WebScriptException e) {
 			response.setStatus(500);
 			response.setContentEncoding("UTF-8");
@@ -310,21 +335,36 @@ public class ExecuteWebscript extends AbstractWebScript {
 
 	private JavascriptConsoleResult runWithTransactionIfNeeded(final WebScriptRequest request, final WebScriptResponse response,
 			final JavascriptConsoleRequest jsreq, final ScriptContent scriptContent) {
+	    
+	    final List<String> printOutput;
+	    if (jsreq.resultChannel != null && this.printOutputCache != null) {
+	        printOutput = new CacheBackedChunkedList<String, String>(this.printOutputCache, jsreq.resultChannel, this.printOutputChunkSize);
+	    } else {
+	        printOutput = null;
+	    }
+	    
+	    JavascriptConsoleResult result = null;
+	    
 		if (jsreq.useTransaction) {
 			LOG.debug("Using transction to execute script: " + (jsreq.transactionReadOnly ? "readonly" : "readwrite"));
-			return transactionService.getRetryingTransactionHelper().doInTransaction(
+			result = this.transactionService.getRetryingTransactionHelper().doInTransaction(
 					new RetryingTransactionCallback<JavascriptConsoleResult>() {
 						public JavascriptConsoleResult execute() throws Exception {
+						    // clear due to potential retry
+		                    if (printOutput != null) {
+		                        printOutput.clear();
+		                    }
 							return executeScriptContent(request, response, scriptContent, jsreq.template, jsreq.spaceNodeRef,
-									jsreq.urlargs, jsreq.documentNodeRef, jsreq.dumpLimit);
+									jsreq.urlargs, jsreq.documentNodeRef, printOutput);
 						}
 					}, jsreq.transactionReadOnly);
-		} else {
-			LOG.debug("Executing script script without transaction.");
-			return executeScriptContent(request, response, scriptContent, jsreq.template, jsreq.spaceNodeRef, jsreq.urlargs,
-					jsreq.documentNodeRef, jsreq.dumpLimit);
-
+			return result;
 		}
+	
+		LOG.debug("Executing script script without transaction.");
+		result = executeScriptContent(request, response, scriptContent, jsreq.template, jsreq.spaceNodeRef, jsreq.urlargs,
+				jsreq.documentNodeRef, printOutput);
+		return result;
 	}
 
 	/*
@@ -334,7 +374,8 @@ public class ExecuteWebscript extends AbstractWebScript {
 	 * WebScriptRequest, org.alfresco.web.scripts.WebScriptResponse)
 	 */
 	private JavascriptConsoleResult executeScriptContent(WebScriptRequest req, WebScriptResponse res,
-			ScriptContent scriptContent, String template, String spaceNodeRef, Map<String, String> urlargs, String documentNodeRef, Integer dumpLimit) {
+			ScriptContent scriptContent, String template, String spaceNodeRef, Map<String, String> urlargs, String documentNodeRef,
+			List<String> printOutput) {
 		JavascriptConsoleResult output = new JavascriptConsoleResult();
 
 		// retrieve requested format
@@ -356,18 +397,15 @@ public class ExecuteWebscript extends AbstractWebScript {
 			Map<String, Object> returnModel = new HashMap<String, Object>(8, 1.0f);
 			scriptModel.put("model", returnModel);
 
-			JavascriptConsoleScriptObject javascriptConsole = new JavascriptConsoleScriptObject(nodeService, permissionService,
-					namespaceService, versionService, contentService, dictionaryService, ruleService, workflowService,
-					renditionService, tagservice, categoryService, webDavService, auditService, sysAdminParams, dumpLimit, lockService);
-
+			JavascriptConsoleScriptObject javascriptConsole = printOutput == null ? new JavascriptConsoleScriptObject() : new JavascriptConsoleScriptObject(printOutput);
 			scriptModel.put("jsconsole", javascriptConsole);
 
 			if (StringUtils.isNotBlank(spaceNodeRef)) {
-				javascriptConsole.setSpace(scriptUtils.getNodeFromString(spaceNodeRef));
+				javascriptConsole.setSpace(this.scriptUtils.getNodeFromString(spaceNodeRef));
 			} else {
 				Object ch = scriptModel.get("companyhome");
 				if (ch instanceof NodeRef) {
-					javascriptConsole.setSpace(scriptUtils.getNodeFromString(ch.toString()));
+					javascriptConsole.setSpace(this.scriptUtils.getNodeFromString(ch.toString()));
 				} else {
 					javascriptConsole.setSpace((ScriptNode) ch);
 				}
@@ -375,14 +413,14 @@ public class ExecuteWebscript extends AbstractWebScript {
 			scriptModel.put("space", javascriptConsole.getSpace());
 
 			if (StringUtils.isNotBlank(documentNodeRef)) {
-				scriptModel.put("document", scriptUtils.getNodeFromString(documentNodeRef));
+				scriptModel.put("document", this.scriptUtils.getNodeFromString(documentNodeRef));
 			}
 
 			PerfLog jsPerf = new PerfLog(LOG).start();
-			try{
+			try {
 				ScriptProcessor scriptProcessor = getContainer().getScriptProcessorRegistry().getScriptProcessorByExtension("js");
 				scriptProcessor.executeScript(scriptContent, scriptModel);
-			}finally{
+			} finally {
 				output.setScriptPerformance(String.valueOf(jsPerf.stop("Executed the script {0} with model {1}", scriptContent,
 						scriptModel)));
 				output.setPrintOutput(javascriptConsole.getPrintOutput());
@@ -512,7 +550,19 @@ public class ExecuteWebscript extends AbstractWebScript {
 		this.permissionService = permissionService;
 	}
 
-	private static class StringScriptContent implements ScriptContent {
+	public final void setPrintOutputCache(SimpleCache<Pair<String, Integer>, List<String>> printOutputCache) {
+        this.printOutputCache = printOutputCache;
+    }
+	
+	public final void setResultCache(SimpleCache<String, JavascriptConsoleResultBase> resultCache) {
+        this.resultCache = resultCache;
+    }
+
+    public final void setPrintOutputChunkSize(int printOutputChunkSize) {
+        this.printOutputChunkSize = printOutputChunkSize;
+    }
+
+    private static class StringScriptContent implements ScriptContent {
 		private final String content;
 
 		public StringScriptContent(String content) {

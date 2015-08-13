@@ -1219,7 +1219,7 @@ if (typeof String.prototype.startsWith != 'function') {
          });
 
          // Recalculate the horizontal size on a browser window resize event
-          YAHOO.util.Event.on(window, "resize", function(e)
+          Event.on(window, "resize", function(e)
           {
              // YAHOO.util.Resize sets an absolute width, reset to auto width
              Dom.setStyle(me.id + "-inputContentArea", "width", "inherit");
@@ -1383,7 +1383,7 @@ if (typeof String.prototype.startsWith != 'function') {
         // Build JSON Object to send to the server
         var input = {
            "script" : scriptCode,
-           "template" : templateCode    ,
+           "template" : templateCode,
            "spaceNodeRef" : this.widgets.nodeField.value,
            "transaction" : this.widgets.config.transaction.value ? this.widgets.config.transaction.value : "readwrite",
            "runas" : this.widgets.config.runas.value ? this.widgets.config.runas.value : "admin",
@@ -1398,6 +1398,8 @@ if (typeof String.prototype.startsWith != 'function') {
         this.showLoadingAjaxSpinner(true);
 
         this.executeStartTime = new Date();
+        
+        input.resultChannel = String(this.executeStartTime.getTime());
 
         Alfresco.util.Ajax.request(
          {
@@ -1408,6 +1410,10 @@ if (typeof String.prototype.startsWith != 'function') {
             successCallback:
             {
                fn: function(res) {
+                 this.fetchResult();
+                   
+                 this.fetchResultTimer.cancel();
+                 this.fetchResultTimer = null;
                  this.showLoadingAjaxSpinner(false);
                  this.printExecutionStats(res.json);
                  this.printDumpInfos(res.json.dumpOutput);
@@ -1428,7 +1434,7 @@ if (typeof String.prototype.startsWith != 'function') {
                  this.widgets.executeButton.disabled = false;
 
                  this.showResultTable(res.json.result);
-                 YAHOO.util.Dom.removeClass(this.widgets.scriptOutput, 'jserror');
+                 Dom.removeClass(this.widgets.scriptOutput, 'jserror');
                  Dom.addClass(this.widgets.scriptOutput, 'jsgreen');
 
                  this.runLikeCrazy();
@@ -1438,30 +1444,117 @@ if (typeof String.prototype.startsWith != 'function') {
             failureCallback:
             {
                fn: function(res) {
-                 this.showLoadingAjaxSpinner(false);
-                 this.printExecutionStats();
-
-                 var result = YAHOO.lang.JSON.parse(res.serverResponse.responseText);
-
-                 this.markJSError(result);
-                 this.markFreemarkerError(result);
-
-                 this.clearOutput();
-                 this.setOutputText(result.status.code + " " +
-                 result.status.name + "\nStacktrace-Details:\n"+result.callstack+"\n\n"+
-                 result.status.description + "\n" + result.message);
-
-                 this.widgets.scriptOutput.disabled = false;
-                 this.widgets.executeButton.disabled = false;
-                 Dom.removeClass(this.widgets.scriptOutput, 'jsgreen');
-                 Dom.addClass(this.widgets.scriptOutput, 'jserror');
-                 this.widgets.outputTabs.selectTab(0); // show console tab
-
-                 this.runLikeCrazy();
+                   if (res.serverResponse.status !== 408) {
+                     this.fetchResult();
+                     
+                     this.fetchResultTimer.cancel();
+                     this.fetchResultTimer = null;
+                     this.showLoadingAjaxSpinner(false);
+                     this.printExecutionStats();
+    
+                     var result = YAHOO.lang.JSON.parse(res.serverResponse.responseText);
+    
+                     this.markJSError(result);
+                     this.markFreemarkerError(result);
+    
+                     this.clearOutput();
+                     this.setOutputText(result.status.code + " " +
+                     result.status.name + "\nStacktrace-Details:\n"+result.callstack+"\n\n"+
+                     result.status.description + "\n" + result.message);
+    
+                     this.widgets.scriptOutput.disabled = false;
+                     this.widgets.executeButton.disabled = false;
+                     Dom.removeClass(this.widgets.scriptOutput, 'jsgreen');
+                     Dom.addClass(this.widgets.scriptOutput, 'jserror');
+                     this.widgets.outputTabs.selectTab(0); // show console tab
+    
+                     this.runLikeCrazy();
+                   }
                },
                scope: this
             }
          });
+        
+        // remove any marking
+        Dom.removeClass(this.widgets.scriptOutput, 'jserror');
+        Dom.removeClass(this.widgets.scriptOutput, 'jsgreen');
+        
+        // fetch result updates to the print output after a second
+        this.fetchResultTimer = YAHOO.lang.later(1000, this, this.fetchResult, null, false);
+      },
+      
+      fetchResult : function()
+      {
+          // double check that execution is still ongoing
+          if (this.widgets.executeButton.disabled) {
+              // this is a best-effort update - we do not care about failures
+              Alfresco.util.Ajax.jsonGet(
+              {
+                  url : Alfresco.constants.PROXY_URI + "de/fme/jsconsole/"
+                          + encodeURIComponent(String(this.executeStartTime.getTime())) + "/executionResult",
+                  successCallback :
+                  {
+                      fn : function(response)
+                      {
+                          // double check that execution is still ongoing
+                          if (this.widgets.executeButton.disabled) {
+                              if (YAHOO.lang.isObject(response.json)) {
+                                  if (YAHOO.lang.isArray(response.json.printOutput)) {
+                                      this.clearOutput();
+                                      this.appendLineArrayToOutput(response.json.printOutput);
+                                  }
+                              
+                                  // either error or result signal completion
+                                  if (response.json.error !== undefined || YAHOO.lang.isArray(response.json.result)) {
+                                      if (this.fetchResultTimer !== null)
+                                      {
+                                          this.fetchResultTimer.cancel();
+                                          this.fetchResultTimer = null;
+                                      }
+                                      this.showLoadingAjaxSpinner(false);
+                                      
+                                      if (YAHOO.lang.isArray(response.json.result)) {
+                                          this.printExecutionStats(response.json);
+                                      } else {
+                                          this.printExecutionStats();
+                                      }
+                                      
+                                      if (YAHOO.lang.isArray(response.json.result)) {
+                                          this.widgets.templateOutputHtml.innerHTML = response.json.renderedTemplate;
+                                          this.widgets.templateOutputText.innerHTML = $html(response.json.renderedTemplate);
+                                          this.widgets.codeMirrorJSON.setValue(formatter.formatJson(response.json.renderedTemplate,"  "));
+                                          this.widgets.codeMirrorJSON.focus();
+                                          
+                                          if (response.json.spaceNodeRef) {
+                                              this.widgets.nodeField.value = response.json.spaceNodeRef;
+                                              this.widgets.pathField.innerHTML = response.json.spacePath;
+                                          }
+                                      }
+            
+                                      this.widgets.scriptOutput.disabled = false;
+                                      this.widgets.templateOutputHtml.disabled = false;
+                                      this.widgets.templateOutputText.disabled = false;
+                                      this.widgets.executeButton.disabled = false;
+            
+                                      if (YAHOO.lang.isArray(response.json.result)) {
+                                          this.showResultTable(response.json.result);
+                                          Dom.removeClass(this.widgets.scriptOutput, 'jserror');
+                                          Dom.addClass(this.widgets.scriptOutput, 'jsgreen');
+                                          this.runLikeCrazy();
+                                      }
+                                  }
+                              }
+
+                              if (this.widgets.executeButton.disabled) {
+                                  // fetch further result updates to the print output after a second
+                                  this.fetchResultTimer = YAHOO.lang.later(1000, this, this.fetchResult, null, false);
+                              }
+                          }
+                      },
+                      scope : this
+                  }
+              });
+          }
       },
 
       runLikeCrazy : function() {
@@ -1537,8 +1630,8 @@ if (typeof String.prototype.startsWith != 'function') {
           stats.innerHTML = '';
           stats.appendChild(document.createTextNode(text));
 
-          if(!YAHOO.util.Event.getListeners(stats,"click")){
-              YAHOO.util.Event.on(stats, "click", function(){
+          if(!Event.getListeners(stats,"click")){
+              Event.on(stats, "click", function(){
                   this.widgets.outputTabs.selectTab(4);
                   var stats = Dom.get(this.id + "-executionStatsSimple");
               }, null, this);
@@ -1551,14 +1644,14 @@ if (typeof String.prototype.startsWith != 'function') {
           var serverCodePerf ="-";
 
           if(json){
-              scriptPerf = json.scriptPerf;
-              fmPerf = json.freemarkerPerf;
+              scriptPerf = parseInt(json.scriptPerf || '0', 10);
+              fmPerf = parseInt(json.freemarkerPerf || '0', 10);
 
               if(fmPerf === undefined){
                   fmPerf = 0;
               }
 
-              webscriptPerf = json.webscriptPerf;
+              webscriptPerf = parseInt(json.webscriptPerf || '0', 10);
               serverCodePerf = webscriptPerf - scriptPerf - fmPerf;
 
               networkPerf = overallPerf - webscriptPerf;

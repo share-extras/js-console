@@ -22,7 +22,7 @@ import org.springframework.extensions.webscripts.WebScriptRequest;
  */
 public class JavascriptConsoleRequest {
 
-	private static final Integer DEFAULT_DUMP_LIMIT = new Integer(10);
+	private static final int DEFAULT_DUMP_LIMIT = 10;
 
 	public final String script;
 	public final String template;
@@ -34,19 +34,22 @@ public class JavascriptConsoleRequest {
 	public final String documentNodeRef;
 	public final Integer dumpLimit;
 
+	public final String resultChannel;
+
 	private JavascriptConsoleRequest(String script, String template,
-			String spaceNodeRef, String transaction, String runas, String urlargs, String documentNodeRef, Integer dumpLimit) {
-		super();
-		this.script = script;
-		this.template = template;
-		this.spaceNodeRef = spaceNodeRef;
-		this.documentNodeRef = documentNodeRef;
+            String spaceNodeRef, String transaction, String runas, String urlargs, String documentNodeRef, Integer dumpLimit, String resultChannel) {
+        super();
+        this.script = script;
+        this.template = template;
+        this.spaceNodeRef = spaceNodeRef;
+        this.documentNodeRef = documentNodeRef;
 		this.dumpLimit = dumpLimit;
-		this.urlargs = parseQueryString(urlargs);
-		this.transactionReadOnly = "readonly".equalsIgnoreCase(transaction);
-		this.useTransaction = transactionReadOnly || "readwrite".equalsIgnoreCase(transaction);
-		this.runas = runas;
-	}
+        this.urlargs = parseQueryString(urlargs);
+        this.transactionReadOnly = "readonly".equalsIgnoreCase(transaction);
+        this.useTransaction = transactionReadOnly || "readwrite".equalsIgnoreCase(transaction);
+        this.runas = runas;
+        this.resultChannel = resultChannel;
+    }
 
 	/**
      * parses the query string
@@ -87,18 +90,20 @@ public class JavascriptConsoleRequest {
 			String transaction = jsonInput.getString("transaction");
 			String urlargs = jsonInput.getString("urlargs");
 			String documentNodeRef = jsonInput.getString("documentNodeRef");
-			Integer dumpLimit =DEFAULT_DUMP_LIMIT;
+			int dumpLimit = DEFAULT_DUMP_LIMIT;
 			if(jsonInput.has("dumpLimit")){
 				dumpLimit = jsonInput.getInt("dumpLimit");
 			}
+			String logOutputChannel = jsonInput.has("printOutputChannel") ? jsonInput.getString("printOutputChannel") : null;
+			String resultChannel = jsonInput.has("resultChannel") ? jsonInput.getString("resultChannel") : null;
 
 			String runas = jsonInput.getString("runas");
 			if (runas == null) {
 				runas = "";
 			}
-
-			return new JavascriptConsoleRequest(script, template, spaceNodeRef, transaction, runas, urlargs, documentNodeRef, dumpLimit);
-
+			
+			return new JavascriptConsoleRequest(script, template, spaceNodeRef, transaction, runas, urlargs, documentNodeRef, dumpLimit, resultChannel);
+			
 		} catch (JSONException e) {
 			throw new WebScriptException(Status.STATUS_INTERNAL_SERVER_ERROR,
 					"Error reading json request body.", e);
@@ -109,7 +114,7 @@ public class JavascriptConsoleRequest {
 	public String toString() {
 		return "JavascriptConsoleRequest [script=" + script + ", template=" + template + ", spaceNodeRef=" + spaceNodeRef
 				+ ", runas=" + runas + ", useTransaction=" + useTransaction + ", transactionReadOnly=" + transactionReadOnly
-				+ ", urlargs=" + urlargs + ", documentNodeRef=" + documentNodeRef + ", dumpLimit=" + dumpLimit + "]";
+				+ ", urlargs=" + urlargs + ", documentNodeRef=" + documentNodeRef + ", dumpLimit=" + dumpLimit + ", resultChannel=" + resultChannel + "]";
 	}
 
 }
