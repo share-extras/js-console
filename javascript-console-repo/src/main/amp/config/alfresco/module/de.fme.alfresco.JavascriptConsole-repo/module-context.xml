@@ -1,13 +1,12 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
-<beans>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+           http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
 	<bean id="webscript.de.fme.jsconsole.execute.post" class="de.fme.jsconsole.ExecuteWebscript" parent="webscript">
 		<property name="scriptUtils" ref="utilsScript"/>
 		<property name="transactionService" ref="transactionService"/>
 		<property name="jsProcessor" ref="javaScriptProcessor" />
-		<property name="preRollScriptResource" value="de/fme/jsconsole/jsconsole-pre-roll-script.js" />
-		<property name="postRollScriptResource" value="de/fme/jsconsole/jsconsole-post-roll-script.js" />
 		<property name="nodeService" ref="NodeService" />
 		<property name="permissionService" ref="PermissionService" />
 		<property name="namespaceService" ref="NamespaceService" />
@@ -23,13 +22,12 @@
 		<property name="auditService" ref="AuditService" />
 		<property name="sysAdminParams" ref="sysAdminParams" />
 		<property name="lockService" ref="LockService" />
-
 	</bean>
 	
 	<bean id="jconsole.extension.dictionaryBootstrap" parent="dictionaryModelBootstrap">
 		<property name="models">
 			<list>
-				<value>alfresco/extension/model/fme-jsconsole-model.xml</value>
+				<value>alfresco/module/de.fme.alfresco.JavascriptConsole-repo/model/fme-jsconsole-model.xml</value>
 			</list>
 		</property>
 	</bean>
