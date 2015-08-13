@@ -1,19 +1,26 @@
 function getSearchCount(query){
-    var paging =
+    var count, paging = {
+            skipCount : 0
+    }, def =
     {
-      maxItems: 1000000,
-      skipCount: 0
+            query: query,
+            store: 'workspace://SpacesStore',
+            language: 'fts-alfresco',
+            page: paging
     };
+    
+    if (search.queryResultSet !== undefined) {
+        // Alfresco 5.0+ allows access to SOLR metadata without requiring to load any results (and mess up caches)
+        paging.limit = 0;
+        count = search.queryResultSet(def).meta.numberFound;
+    } else {
+        // note that this high limit may mess up caches due to loading so many nodes
+        paging.limit = 1000000;
+        count = search.query(def).length;
+    }
 
-    var def =
-    {
-        query: query,
-      store: 'workspace://SpacesStore',
-      language: 'fts-alfresco',
-      page: paging
-    };
 
-    return search.query(def).length;
+    return count;
 
 }
 
@@ -157,13 +164,28 @@ model.groupsCount = groups.getGroups("", utils.createPaging(100000, 0)).length;
 model.groupId =search.selectNodes("/sys:system/sys:authorities")[0].nodeRef;
 model.peopleCount = people.getPeople("", 100000).length;
 model.peopleId =search.selectNodes("/sys:system/sys:people")[0].nodeRef;
-model.tagsCount = taggingService.getTags("workspace://SpacesStore").length;
+
+try {
+    model.tagsCount = taggingService.getTags("workspace://SpacesStore").length;
+} catch(e) {
+    // TaggingService is index-dependant via CategoryService, so it may fail without an active index
+    model.tagsCount = -1;
+}
+
 model.workflowDefinitions = workflow.getLatestDefinitions().length;
 model.workflowAllDefinitions = workflow.getAllDefinitions().length;
 model.workflowCount = getWorkflowCount();
-model.folderCount = getSearchCount("TYPE:folder");
-model.docsCount = getSearchCount("TYPE:content");
-model.checkedOutCount = getSearchCount("ASPECT:checkedOut");
+try {
+    model.folderCount = getSearchCount("TYPE:folder");
+    model.docsCount = getSearchCount("TYPE:content");
+    model.checkedOutCount = getSearchCount("ASPECT:checkedOut");
+} catch(e) {
+    // the queries are simple enough to be executed via DB FTS, but that feature may not be available / enabled
+    model.folderCount = -1;
+    model.docsCount = -1;
+    model.checkedOutCount = -1;
+}
+
 model.classifications= classification.allClassificationAspects.length;
 model.runningActions = actionTrackingService.allExecutingActions.length;
 //model.runningJobs = getCurrentRunningJobs();
