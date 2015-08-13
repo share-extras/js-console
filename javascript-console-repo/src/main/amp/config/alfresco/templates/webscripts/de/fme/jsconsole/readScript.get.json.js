@@ -2,7 +2,7 @@
 var nodeRef= args.nodeRef;
 
 var readScript = function saveScript(){
-    var scriptFolder = search.xpathSearch("/app:company_home/app:dictionary/app:scripts")[0];
+    var scriptFolder = search.selectNodes("/app:company_home/app:dictionary/app:scripts")[0];
     if (scriptFolder) {
         var scriptNode;
         if(isUpdate){

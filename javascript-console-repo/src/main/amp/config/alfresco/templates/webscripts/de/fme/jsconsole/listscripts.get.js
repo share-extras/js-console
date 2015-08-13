@@ -23,7 +23,7 @@ var prepareOutput= function prepareOutput(folder) {
 }
 
 var findAvailableScripts = function findAvailableScripts(){
-    var scriptFolder = companyhome.childrenByXPath("app:dictionary/app:scripts")[0];
+    var scriptFolder = search.selectNodes("/app:company_home/app:dictionary/app:scripts")[0];
     if (scriptFolder) {
     	model.scripts = jsonUtils.toJSONString(prepareOutput(scriptFolder));
     }
