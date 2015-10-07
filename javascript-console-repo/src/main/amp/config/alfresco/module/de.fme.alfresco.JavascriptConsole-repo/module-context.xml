@@ -7,24 +7,28 @@
 		<property name="scriptUtils" ref="utilsScript"/>
 		<property name="transactionService" ref="transactionService"/>
 		<property name="jsProcessor" ref="javaScriptProcessor" />
-		<property name="nodeService" ref="NodeService" />
-		<property name="permissionService" ref="PermissionService" />
-		<property name="namespaceService" ref="NamespaceService" />
-		<property name="versionService" ref="VersionService" />
-		<property name="contentService" ref="ContentService" />
-		<property name="dictionaryService" ref="DictionaryService" />
-		<property name="ruleService" ref="RuleService" />
-		<property name="workflowService" ref="WorkflowService" />
-		<property name="renditionService" ref="RenditionService" />
-		<property name="tagservice" ref="TaggingService" />
-		<property name="categoryService" ref="CategoryService" />
-		<property name="webDavService" ref="webdavService" />
-		<property name="auditService" ref="AuditService" />
-		<property name="sysAdminParams" ref="sysAdminParams" />
-		<property name="lockService" ref="LockService" />
-        
         <property name="printOutputCache" ref="jconsole.printOutputCache" />
         <property name="resultCache" ref="jconsole.resultCache" />
+        <property name="dumpService">
+        	<bean class="de.fme.jsconsole.DumpService" >
+        		<property name="nodeService" ref="NodeService" />
+        		<property name="permissionService" ref="PermissionService" />
+        		<property name="namespaceService" ref="NamespaceService" />
+        		<property name="versionService" ref="VersionService" />
+        		<property name="contentService" ref="ContentService" />
+        		<property name="dictionaryService" ref="DictionaryService" />
+        		<property name="workflowService" ref="WorkflowService" />
+        		<property name="renditionService" ref="RenditionService" />
+        		<property name="ruleService" ref="RuleService" />
+        		<property name="tagService" ref="TaggingService" />
+        		<property name="categoryService" ref="CategoryService" />
+        		<property name="webDavService" ref="webdavService" />
+        		<property name="auditService" ref="AuditService" />
+        		<property name="sysAdminParams" ref="sysAdminParams" />
+        		<property name="lockService" ref="LockService" />
+        		<property name="dumpLimit" ref="-1" />
+        	</bean>
+        </property>
 	</bean>
     
     <bean id="webscript.de.fme.jsconsole.executionResult.get" class="de.fme.jsconsole.ExecutionResultGet" parent="webscript">
