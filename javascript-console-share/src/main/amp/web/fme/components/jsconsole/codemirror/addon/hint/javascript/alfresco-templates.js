@@ -83,7 +83,7 @@
         {
            "name" : "DEBUG_ACTIVITI",
            "description" : "To debug all activiti (org.activiti) related information",
-           "template":"logger.setLevel('org.activiti','DEBUG');\nlogger.setLevel('org.activiti','DEBUG');\n//logger.setLevel('org.activiti','WARN');"
+           "template":"logger.setLevel('org.activiti','DEBUG');\n//logger.setLevel('org.activiti','WARN');"
         },
         {
            "name" : "DEBUG_FTP",
