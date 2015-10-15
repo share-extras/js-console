@@ -32,7 +32,7 @@
         },
 		{
             "name" : "EX_TAGSCOPE_REFRESH",
-            "description" : "Alfresco uses a concept called tagscope caching to support performant tagging services in Alfresco Share. Each folder representing a site or a site container (doclib, wiki…)  has a d:content property cm:tagScopeCache thats acts as a tag cache. More detailed this property is a txt-file that contains a list of tags & their quantity, e.g.:\n\ntest|2\ntest2|1\n\nSometimes these tagScopeCache are out-of-sync (at least in Alfresco 3.1), so I wrote a simple Javascript snippet to refresh this caches:",
+            "description" : "Alfresco uses a concept called tagscope caching to support performant tagging services in Alfresco Share. Each folder representing a site or a site container (doclib, wikiâ€¦)  has a d:content property cm:tagScopeCache thats acts as a tag cache. More detailed this property is a txt-file that contains a list of tags & their quantity, e.g.:\n\ntest|2\ntest2|1\n\nSometimes these tagScopeCache are out-of-sync (at least in Alfresco 3.1), so I wrote a simple Javascript snippet to refresh this caches:",
             "template" : "function refreshTagScope(folder){\n\tvar refresh = actions.create('refresh-tagscope');\n\trefresh.execute(folder);\n\tfor each(item in folder.children){\n\t\tif (item.isContainer){\n\t\t\t{refreshTagScope(item);}}}refreshTagScope(space);"
         },
 		 {
@@ -79,6 +79,11 @@
            "name" : "DEBUG_AUDIT_DATA_PRODUCERS",
            "description" : "To debug all data producers information",
            "template":"logger.setLevel('org.alfresco.repo.audit.inbound','DEBUG');\nlogger.setLevel('org.alfresco.repo.audit.AuditComponentImpl','DEBUG');\n\n//logger.setLevel('org.alfresco.repo.audit.inbound','WARN');\n//logger.setLevel('org.alfresco.repo.audit.AuditComponentImpl','WARN');"
+        },
+        {
+           "name" : "DEBUG_ACTIVITI",
+           "description" : "To debug all activiti (org.activiti) related information",
+           "template":"logger.setLevel('org.activiti','DEBUG');\nlogger.setLevel('org.activiti','DEBUG');\n//logger.setLevel('org.activiti','WARN');"
         },
         {
            "name" : "DEBUG_FTP",
