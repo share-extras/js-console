@@ -115,7 +115,7 @@ public class DumpService {
 				Iterator<?> colIter = col.iterator();
 				int currentValue = dumpCounter.get();
 				while (colIter.hasNext()) {
-					if (dumpLimit != -1 || currentValue <= dumpLimit) {
+					if (dumpLimit == -1 || currentValue <= dumpLimit) {
 						dumpOutput.add(dumpObject(colIter.next()));
 						currentValue = dumpCounter.incrementAndGet();
 					} else {
@@ -124,7 +124,7 @@ public class DumpService {
 				}
 			} else {
 				int currentValue = dumpCounter.getAndIncrement();
-				if (dumpLimit != -1 || currentValue <= dumpLimit) {
+				if (dumpLimit == -1 || currentValue <= dumpLimit) {
 					dumpOutput.add(dumpObject(value));
 				} else {
 					logger.warn("Reached dump limit");
