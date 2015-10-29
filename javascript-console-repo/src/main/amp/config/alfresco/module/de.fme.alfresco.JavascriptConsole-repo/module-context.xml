@@ -26,7 +26,7 @@
         		<property name="auditService" ref="AuditService" />
         		<property name="sysAdminParams" ref="sysAdminParams" />
         		<property name="lockService" ref="LockService" />
-        		<property name="dumpLimit" ref="-1" />
+        		<property name="dumpLimit" value="-1" />
         	</bean>
         </property>
 	</bean>
