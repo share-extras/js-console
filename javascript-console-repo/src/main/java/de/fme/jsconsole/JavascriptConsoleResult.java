@@ -44,7 +44,6 @@ public class JavascriptConsoleResult extends JavascriptConsoleResultBase {
 		try {
 			JSONObject jsonOutput = generateJsonOutput();
 			response.getWriter().write(jsonOutput.toString());
-
 		} catch (JSONException e) {
 			throw new WebScriptException(Status.STATUS_INTERNAL_SERVER_ERROR,
 					"Error writing json response.", e);
