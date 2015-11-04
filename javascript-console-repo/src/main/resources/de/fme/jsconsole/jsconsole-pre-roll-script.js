@@ -4,5 +4,5 @@ function print(obj) {
 };
 
 function dump(obj){
-    jsconsole.addDump(obj);
+    dumpService.addDump(obj);
 };

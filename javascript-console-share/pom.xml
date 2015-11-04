@@ -136,6 +136,62 @@
                 </dependency>
             </dependencies>
         </profile>
+        
+        <profile>
+			<id>installable-jar</id>
+			<build>
+				<plugins>
+					<!-- Build alternative artifacts (installable JAR, overlay WAR) -->
+					<plugin>
+						<artifactId>maven-assembly-plugin</artifactId>
+						<version>2.4</version>
+						<configuration>
+							<appendAssemblyId>false</appendAssemblyId>
+							<attach>false</attach>
+						</configuration>
+						<executions>
+							<execution>
+								<id>make-installable-jar</id>
+								<phase>package</phase>
+								<goals>
+									<goal>single</goal>
+								</goals>
+								<configuration>
+									<classifier>installable</classifier>
+									<finalName>${project.build.finalName}-installable</finalName>
+									<descriptor>src/main/assembly/installable-jar.xml</descriptor>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+
+					<!-- Attach alternative artifacts -->
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>build-helper-maven-plugin</artifactId>
+						<version>1.8</version>
+						<executions>
+							<execution>
+								<id>attach-artifacts</id>
+								<phase>package</phase>
+								<goals>
+									<goal>attach-artifact</goal>
+								</goals>
+								<configuration>
+									<artifacts>
+										<artifact>
+											<file>${project.build.directory}/${project.build.finalName}-installable.jar</file>
+											<type>jar</type>
+											<classifier>installable</classifier>
+										</artifact>
+									</artifacts>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 
     </profiles>
 

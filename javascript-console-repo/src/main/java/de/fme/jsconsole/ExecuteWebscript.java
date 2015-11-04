@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.alfresco.repo.admin.SysAdminParams;
 import org.alfresco.repo.cache.SimpleCache;
 import org.alfresco.repo.content.MimetypeMap;
 import org.alfresco.repo.jscript.RhinoScriptProcessor;
@@ -23,21 +22,7 @@ import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.security.permissions.AccessDeniedException;
 import org.alfresco.repo.transaction.RetryingTransactionHelper.RetryingTransactionCallback;
 import org.alfresco.scripts.ScriptResourceHelper;
-import org.alfresco.service.cmr.audit.AuditService;
-import org.alfresco.service.cmr.dictionary.DictionaryService;
-import org.alfresco.service.cmr.lock.LockService;
-import org.alfresco.service.cmr.rendition.RenditionService;
-import org.alfresco.service.cmr.repository.ContentService;
 import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.cmr.repository.NodeService;
-import org.alfresco.service.cmr.rule.RuleService;
-import org.alfresco.service.cmr.search.CategoryService;
-import org.alfresco.service.cmr.security.PermissionService;
-import org.alfresco.service.cmr.tagging.TaggingService;
-import org.alfresco.service.cmr.version.VersionService;
-import org.alfresco.service.cmr.webdav.WebDavService;
-import org.alfresco.service.cmr.workflow.WorkflowService;
-import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.transaction.TransactionService;
 import org.alfresco.util.MD5;
 import org.alfresco.util.Pair;
@@ -84,79 +69,16 @@ public class ExecuteWebscript extends AbstractWebScript {
 
 	private org.alfresco.service.cmr.repository.ScriptProcessor jsProcessor;
 
-	private NodeService nodeService;
+	private DumpService dumpService;
 
-	private PermissionService permissionService;
-	private NamespaceService namespaceService;
-	private VersionService versionService;
-	private ContentService contentService;
-	private DictionaryService dictionaryService;
-	private RuleService ruleService;
-	private WorkflowService workflowService;
-	private RenditionService renditionService;
-	private TaggingService tagservice;
-	private CategoryService categoryService;
-	private WebDavService webDavService;
-	private AuditService auditService;
-	private SysAdminParams sysAdminParams;
-	private LockService lockService;
-	
-	public void setLockService(LockService lockService) {
-		this.lockService = lockService;
+	public void setDumpService(DumpService dumpService) {
+		this.dumpService = dumpService;
 	}
 
-	public void setSysAdminParams(SysAdminParams sysAdminParams) {
-		this.sysAdminParams = sysAdminParams;
-	}
-
-	public void setNamespaceService(NamespaceService namespaceService) {
-		this.namespaceService = namespaceService;
-	}
-
-	public void setVersionService(VersionService versionService) {
-		this.versionService = versionService;
-	}
-
-	public void setContentService(ContentService contentService) {
-		this.contentService = contentService;
-	}
-
-	public void setDictionaryService(DictionaryService dictionaryService) {
-		this.dictionaryService = dictionaryService;
-	}
-
-	public void setRuleService(RuleService ruleService) {
-		this.ruleService = ruleService;
-	}
-
-	public void setWorkflowService(WorkflowService workflowService) {
-		this.workflowService = workflowService;
-	}
-
-	public void setRenditionService(RenditionService renditionService) {
-		this.renditionService = renditionService;
-	}
-
-	public void setTagservice(TaggingService tagservice) {
-		this.tagservice = tagservice;
-	}
-
-	public void setCategoryService(CategoryService categoryService) {
-		this.categoryService = categoryService;
-	}
-
-	public void setWebDavService(WebDavService webDavService) {
-		this.webDavService = webDavService;
-	}
-
-	public void setAuditService(AuditService auditService) {
-		this.auditService = auditService;
-	}
-	
 	private SimpleCache<Pair<String, Integer>, List<String>> printOutputCache;
-	
+
 	private SimpleCache<String, JavascriptConsoleResultBase> resultCache;
-	
+
 	private int printOutputChunkSize = 5;
 
 	@Override
@@ -197,13 +119,13 @@ public class ExecuteWebscript extends AbstractWebScript {
 
 			try {
 			    result = runScriptWithTransactionAndAuthentication(request, response, jsreq, scriptContent);
-			    
+
 			    result.setScriptOffset(scriptOffset);
-			
+
 			    // this won't be very precise since there is still some post-processing, but we can't delay it any longer
 			    result.setWebscriptPerformance(String.valueOf(webscriptPerf.stop("Execute Webscript with {0} - result: {1} ",
                         jsreq, result)));
-			    
+
     			if (!result.isStatusResponseSent()) {
     			    result.writeJson(response);
     			}
@@ -215,7 +137,7 @@ public class ExecuteWebscript extends AbstractWebScript {
 			            // dummy response as indicator for "error"
 			            ExecuteWebscript.this.resultCache.put(jsreq.resultChannel, new JavascriptConsoleResultBase());
 			        }
-			        
+
 			    }
 			}
 
@@ -227,7 +149,7 @@ public class ExecuteWebscript extends AbstractWebScript {
 			writeErrorInfosAsJson(response, result, scriptOffset, e);
 		}
 	}
-	
+
 	private int countScriptLines(String script, boolean attemptImportResolution)
 	{
 		String scriptSource;
@@ -250,7 +172,7 @@ public class ExecuteWebscript extends AbstractWebScript {
 	 * parameters to the built-in alfresco status templates.
 	 *
 	 * @param response
-	 * @param result 
+	 * @param result
 	 * @param scriptOffset
 	 * @param e
 	 *            the occured exception
@@ -303,7 +225,6 @@ public class ExecuteWebscript extends AbstractWebScript {
 	}
 
 	private String readScriptFromResource(String resource, boolean unwrapLines) throws IOException {
-		@SuppressWarnings("unchecked")
         List<String> lines = IOUtils.readLines(getClass().getResourceAsStream(resource));
 
 		StringBuffer script = new StringBuffer();
@@ -324,6 +245,7 @@ public class ExecuteWebscript extends AbstractWebScript {
 
 		if (StringUtils.isNotBlank(jsreq.runas)) {
 			return AuthenticationUtil.runAs(new AuthenticationUtil.RunAsWork<JavascriptConsoleResult>() {
+				@Override
 				public JavascriptConsoleResult doWork() {
 					return runWithTransactionIfNeeded(request, response, jsreq, scriptContent);
 				}
@@ -335,20 +257,21 @@ public class ExecuteWebscript extends AbstractWebScript {
 
 	private JavascriptConsoleResult runWithTransactionIfNeeded(final WebScriptRequest request, final WebScriptResponse response,
 			final JavascriptConsoleRequest jsreq, final ScriptContent scriptContent) {
-	    
+
 	    final List<String> printOutput;
 	    if (jsreq.resultChannel != null && this.printOutputCache != null) {
 	        printOutput = new CacheBackedChunkedList<String, String>(this.printOutputCache, jsreq.resultChannel, this.printOutputChunkSize);
 	    } else {
 	        printOutput = null;
 	    }
-	    
+
 	    JavascriptConsoleResult result = null;
-	    
+
 		if (jsreq.useTransaction) {
 			LOG.debug("Using transction to execute script: " + (jsreq.transactionReadOnly ? "readonly" : "readwrite"));
 			result = this.transactionService.getRetryingTransactionHelper().doInTransaction(
 					new RetryingTransactionCallback<JavascriptConsoleResult>() {
+						@Override
 						public JavascriptConsoleResult execute() throws Exception {
 						    // clear due to potential retry
 		                    if (printOutput != null) {
@@ -360,7 +283,7 @@ public class ExecuteWebscript extends AbstractWebScript {
 					}, jsreq.transactionReadOnly);
 			return result;
 		}
-	
+
 		LOG.debug("Executing script script without transaction.");
 		result = executeScriptContent(request, response, scriptContent, jsreq.template, jsreq.spaceNodeRef, jsreq.urlargs,
 				jsreq.documentNodeRef, printOutput);
@@ -412,9 +335,12 @@ public class ExecuteWebscript extends AbstractWebScript {
 			}
 			scriptModel.put("space", javascriptConsole.getSpace());
 
+			ScriptNode documentNode = null;
 			if (StringUtils.isNotBlank(documentNodeRef)) {
-				scriptModel.put("document", this.scriptUtils.getNodeFromString(documentNodeRef));
+				documentNode = this.scriptUtils.getNodeFromString(documentNodeRef);
+				scriptModel.put("document", documentNode);
 			}
+			scriptModel.put("dumpService", dumpService);
 
 			PerfLog jsPerf = new PerfLog(LOG).start();
 			try {
@@ -424,7 +350,9 @@ public class ExecuteWebscript extends AbstractWebScript {
 				output.setScriptPerformance(String.valueOf(jsPerf.stop("Executed the script {0} with model {1}", scriptContent,
 						scriptModel)));
 				output.setPrintOutput(javascriptConsole.getPrintOutput());
-				output.setDumpOutput(javascriptConsole.getDumpOutput());
+				if (documentNode != null) {
+					output.setDumpOutput(dumpService.addDump(documentNode));
+				}
 			}
 
 
@@ -449,8 +377,9 @@ public class ExecuteWebscript extends AbstractWebScript {
 				// apply location
 				String location = status.getLocation();
 				if (location != null && location.length() > 0) {
-					if (LOG.isDebugEnabled())
+					if (LOG.isDebugEnabled()) {
 						LOG.debug("Setting location to " + location);
+					}
 					res.setHeader(WebScriptResponse.HEADER_LOCATION, location);
 				}
 
@@ -524,8 +453,9 @@ public class ExecuteWebscript extends AbstractWebScript {
 
 		String templatePath = getDescription().getId() + "." + format;
 
-		if (LOG.isDebugEnabled())
+		if (LOG.isDebugEnabled()) {
 			LOG.debug("Rendering template '" + templatePath + "'");
+		}
 
 		renderTemplate(templatePath, model, writer);
 	}
@@ -542,18 +472,10 @@ public class ExecuteWebscript extends AbstractWebScript {
 		this.jsProcessor = jsProcessor;
 	}
 
-	public void setNodeService(NodeService nodeService) {
-		this.nodeService = nodeService;
-	}
-
-	public void setPermissionService(PermissionService permissionService) {
-		this.permissionService = permissionService;
-	}
-
 	public final void setPrintOutputCache(SimpleCache<Pair<String, Integer>, List<String>> printOutputCache) {
         this.printOutputCache = printOutputCache;
     }
-	
+
 	public final void setResultCache(SimpleCache<String, JavascriptConsoleResultBase> resultCache) {
         this.resultCache = resultCache;
     }
