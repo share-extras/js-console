@@ -2,19 +2,20 @@
         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.sharextras</groupId>
-    <artifactId>javascript-console-parent</artifactId>
-    <version>1.0</version>
-    <name>JavaScript Console - Parent</name>
+    <groupId>de.fmaul</groupId>
+    <artifactId>javascript-console</artifactId>
+    <version>0.6-SNAPSHOT</version>
+    <name>JavaScript Console</name>
     <packaging>pom</packaging>
 
     <properties>
+      <sonatypeOssDistMgmtSnapshotsUrl>https://oss.sonatype.org/content/repositories/snapshots/</sonatypeOssDistMgmtSnapshotsUrl>
     </properties>
 
-	<parent>
+    <parent>
         <groupId>org.alfresco.maven</groupId>
         <artifactId>alfresco-sdk-parent</artifactId>
-        <version>2.0.0</version>
+        <version>2.2.0</version>
     </parent>
 
     <modules>
@@ -22,22 +23,19 @@
         <module>javascript-console-share</module>
     </modules>
 
-       <distributionManagement>
+    <distributionManagement>
+          <snapshotRepository>
+              <id>sonatype-nexus-snapshots</id>
+              <name>Sonatype Nexus Snapshots</name>
+              <url>${sonatypeOssDistMgmtSnapshotsUrl}</url>
+          </snapshotRepository>
+          <repository>
+              <id>sonatype-nexus-staging</id>
+              <name>Nexus Release Repository</name>
+              <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+          </repository>
+      </distributionManagement>
 
-        <repository>
-            <id>${distribution.repo.release.id}</id>
-            <name>${distribution.repo.release.name}</name>
-            <url>${distribution.repo.release.url}</url>
-        </repository>
-
-        <snapshotRepository>
-            <id>${distribution.repo.snapshot.id}</id>
-            <name>${distribution.repo.snapshot.name}</name>
-            <url>${distribution.repo.snapshot.url}</url>
-        </snapshotRepository>
-
-    </distributionManagement>
-	
 	<!-- This repository is only needed to retrieve Alfresco parent POM. NOTE: This can be removed when/if Alfresco will be on Maven Central -->
     <repositories>
         <repository>
@@ -52,6 +50,87 @@
                 <updatePolicy>daily</updatePolicy>
             </snapshots>
         </repository>
+            <repository>
+                <id>sonatype-nexus-snapshots</id>
+                <name>Sonatype Nexus Snapshots</name>
+                <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+                <releases>
+                    <enabled>false</enabled>
+                </releases>
+                <snapshots>
+                    <enabled>true</enabled>
+                </snapshots>
+            </repository>
     </repositories>
+
+    <build>
+    <pluginManagement>
+     <plugins>
+         <plugin>
+             <groupId>org.apache.maven.plugins</groupId>
+             <artifactId>maven-release-plugin</artifactId>
+             <version>2.5.1</version>
+             <configuration>
+                 <mavenExecutorId>forked-path</mavenExecutorId>
+                 <useReleaseProfile>false</useReleaseProfile>
+                 <arguments>${arguments} -Psonatype-oss-release</arguments>
+                 <autoVersionSubmodules>true</autoVersionSubmodules>
+                 <tagNameFormat>v@{project.version}</tagNameFormat>
+             </configuration>
+         </plugin>
+     </plugins>
+ </pluginManagement>
+     </build>
+
+     <profiles>
+         <profile>
+             <id>sonatype-oss-release</id>
+             <build>
+                 <plugins>
+                     <plugin>
+                         <groupId>org.apache.maven.plugins</groupId>
+                         <artifactId>maven-source-plugin</artifactId>
+                         <version>2.4</version>
+                         <executions>
+                             <execution>
+                                 <id>attach-sources</id>
+                                 <goals>
+                                     <goal>jar-no-fork</goal>
+                                 </goals>
+                             </execution>
+                         </executions>
+                     </plugin>
+                     <plugin>
+                         <groupId>org.apache.maven.plugins</groupId>
+                         <artifactId>maven-javadoc-plugin</artifactId>
+                         <version>2.10.1</version>
+                         <executions>
+                             <execution>
+                                 <id>attach-javadocs</id>
+                                 <goals>
+                                     <goal>jar</goal>
+                                 </goals>
+                             </execution>
+                         </executions>
+                     </plugin>
+                     <plugin>
+                         <groupId>org.apache.maven.plugins</groupId>
+                         <artifactId>maven-gpg-plugin</artifactId>
+                         <version>1.6</version>
+                         <executions>
+                             <execution>
+                                 <id>sign-artifacts</id>
+                                 <phase>verify</phase>
+                                 <goals>
+                                     <goal>sign</goal>
+                                 </goals>
+                             </execution>
+                         </executions>
+                     </plugin>
+                 </plugins>
+             </build>
+         </profile>
+     </profiles>
+
 
 </project>

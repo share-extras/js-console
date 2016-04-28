@@ -6,14 +6,13 @@
     <name>JavaScript Console - Repository</name>
     <description>Alfresco Share-Extras JavaScript Console - Repository Module</description>
     <packaging>amp</packaging>
-	
- 	<parent>
-        <groupId>org.sharextras</groupId>
-        <artifactId>javascript-console-parent</artifactId>
-        <version>1.0</version>
+
+ 	  <parent>
+        <groupId>de.fmaul</groupId>
+        <artifactId>javascript-console</artifactId>
+        <version>0.6-SNAPSHOT</version>
     </parent>
 
-	
     <developers>
         <developer>
             <id>f.maul</id>
@@ -31,10 +30,10 @@
         </developer>
     </developers>
 
-    <!-- 
+    <!--
        | SDK properties have sensible defaults in the SDK parent,
-       | but you can override the properties below to use another version. 
-       | For more available properties see the alfresco-sdk-parent POM. 
+       | but you can override the properties below to use another version.
+       | For more available properties see the alfresco-sdk-parent POM.
        -->
     <properties>
         <alfresco.client.contextPath>/alfresco</alfresco.client.contextPath>
@@ -51,14 +50,14 @@
         <!-- This controls which properties will be picked in src/test/properties for embedded run -->
         <!--<env>local</env>-->
         <!-- Defines the target WAR artifactId to run this amp, only used with the -Pamp-to-war profile
-             | Defaults to a vanilla repository AMP, but could point to your foundation / aggregator WAR 
+             | Defaults to a vanilla repository AMP, but could point to your foundation / aggregator WAR
         .    | Allowed values for Community: alfresco | share
              | Allowed values for Enterprise: alfresco-enterprise | share-enterprise
              <alfresco.client.war>${alfresco.repo.artifactId}</alfresco.client.war> -->
         <!-- Defines the target WAR groupId to run this amp, only used with the -Pamp-to-war switch
         .    | Could be org.alfresco or your corporate groupId -->
         <!-- <alfresco.client.war.groupId>${alfresco.groupId}</alfresco.client.war.groupId> -->
-        
+
         <!-- Defines the target WAR version to run this amp, only used with the -Pamp-to-war switch -->
         <!-- <alfresco.client.war.version>${alfresco.version}</alfresco.client.war.version>-->
     </properties>
@@ -90,7 +89,7 @@
 
 
     <profiles>
-		
+
 		<!-- Enterprise profile, manually activated, automatically adds support for Enterprise edition development (dependencies) -->
         <profile>
             <id>enterprise</id>
@@ -103,7 +102,7 @@
                 </dependency>
             </dependencies>
         </profile>
-		
+
 		<profile>
 			<id>amp-to-war</id>
 			<dependencies>
@@ -114,7 +113,7 @@
 				</dependency>
 			</dependencies>
 		</profile>
-		
+
 		<profile>
 			<id>installable-jar</id>
 			<build>

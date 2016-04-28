@@ -7,10 +7,10 @@
     <description>Alfresco Share-Extras JavaScript Console - Share Module</description>
     <packaging>amp</packaging>
 
-     <parent>
-        <groupId>org.sharextras</groupId>
-        <artifactId>javascript-console-parent</artifactId>
-        <version>1.0</version>
+    <parent>
+        <groupId>de.fmaul</groupId>
+        <artifactId>javascript-console</artifactId>
+        <version>0.6-SNAPSHOT</version>
     </parent>
 
     <developers>
@@ -103,7 +103,7 @@
 		<plugins>
 
 <!-- Compress JavaScript files and store as *-min.js -->
-            
+
 			<plugin>
 				<artifactId>maven-resources-plugin</artifactId>
 				<configuration>
@@ -122,7 +122,7 @@
 
     <profiles>
 
-        
+
 		<!-- Enterprise profile, manually activated, automatically adds support for Enterprise edition development (dependencies) -->
         <profile>
             <id>enterprise</id>
@@ -136,7 +136,7 @@
                 </dependency>
             </dependencies>
         </profile>
-        
+
         <profile>
 			<id>installable-jar</id>
 			<build>
