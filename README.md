@@ -1,4 +1,4 @@
-Javascript Console Admin Console component for Alfresco 4.x-5.0
+Javascript Console Admin Console component for Alfresco 4.x-5.1
 ===============================================================
 [![Build Status](https://travis-ci.org/share-extras/js-console.svg?branch=master)](https://travis-ci.org/share-extras/js-console)
 
@@ -43,7 +43,7 @@ For Share
       ...
       <dependency>
         <groupId>de.fmaul</groupId>
-        <artifactId>javascript-console-repo</artifactId>
+        <artifactId>javascript-console-share</artifactId>
         <version>0.6</version>
         <type>amp</type>
       </dependency>
@@ -54,7 +54,7 @@ For Share
       ...
       <overlay>
         <groupId>de.fmaul</groupId>
-        <artifactId>javascript-console-repo</artifactId>
+        <artifactId>javascript-console-share</artifactId>
         <type>amp</type>
       </overlay>
       ...
