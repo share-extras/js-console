@@ -1,15 +1,47 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>de.fmaul</groupId>
     <artifactId>javascript-console</artifactId>
-    <version>0.6-SNAPSHOT</version>
-    <name>JavaScript Console</name>
+    <version>0.6</version>
     <packaging>pom</packaging>
 
+    <name>JavaScript Console</name>
+    <description>An Alfresco extension to allow executing javascript through the user interface.</description>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+    </licenses>
+
+    <scm>
+        <connection>scm:git:git@github.com:share-extras/js-console.git</connection>
+        <developerConnection>scm:git:git@github.com:share-extras/js-console.git</developerConnection>
+        <url>git@github.com:share-extras/js-console.git</url>
+        <tag>HEAD</tag>
+    </scm>
+
+    <developers>
+        <developer>
+            <id>f.maul</id>
+            <name>Florian Maul</name>
+            <email>f.maul@fme.de</email>
+            <organization>fme AG</organization>
+            <roles>
+                <role>Founder</role>
+                <role>Architect</role>
+                <role>Developer</role>
+            </roles>
+            <properties>
+                <twitter>twitter.com/fmaul</twitter>
+            </properties>
+        </developer>
+    </developers>
+
     <properties>
-      <sonatypeOssDistMgmtSnapshotsUrl>https://oss.sonatype.org/content/repositories/snapshots/</sonatypeOssDistMgmtSnapshotsUrl>
+        <sonatypeOssDistMgmtSnapshotsUrl>https://oss.sonatype.org/content/repositories/snapshots/</sonatypeOssDistMgmtSnapshotsUrl>
     </properties>
 
     <parent>
@@ -22,21 +54,14 @@
         <module>javascript-console-repo</module>
         <module>javascript-console-share</module>
     </modules>
-
     <distributionManagement>
-          <snapshotRepository>
-              <id>sonatype-nexus-snapshots</id>
-              <name>Sonatype Nexus Snapshots</name>
-              <url>${sonatypeOssDistMgmtSnapshotsUrl}</url>
-          </snapshotRepository>
-          <repository>
-              <id>sonatype-nexus-staging</id>
-              <name>Nexus Release Repository</name>
-              <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-          </repository>
-      </distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
 
-	<!-- This repository is only needed to retrieve Alfresco parent POM. NOTE: This can be removed when/if Alfresco will be on Maven Central -->
+    <!-- This repository is only needed to retrieve Alfresco parent POM. NOTE: This can be removed when/if Alfresco will be on Maven Central -->
     <repositories>
         <repository>
             <id>alfresco-public</id>
@@ -50,87 +75,52 @@
                 <updatePolicy>daily</updatePolicy>
             </snapshots>
         </repository>
-            <repository>
-                <id>sonatype-nexus-snapshots</id>
-                <name>Sonatype Nexus Snapshots</name>
-                <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-                <releases>
-                    <enabled>false</enabled>
-                </releases>
-                <snapshots>
-                    <enabled>true</enabled>
-                </snapshots>
-            </repository>
     </repositories>
 
     <build>
-    <pluginManagement>
-     <plugins>
-         <plugin>
-             <groupId>org.apache.maven.plugins</groupId>
-             <artifactId>maven-release-plugin</artifactId>
-             <version>2.5.1</version>
-             <configuration>
-                 <mavenExecutorId>forked-path</mavenExecutorId>
-                 <useReleaseProfile>false</useReleaseProfile>
-                 <arguments>${arguments} -Psonatype-oss-release</arguments>
-                 <autoVersionSubmodules>true</autoVersionSubmodules>
-                 <tagNameFormat>v@{project.version}</tagNameFormat>
-             </configuration>
-         </plugin>
-     </plugins>
- </pluginManagement>
-     </build>
-
-     <profiles>
-         <profile>
-             <id>sonatype-oss-release</id>
-             <build>
-                 <plugins>
-                     <plugin>
-                         <groupId>org.apache.maven.plugins</groupId>
-                         <artifactId>maven-source-plugin</artifactId>
-                         <version>2.4</version>
-                         <executions>
-                             <execution>
-                                 <id>attach-sources</id>
-                                 <goals>
-                                     <goal>jar-no-fork</goal>
-                                 </goals>
-                             </execution>
-                         </executions>
-                     </plugin>
-                     <plugin>
-                         <groupId>org.apache.maven.plugins</groupId>
-                         <artifactId>maven-javadoc-plugin</artifactId>
-                         <version>2.10.1</version>
-                         <executions>
-                             <execution>
-                                 <id>attach-javadocs</id>
-                                 <goals>
-                                     <goal>jar</goal>
-                                 </goals>
-                             </execution>
-                         </executions>
-                     </plugin>
-                     <plugin>
-                         <groupId>org.apache.maven.plugins</groupId>
-                         <artifactId>maven-gpg-plugin</artifactId>
-                         <version>1.6</version>
-                         <executions>
-                             <execution>
-                                 <id>sign-artifacts</id>
-                                 <phase>verify</phase>
-                                 <goals>
-                                     <goal>sign</goal>
-                                 </goals>
-                             </execution>
-                         </executions>
-                     </plugin>
-                 </plugins>
-             </build>
-         </profile>
-     </profiles>
-
+        <plugins>
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.7</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>ossrh</serverId>
+                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.4</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.6</version>
+                <configuration>
+                  <useAgent>false</useAgent>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

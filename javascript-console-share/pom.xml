@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <artifactId>javascript-console-share</artifactId>
     <name>JavaScript Console - Share</name>
@@ -10,27 +9,10 @@
     <parent>
         <groupId>de.fmaul</groupId>
         <artifactId>javascript-console</artifactId>
-        <version>0.6-SNAPSHOT</version>
+        <version>0.6</version>
     </parent>
 
-    <developers>
-        <developer>
-            <id>f.maul</id>
-            <name>Florian Maul</name>
-            <email>f.maul@fme.de</email>
-            <organization>fme AG</organization>
-            <roles>
-                <role>Founder</role>
-                <role>Architect</role>
-                <role>Developer</role>
-            </roles>
-            <properties>
-                <twitter>twitter.com/fmaul</twitter>
-            </properties>
-        </developer>
-    </developers>
-
-	<!--
+    <!--
        | SDK properties have sensible defaults in the SDK parent,
        | but you can override the properties below to use another version.
        | For more available properties see the alfresco-sdk-parent POM.
@@ -50,21 +32,18 @@
              Community versions are typically identified by major.minor.character (4.2.a),
              while Enterprise versions are identified by major.minor.digit (4.2.0)
         -->
-		<!--<alfresco.version>5.0.c</alfresco.version>-->
+        <!--<alfresco.version>5.0.c</alfresco.version>-->
 
         <!-- Defines the log level used in log4j.properties -->
         <app.log.root.level>WARN</app.log.root.level>
 
-		<!-- The Maven artifact ID to use when loading the Share.WAR that the AMP should be applied to,
+        <!-- The Maven artifact ID to use when loading the Share.WAR that the AMP should be applied to,
                     defaults to the alfresco.war artifact ID, so we need to override here. -->
-		<app.amp.client.war.artifactId>${alfresco.share.artifactId}</app.amp.client.war.artifactId>
-
-
+        <app.amp.client.war.artifactId>${alfresco.share.artifactId}</app.amp.client.war.artifactId>
 
     </properties>
 
-
- <!-- Here we realize the connection with the Alfresco selected platform
+    <!-- Here we realize the connection with the Alfresco selected platform
         (e.g.version and edition) -->
     <dependencyManagement>
         <dependencies>
@@ -92,38 +71,35 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-          <groupId>org.springframework.extensions.surf</groupId>
-          <artifactId>spring-surf-api</artifactId>
-          <scope>provided</scope>
+            <groupId>org.springframework.extensions.surf</groupId>
+            <artifactId>spring-surf-api</artifactId>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 
+    <build>
+        <plugins>
 
-	<build>
-		<plugins>
+            <!-- Compress JavaScript files and store as *-min.js -->
 
-<!-- Compress JavaScript files and store as *-min.js -->
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <configuration>
+                    <nonFilteredFileExtensions>
+                        <nonFilteredFileExtension>js</nonFilteredFileExtension>
+                        <nonFilteredFileExtension>css</nonFilteredFileExtension>
+                        <nonFilteredFileExtension>ftl</nonFilteredFileExtension>
 
-			<plugin>
-				<artifactId>maven-resources-plugin</artifactId>
-				<configuration>
-					<nonFilteredFileExtensions>
-						<nonFilteredFileExtension>js</nonFilteredFileExtension>
-						<nonFilteredFileExtension>css</nonFilteredFileExtension>
-            <nonFilteredFileExtension>ftl</nonFilteredFileExtension>
+                    </nonFilteredFileExtensions>
+                </configuration>
+            </plugin>
 
-					</nonFilteredFileExtensions>
-				</configuration>
-			</plugin>
-
-		</plugins>
-	</build>
-
+        </plugins>
+    </build>
 
     <profiles>
 
-
-		<!-- Enterprise profile, manually activated, automatically adds support for Enterprise edition development (dependencies) -->
+        <!-- Enterprise profile, manually activated, automatically adds support for Enterprise edition development (dependencies) -->
         <profile>
             <id>enterprise</id>
             <dependencies>
@@ -138,60 +114,60 @@
         </profile>
 
         <profile>
-			<id>installable-jar</id>
-			<build>
-				<plugins>
-					<!-- Build alternative artifacts (installable JAR, overlay WAR) -->
-					<plugin>
-						<artifactId>maven-assembly-plugin</artifactId>
-						<version>2.4</version>
-						<configuration>
-							<appendAssemblyId>false</appendAssemblyId>
-							<attach>false</attach>
-						</configuration>
-						<executions>
-							<execution>
-								<id>make-installable-jar</id>
-								<phase>package</phase>
-								<goals>
-									<goal>single</goal>
-								</goals>
-								<configuration>
-									<classifier>installable</classifier>
-									<finalName>${project.build.finalName}-installable</finalName>
-									<descriptor>src/main/assembly/installable-jar.xml</descriptor>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
+            <id>installable-jar</id>
+            <build>
+                <plugins>
+                    <!-- Build alternative artifacts (installable JAR, overlay WAR) -->
+                    <plugin>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <version>2.4</version>
+                        <configuration>
+                            <appendAssemblyId>false</appendAssemblyId>
+                            <attach>false</attach>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>make-installable-jar</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                                <configuration>
+                                    <classifier>installable</classifier>
+                                    <finalName>${project.build.finalName}-installable</finalName>
+                                    <descriptor>src/main/assembly/installable-jar.xml</descriptor>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
 
-					<!-- Attach alternative artifacts -->
-					<plugin>
-						<groupId>org.codehaus.mojo</groupId>
-						<artifactId>build-helper-maven-plugin</artifactId>
-						<version>1.8</version>
-						<executions>
-							<execution>
-								<id>attach-artifacts</id>
-								<phase>package</phase>
-								<goals>
-									<goal>attach-artifact</goal>
-								</goals>
-								<configuration>
-									<artifacts>
-										<artifact>
-											<file>${project.build.directory}/${project.build.finalName}-installable.jar</file>
-											<type>jar</type>
-											<classifier>installable</classifier>
-										</artifact>
-									</artifacts>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
+                    <!-- Attach alternative artifacts -->
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>build-helper-maven-plugin</artifactId>
+                        <version>1.8</version>
+                        <executions>
+                            <execution>
+                                <id>attach-artifacts</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>attach-artifact</goal>
+                                </goals>
+                                <configuration>
+                                    <artifacts>
+                                        <artifact>
+                                            <file>${project.build.directory}/${project.build.finalName}-installable.jar</file>
+                                            <type>jar</type>
+                                            <classifier>installable</classifier>
+                                        </artifact>
+                                    </artifacts>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
 
     </profiles>
 
