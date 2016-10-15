@@ -9,7 +9,7 @@
     <parent>
         <groupId>de.fmaul</groupId>
         <artifactId>javascript-console</artifactId>
-        <version>0.6</version>
+        <version>0.7-SNAPSHOT</version>
     </parent>
 
     <!--
@@ -80,18 +80,9 @@
     <build>
         <plugins>
 
-            <!-- Compress JavaScript files and store as *-min.js -->
-
             <plugin>
-                <artifactId>maven-resources-plugin</artifactId>
-                <configuration>
-                    <nonFilteredFileExtensions>
-                        <nonFilteredFileExtension>js</nonFilteredFileExtension>
-                        <nonFilteredFileExtension>css</nonFilteredFileExtension>
-                        <nonFilteredFileExtension>ftl</nonFilteredFileExtension>
-
-                    </nonFilteredFileExtensions>
-                </configuration>
+                <groupId>net.alchim31.maven</groupId>
+                <artifactId>yuicompressor-maven-plugin</artifactId>
             </plugin>
 
         </plugins>
