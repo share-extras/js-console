@@ -1,4 +1,4 @@
-<#include "../../../../org/alfresco/components/component.head.inc">
+<#include "/org/alfresco/components/component.head.inc">
 <!-- Admin Console Javascript Console -->
 <@link rel="stylesheet" type="text/css" href="${page.url.context}/res/fme/components/jsconsole/javascript-console.css" />
 <@script type="text/javascript" src="${page.url.context}/res/components/console/consoletool.js"></@script>
@@ -8,7 +8,7 @@
 <@script type="text/javascript" src="${page.url.context}/res/fme/components/jsconsole/beautify.js"></@script>
 <@script type="text/javascript" src="${page.url.context}/res/yui/resize/resize.js"></@script>
 
-<link href="http://fonts.googleapis.com/css?family=Source+Code+Pro:300" rel="stylesheet" type="text/css"/>
+<link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:300" rel="stylesheet" type="text/css"/>
 <@script type="text/javascript" src="${page.url.context}/res/fme/components/jsconsole/common/map.js"></@script>
 
 
