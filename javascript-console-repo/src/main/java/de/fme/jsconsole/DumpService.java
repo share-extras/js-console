@@ -485,7 +485,7 @@ public class DumpService {
 		if (limited) {
 			limit = 5;
 		} else {
-			limit = -1;
+			limit = 100;
 		}
 		auditService.auditQuery(callback, params, limit);
 		return entries;
