@@ -41,6 +41,7 @@
 		        <li class="selected"><a href="#itab1"><em>${msg("tab.label.javascript.input")}</em></a></li>
 		        <li><a href="#itab2"><em>${msg("tab.label.freemarker.input")}</em></a></li>
 		        <li><a href="#itab3"><em>${msg("tab.label.script.execution.parameters")}</em></a></li>
+		        <li><a href="#itab4"><em>${msg("tab.label.request.parameters")}</em></a></li>
 		    </ul>
 		    <div id="${el}-inputContentArea" class="yui-content">
 		        <div>
@@ -58,10 +59,6 @@
 				</div>
 		        <div>
                     <div class="configform">
-                        <div class="control">
-                            <span class="label">${msg("option.arguments")}</span>
-                            <input id="${el}-urlarguments" type="text" size="50"/>
-                        </div>
                         <div class="control">
                             <span class="label">${msg("option.run")}</span>
                             <input id="${el}-runas" type="text" size="20" value="admin"/>
@@ -85,6 +82,32 @@
                         </div>
                     </div> 
                 </div>
+                <div>
+                 <div class="configform requestconfigform" id="${el}-requestconfigform">
+	                	<div class="control">
+                            <span class="label">${msg("option.arguments")}</span>
+                            <input id="${el}-urlarguments" type="text" size="50"/>
+                        </div>
+                        <div class="control">
+	                        <span class="label">${msg("option.request.type")}</span>
+	                        <select id="${el}-requestType">
+	                            <option value="" selected="selected">${msg("value.default")}</option>
+	                            <option value="multipart/form-data">${msg("value.formdata")}</option>
+	                            <option value="application/json">${msg("value.json")}</option>
+	                        </select>
+	                    </div>
+	                    <div class="control" id="${el}-content-container">
+	                        <span class="label">${msg("option.request.content")}</span>
+	                        <textarea id="${el}-requestContent" name="requestContent" cols="80" rows="5" class="requestContent"></textarea>
+	                    </div>
+	                    <div class="control" id="${el}-fields-containters">
+	                    	<span class="label">${msg("option.request.fields")}</span>
+	                    </div>
+	                    <div class="control" id="${el}-header-containters">
+	                    	<span class="label">${msg("option.request.headers")}</span>
+	                    </div>
+	                </div>
+                </div>
 		    </div>
 		</div>
 		<div class="execute-buttonbar">
@@ -95,7 +118,7 @@
 		</div>
 
 
-		<div id="${el}-outputTabs" class="yui-navset">
+		<div id="${el}-outputTabs" class="yui-navset output-tabs">
 		    <ul class="yui-nav">
 		        <li class="selected"><a href="#otab1"><em>${msg("tab.label.console.output")}</em></a></li>
 		        <li><a href="#otab2"><em>${msg("tab.label.freemarker.html.output")}</em></a></li>

@@ -37,12 +37,14 @@ import org.springframework.extensions.webscripts.Cache;
 import org.springframework.extensions.webscripts.Container;
 import org.springframework.extensions.webscripts.DeclarativeWebScript;
 import org.springframework.extensions.webscripts.Description;
+import org.springframework.extensions.webscripts.FormatReader;
 import org.springframework.extensions.webscripts.ScriptContent;
 import org.springframework.extensions.webscripts.ScriptProcessor;
 import org.springframework.extensions.webscripts.Status;
 import org.springframework.extensions.webscripts.TemplateProcessor;
 import org.springframework.extensions.webscripts.WebScriptException;
 import org.springframework.extensions.webscripts.WebScriptRequest;
+import org.springframework.extensions.webscripts.WebScriptRequestImpl;
 import org.springframework.extensions.webscripts.WebScriptResponse;
 
 /**
@@ -106,7 +108,14 @@ public class ExecuteWebscript extends AbstractWebScript {
 		try {
 		    // this isn't very precise since there is some bit of processing until here that we can't measure
 			PerfLog webscriptPerf = new PerfLog().start();
-			JavascriptConsoleRequest jsreq = JavascriptConsoleRequest.readJson(request);
+			JavascriptConsoleRequest jsreq = null;
+			if(request.getContentType().equals(WebScriptRequestImpl.MULTIPART_FORM_DATA)) {
+				jsreq = JavascriptConsoleRequest.readFormData(request);
+			}
+			else {
+				// standard json
+				jsreq = JavascriptConsoleRequest.readJson(request);
+			}
 
 			// Note: Need to use import here so the user-supplied script may also import scripts
 			String script = "<import resource=\"classpath:" + PRE_ROLL_SCRIPT_RESOURCE + "\">\n" + jsreq.script;
@@ -278,14 +287,14 @@ public class ExecuteWebscript extends AbstractWebScript {
 		                        printOutput.clear();
 		                    }
 							return executeScriptContent(request, response, scriptContent, jsreq.template, jsreq.spaceNodeRef,
-									jsreq.urlargs, jsreq.documentNodeRef, printOutput);
+									jsreq.mockRequest, jsreq.documentNodeRef, printOutput);
 						}
 					}, jsreq.transactionReadOnly);
 			return result;
 		}
 
 		LOG.debug("Executing script script without transaction.");
-		result = executeScriptContent(request, response, scriptContent, jsreq.template, jsreq.spaceNodeRef, jsreq.urlargs,
+		result = executeScriptContent(request, response, scriptContent, jsreq.template, jsreq.spaceNodeRef, jsreq.mockRequest,
 				jsreq.documentNodeRef, printOutput);
 		return result;
 	}
@@ -297,7 +306,7 @@ public class ExecuteWebscript extends AbstractWebScript {
 	 * WebScriptRequest, org.alfresco.web.scripts.WebScriptResponse)
 	 */
 	private JavascriptConsoleResult executeScriptContent(WebScriptRequest req, WebScriptResponse res,
-			ScriptContent scriptContent, String template, String spaceNodeRef, Map<String, String> urlargs, String documentNodeRef,
+			ScriptContent scriptContent, String template, String spaceNodeRef, WebScriptRequest mockReq, String documentNodeRef,
 			List<String> printOutput) {
 		JavascriptConsoleResult output = new JavascriptConsoleResult();
 
@@ -312,10 +321,14 @@ public class ExecuteWebscript extends AbstractWebScript {
 			model.put("status", status);
 			model.put("cache", cache);
 
-			Map<String, Object> scriptModel = createScriptParameters(req, res, null, model);
-
-			augmentScriptModelArgs(scriptModel, urlargs);
-
+			Map<String, Object> scriptModel = createScriptParameters(mockReq, res, null, model);
+			
+			// add object related to request type e.g. json object
+			FormatReader<Object> reader = getContainer().getFormatRegistry().getReader(mockReq.getContentType());
+			if(reader != null) {
+				scriptModel.putAll(reader.createScriptParameters(mockReq, res));
+			}
+			
 			// add return model allowing script to add items to template model
 			Map<String, Object> returnModel = new HashMap<String, Object>(8, 1.0f);
 			scriptModel.put("model", returnModel);
@@ -405,13 +418,6 @@ public class ExecuteWebscript extends AbstractWebScript {
 			throw createStatusException(e, req, res);
 		}
 		return output;
-	}
-
-	private void augmentScriptModelArgs(Map<String, Object> scriptModel, Map<String, String> additionalUrlArgs) {
-		@SuppressWarnings("unchecked")
-		Map<String, String> args = (Map<String, String>) scriptModel.get("args");
-
-		args.putAll(additionalUrlArgs);
 	}
 
 	/**

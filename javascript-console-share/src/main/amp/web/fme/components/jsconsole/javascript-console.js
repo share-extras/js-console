@@ -115,8 +115,14 @@ if (typeof String.prototype.startsWith != 'function') {
                      runas : Dom.get(parent.id + "-runas"),
                      transaction : Dom.get(parent.id + "-transactions"),
                      urlargs : Dom.get(parent.id + "-urlarguments"),
+                     requestType : Dom.get(parent.id + "-requestType"),
+                     requestContent : Dom.get(parent.id + "-requestContent"),
                      runlikecrazy : Dom.get(parent.id + "-runlikecrazy")
              };
+             parent.widgets.requestconfigform = Dom.get(parent.id + "-requestconfigform");
+             parent.widgets.contentContainer = Dom.get(parent.id + "-content-container");
+             parent.widgets.fieldsContainers = Dom.get(parent.id + "-fields-containters");
+             parent.widgets.headerContainers = Dom.get(parent.id + "-header-containters");
 
              // Buttons
              parent.widgets.selectDestinationButton = Alfresco.util.createYUIButton(parent, "selectDestination-button", parent.onSelectDestinationClick);
@@ -208,7 +214,7 @@ if (typeof String.prototype.startsWith != 'function') {
                  { text : "Freemarker Manual", url : "http://freemarker.sourceforge.net/docs/index.html", target:"_blank"}
                ],
                [
-				 { text : "Fulltext Search Reference", url : "http://docs.alfresco.com/5.0/concepts/rm-searchsyntax-intro.html", target:"_blank" },
+                 { text : "Fulltext Search Reference", url : "http://docs.alfresco.com/5.0/concepts/rm-searchsyntax-intro.html", target:"_blank" },
                  { text : "Lucene Search Reference", url : "http://wiki.alfresco.com/wiki/Search", target:"_blank" },
                  { text : "Alfresco XPath Search", url : "http://wiki.alfresco.com/wiki/Search_Documentation", target:"_blank" }
                ],
@@ -368,7 +374,223 @@ if (typeof String.prototype.startsWith != 'function') {
               });
           }
       },
+      
+      fieldIds: 0,
+      fieldCount: 0,
+      
+      onRequestTypeChange: function() {
+            var requestType = this.widgets.config.requestType.value;
+            Dom.setStyle(this.widgets.contentContainer, "display", requestType === "application/json" ? "" : "none");
+            Dom.setStyle(this.widgets.fieldsContainers, "display", requestType === "multipart/form-data" ? "" : "none");
+      },
+      
+      createFieldsOption: function(ob) {
+          var container = this.widgets.fieldsContainers;
+          
+          ++this.fieldCount;
+          var newId = ++this.fieldIds;
+          var fieldContainer = document.createElement("div");
+          fieldContainer.setAttribute("class", "field-container");
+          
+          
+          var fieldType = document.createElement("select");
+          fieldType.setAttribute("id", this.id+"-field-type");
+          var textOption = document.createElement("option");
+          textOption.setAttribute("value", "text");
+          textOption.innerHTML = this.msg("option.field.text");
+          fieldType.appendChild(textOption);
+          var fileOption = document.createElement("option");
+          fileOption.setAttribute("value", "file");
+          fileOption.innerHTML = this.msg("option.field.file");
+          fieldType.appendChild(fileOption);
+          fieldContainer.appendChild(fieldType);
+          
+          var fieldName = document.createElement("input");
+          fieldName.setAttribute("type", "text");
+          fieldName.setAttribute("size", "50");
+          var fieldValue = fieldName.cloneNode();
+          fieldValue.setAttribute("class", "field-value");
+          fieldName.setAttribute("class", "field-name");
+          fieldName.setAttribute("placeholder", this.msg("placeholder.field"));
+          fieldValue.setAttribute("placeholder", this.msg("placeholder.value"));
+          fieldName.setAttribute("id", this.id+"-field-name-"+newId);
+          
+          fieldContainer.appendChild(fieldName);
+          fieldContainer.appendChild(fieldValue);
+          if(ob != null) {
+              if(ob.fieldType != null) {
+                  fieldType.value = ob.fieldType;
+                  fieldValue.setAttribute("type", ob.fieldType);
+              }
+              if(ob.name != null) {
+                  fieldName.value = ob.name;
+              }
+              if(ob.value != null) {
+                  fieldValue.value = ob.value;
+              }
+              
+          }
+          
+          fieldType.addEventListener("change", function() {
+              fieldValue.setAttribute("type", fieldType.value);
+          });
+          
+          var fieldAddSpan = document.createElement("span");
+          var fieldAddA = document.createElement("a");
+          fieldAddA.setAttribute("class", "field-add");
+          fieldAddA.setAttribute("href", "#");
+          var fieldAddImg = document.createElement("img");
+          fieldAddImg.setAttribute("src", Alfresco.constants.URL_RESCONTEXT+"components/images/add-icon-16.png");
+          fieldAddA.appendChild(fieldAddImg);
+          fieldAddSpan.appendChild(fieldAddA);
+          fieldAddA.onclick = this.createFieldsOption.bind(this);
+          fieldContainer.appendChild(fieldAddSpan);
+          
+          var fieldRemoveA = document.createElement("a");
+          fieldRemoveA.setAttribute("class", "field-remove");
+          fieldRemoveA.setAttribute("href", "#");
+          var fieldRemoveImg = document.createElement("img");
+          fieldRemoveImg.setAttribute("src", Alfresco.constants.URL_RESCONTEXT+"components/images/remove-icon-16.png");
+          fieldRemoveA.appendChild(fieldRemoveImg);
+          
+          fieldRemoveA.addEventListener("click", function() {
+                if(this.fieldCount > 1) {
+                    --this.fieldCount;
+                    fieldContainer.parentNode.removeChild(fieldContainer);
+                }
+                else {
+                    fieldValue.value = "";
+                    fieldName.value = "";
+                }
+              
+              }.bind(this));
+          
+          
+          fieldAddSpan.appendChild(fieldRemoveA);
+          container.appendChild(fieldContainer);
+          
+    
+      },
+      
+      getFieldsOption: function() {
+          var resultList = [];
+          var resFields = [];
+          var fields = Dom.getElementsByClassName("field-container");
+          for(var i = 0; i < fields.length; ++i) {
+              var fieldName = fields[i].getElementsByClassName("field-name")[0];
+              var fieldValue = fields[i].getElementsByClassName("field-value")[0];
+              if(fieldName.value !== "") {
+                  resultList.push({
+                      "name" : fieldName.value,
+                      "type" : fieldValue.getAttribute("type") == "text" ? "param" : "file"
+                  });
+                  resFields.push({
+                      "name" : fieldName.value,
+                      "value" : fieldValue.getAttribute("type") == "text" ? fieldValue.value : fieldValue.files[0]
+                  });
+              }
+              
+              // "[{"name":"test1", "type":"param"},{"name":"test2", "type":"param"}]"
+                      
+          }
+          return { "mp-fields": YAHOO.lang.JSON.stringify(resultList), fields: resFields };
+      },
 
+      headerListDs: new YAHOO.util.LocalDataSource(["A-IM", "Accept", "Accept-Charset", "Accept-Encoding", "Accept-Language", "Accept-Datetime", "Access-Control-Request-Method",
+            "Access-Control-Request-Headers", "Authorization", "Cache-Control", "Connection", "Content-Length", "Content-MD5", "Content-Type", "Cookie", "Date", "Expect", "Forwarded", "From", "Host", "If-Match", "If-Modified-Since", "If-None-Match", "If-Range", "If-Unmodified-Since", "Max-Forwards", "Origin", "Pragma", "Proxy-Authorization", "Range", "Referer", "TE", "User-Agent", "Upgrade", "Via", "Warning"]),
+      
+      headerId: 0,
+      headerCount: 0,
+      
+      createHeaderOption: function(ob) {
+          var container = this.widgets.headerContainers;
+          
+          ++this.headerCount;
+          var newId = ++this.headerId;
+          var headerContainer = document.createElement("div");
+          headerContainer.setAttribute("class", "header-container");
+          //headerContainer.setAttribute("id", this.id+"-header-container-"+newId);
+          var headerNameContainer = document.createElement("div");
+          var headerName = document.createElement("input");
+          headerName.setAttribute("type", "text");
+          headerName.setAttribute("size", "50");
+          var headerValue = headerName.cloneNode();
+          headerValue.setAttribute("class", "header-value");
+          headerName.setAttribute("class", "header-name");
+          headerName.setAttribute("placeholder", this.msg("placeholder.header"));
+          headerValue.setAttribute("placeholder", this.msg("placeholder.value"));
+          headerName.setAttribute("id", this.id+"-header-name-"+newId);
+          var headerNameAc = document.createElement("div");
+          headerNameAc.setAttribute("id", this.id+"-header-name-ac-"+newId);
+          headerNameAc.setAttribute("class", "header-ac");
+          headerNameContainer.appendChild(headerName);
+          headerNameContainer.appendChild(headerNameAc);
+          headerContainer.appendChild(headerNameContainer);
+          headerContainer.appendChild(headerValue);
+          if(ob != null) {
+              if(ob.name != null) {
+                headerName.value = ob.name;
+              }
+              if(ob.value != null) {
+                  headerValue.value = ob.value;
+              }
+          }
+          
+          var headerAddSpan = document.createElement("span");
+          var headerAddA = document.createElement("a");
+          headerAddA.setAttribute("class", "header-add");
+          headerAddA.setAttribute("href", "#");
+          var headerAddImg = document.createElement("img");
+          headerAddImg.setAttribute("src", Alfresco.constants.URL_RESCONTEXT+"components/images/add-icon-16.png");
+          headerAddA.appendChild(headerAddImg);
+          headerAddSpan.appendChild(headerAddA);
+          headerAddA.onclick = this.createHeaderOption.bind(this);
+          headerContainer.appendChild(headerAddSpan);
+          
+          var headerRemoveA = document.createElement("a");
+          headerRemoveA.setAttribute("class", "header-remove");
+          headerRemoveA.setAttribute("href", "#");
+          var headerRemoveImg = document.createElement("img");
+          headerRemoveImg.setAttribute("src", Alfresco.constants.URL_RESCONTEXT+"components/images/remove-icon-16.png");
+          headerRemoveA.appendChild(headerRemoveImg);
+          
+          headerRemoveA.addEventListener("click", function() {
+            if(this.headerCount > 1) {
+                --this.headerCount;
+                headerContainer.parentNode.removeChild(headerContainer);
+            }
+            else {
+                  headerValue.value = "";
+                  headerName.value = "";
+            }
+          
+          }.bind(this));
+          
+          headerAddSpan.appendChild(headerRemoveA);
+          
+          container.appendChild(headerContainer);
+          
+          new YAHOO.widget.AutoComplete(headerName, headerNameAc, this.headerListDs);
+    
+      },
+      
+      getHeaderOption: function() {
+          var resultList = [];
+          var customHeaders = Dom.getElementsByClassName("header-container");
+          for(var i = 0; i < customHeaders.length; ++i) {
+              var headerName = customHeaders[i].getElementsByClassName("header-name")[0];
+              var headerValue = customHeaders[i].getElementsByClassName("header-value")[0];
+              if(headerName.value !== "") {
+                  resultList.push({
+                      "name" : headerName.value,
+                      "value" : headerValue.value
+                  });
+              }
+                      
+          }
+          return YAHOO.lang.JSON.stringify(resultList);
+      },
+      
       onEditorKeyEvent : function ACJC_onEditorKeyEvent(i, e) {
          // Hook into ctrl-enter
           if (e.type=="keyup" && e.keyCode == 13 && (e.ctrlKey || e.metaKey) && !e.altKey) {
@@ -546,18 +768,56 @@ if (typeof String.prototype.startsWith != 'function') {
              };
          });
 
+         this.widgets.config.requestType.addEventListener("change", this.onRequestTypeChange.bind(this));
+         this.onRequestTypeChange();
+         
+         this.widgets.config.codeMirrorRequestContent = CodeMirror.fromTextArea(this.widgets.config.requestContent, { 
+            mode : "application/json",
+            lineNumbers: true,
+            lineWrapping: true,
+            matchBrackets: true,
+            styleActiveLine: true,
+            showCursorWhenSelecting :true,
+            highlightSelectionMatches : true
+         });
+         
+         this.widgets.config.codeMirrorRequestContent.setValue("{\n\n}");
 
          new YAHOO.widget.Tooltip("tooltip-urlargs", {
                 context: this.widgets.config.urlargs,
                 text: this.msg("tooltip.urlargs"),
                 showDelay: 200
             });
+         
+         new YAHOO.widget.Tooltip("tooltip-requestType", {
+             context: this.widgets.config.requestType,
+             text: this.msg("tooltip.requestType"),
+             showDelay: 200
+         });
+         
+         new YAHOO.widget.Tooltip("tooltip-requestContent", {
+             context: this.widgets.contentContainer.firstElementChild,
+             text: this.msg("tooltip.requestContent"),
+             showDelay: 200
+         });
+         
+         new YAHOO.widget.Tooltip("tooltip-requestFormFields", {
+             context: this.widgets.fieldsContainers.firstElementChild,
+             text: this.msg("tooltip.requestFormFields"),
+             showDelay: 200
+         });
 
+         new YAHOO.widget.Tooltip("tooltip-requestHeaders", {
+             context: this.widgets.headerContainers.firstElementChild,
+             text: this.msg("tooltip.requestHeaders"),
+             showDelay: 200
+         });
+         
          new YAHOO.widget.Tooltip("tooltip-runas", {
             context: this.widgets.config.runas,
             text: this.msg("tooltip.runas"),
             showDelay: 200
-        });
+         });
 
          var tab0 = this.widgets.inputTabs.getTab(1); // 2nd tab
          tab0.addListener('click', function handleClick(e) {
@@ -609,6 +869,26 @@ if (typeof String.prototype.startsWith != 'function') {
                  }
 
                  window.localStorage["javascript.console.codemirror.theme"]    = self.widgets.codeMirrorScript.options.theme;
+                 
+                 if(self.widgets.config.requestType) {
+                     window.localStorage["javascript.console.config.requestType"] = self.widgets.config.requestType.value;                     
+                 }
+                 if(self.widgets.config.requestContent) {
+                     window.localStorage["javascript.console.config.requestContent"] = self.widgets.config.codeMirrorRequestContent.getValue();                     
+                 }
+                 window.localStorage["javascript.console.config.headerContainers"] =  self.getHeaderOption();
+                 
+                 var fieldsOption = self.getFieldsOption();
+                 var list = [];
+                 var mpFields = YAHOO.lang.JSON.parse(fieldsOption["mp-fields"]);
+                 for(var i=0; i < fieldsOption.fields.length; ++i) {
+                     fieldsOption.fields[i].fieldType = mpFields[i].type == "param" ? "text" : "file";
+                     fieldsOption.fields[i].value = mpFields[i].type == "param" ? fieldsOption.fields[i].value : null;
+                     list.push(fieldsOption.fields[i]);
+                 }
+                 
+                 window.localStorage["javascript.console.config.fieldsContainers"] =  YAHOO.lang.JSON.stringify(list);
+                 
              };
 
              if (window.localStorage["javascript.console.config.runas"]) {
@@ -640,9 +920,43 @@ if (typeof String.prototype.startsWith != 'function') {
                  var theme = window.localStorage["javascript.console.codemirror.theme"];
                  this.widgets.codeMirrorScript.setOption('theme',theme);
                  this.widgets.codeMirrorTemplate.setOption('theme',theme);
+                 this.widgets.config.codeMirrorRequestContent.setOption('theme',theme);
              }
 
+             
+             if (window.localStorage["javascript.console.config.requestType"]) {
+                 self.widgets.config.requestType.value = window.localStorage["javascript.console.config.requestType"];
+                 this.onRequestTypeChange();
+             }
+             
+             if (window.localStorage["javascript.console.config.requestContent"]) {
+               self.widgets.config.codeMirrorRequestContent.setValue(window.localStorage["javascript.console.config.requestContent"]);
+             }
+             
+             if (window.localStorage["javascript.console.config.fieldsContainers"]) {
+                var list = YAHOO.lang.JSON.parse(window.localStorage["javascript.console.config.fieldsContainers"]);
+                for(var i = 0; i < list.length; ++i) {
+                    self.createFieldsOption(list[i]);
+                }
+                
+             }
+             
+             if (window.localStorage["javascript.console.config.headerContainers"]) {
+                var list = YAHOO.lang.JSON.parse(window.localStorage["javascript.console.config.headerContainers"]);
+                for(var i = 0; i < list.length; ++i) {
+                    self.createHeaderOption(list[i]);
+                }
+                
+             }
+             
 
+         }
+         
+         if(this.headerId == 0) {
+             this.createHeaderOption();             
+         }
+         if(this.fieldIds == 0) {
+            this.createFieldsOption();             
          }
 
          this.loadRepoScriptList();
@@ -1115,12 +1429,12 @@ if (typeof String.prototype.startsWith != 'function') {
          
          this.options.documentDump = getQueryVariable("dump");
          if(this.options.documentDump){
-         	// replace text in content editor and freemarker editor
-         	// execute call to server onExecute
-         	// handle the success call to jump to the dumpTab to see the result
-         	this.widgets.codeMirrorScript.setValue("dump(document);");
-         	this.onExecuteClick();
-         	this.widgets.outputTabs.selectTab(6);
+             // replace text in content editor and freemarker editor
+             // execute call to server onExecute
+             // handle the success call to jump to the dumpTab to see the result
+             this.widgets.codeMirrorScript.setValue("dump(document);");
+             this.onExecuteClick();
+             this.widgets.outputTabs.selectTab(6);
          }
 
 // var help = [
@@ -1197,14 +1511,16 @@ if (typeof String.prototype.startsWith != 'function') {
 
           var codeMirrorScript = this.widgets.codeMirrorScript;
           var codeMirrorTemplate = this.widgets.codeMirrorTemplate;
+          var requestConfigForm = this.widgets.requestconfigform;
 
           var resize = new YAHOO.util.Resize(this.id + "-inputContentArea", { handles : ["b"] });
-
+          
          resize.on('resize', function(ev) {
              var h = ev.height;
 
              codeMirrorScript.setSize(null, h-50);
              codeMirrorTemplate.setSize(null,h-50);
+             Dom.setStyle(requestConfigForm, "height", h+"px");
 
              Dom.setStyle(me.id + "-inputContentArea", "width", "inherit");
          });
@@ -1214,6 +1530,7 @@ if (typeof String.prototype.startsWith != 'function') {
 
              codeMirrorScript.setSize(null, h-50);
              codeMirrorTemplate.setSize(null,h-50);
+             Dom.setStyle(requestConfigForm, "height", h+"px");
 
              Dom.setStyle(me.id + "-inputContentArea", "width", "inherit");
          });
@@ -1379,6 +1696,8 @@ if (typeof String.prototype.startsWith != 'function') {
         }
 
         templateCode = this.widgets.templateInput.value;
+        
+        var fieldsOptions = this.getFieldsOption();
 
         // Build JSON Object to send to the server
         var input = {
@@ -1388,8 +1707,24 @@ if (typeof String.prototype.startsWith != 'function') {
            "transaction" : this.widgets.config.transaction.value ? this.widgets.config.transaction.value : "readwrite",
            "runas" : this.widgets.config.runas.value ? this.widgets.config.runas.value : "admin",
            "urlargs" : this.widgets.config.urlargs.value ? this.widgets.config.urlargs.value : "",
+           "requestType" : this.widgets.config.requestType.value ? this.widgets.config.requestType.value : "",
+           "requestContent" : this.widgets.config.codeMirrorRequestContent.getValue() ? this.widgets.config.codeMirrorRequestContent.getValue() : "",
+           "requestHeaders" : this.getHeaderOption(),
+           "mp-fields": fieldsOptions["mp-fields"],
            "documentNodeRef" : this.options.documentNodeRef
         };
+        
+        var restrictedNames = Object.keys(input);
+        for(var i = 0; i < fieldsOptions.fields.length; ++i) {
+            var field = fieldsOptions.fields[i];
+            if(restrictedNames.indexOf(field.name) >= 0) {
+                Alfresco.util.PopupManager.displayMessage({
+                   text: this.msg("restrictedName", field.name)
+               });
+               return;
+            }
+            input[field.name] = field.value;
+        }
 
         // Disable the result textarea
         this.widgets.scriptOutput.disabled = true;
@@ -1400,80 +1735,117 @@ if (typeof String.prototype.startsWith != 'function') {
         this.executeStartTime = new Date();
         
         input.resultChannel = String(this.executeStartTime.getTime());
+        
+        var successCallback = function(res) {
+            this.fetchResult();
+            
+            this.fetchResultTimer.cancel();
+            this.fetchResultTimer = null;
+            this.showLoadingAjaxSpinner(false);
+            this.printExecutionStats(res.json);
+            this.printDumpInfos(res.json.dumpOutput);
+            this.clearOutput();
+            this.appendLineArrayToOutput(res.json.printOutput);
+            this.widgets.templateOutputHtml.innerHTML = res.json.renderedTemplate;
+            this.widgets.templateOutputText.innerHTML = $html(res.json.renderedTemplate);
+            this.widgets.codeMirrorJSON.setValue(formatter.formatJson(res.json.renderedTemplate,"  "));
+            this.widgets.codeMirrorJSON.focus();
 
-        Alfresco.util.Ajax.request(
-         {
-            url: Alfresco.constants.PROXY_URI + "de/fme/jsconsole/execute",
-            method: Alfresco.util.Ajax.POST,
-            dataObj: input,
-            requestContentType: Alfresco.util.Ajax.JSON,
-            successCallback:
-            {
-               fn: function(res) {
-                 this.fetchResult();
-                   
-                 this.fetchResultTimer.cancel();
-                 this.fetchResultTimer = null;
-                 this.showLoadingAjaxSpinner(false);
-                 this.printExecutionStats(res.json);
-                 this.printDumpInfos(res.json.dumpOutput);
-                 this.clearOutput();
-                 this.appendLineArrayToOutput(res.json.printOutput);
-                 this.widgets.templateOutputHtml.innerHTML = res.json.renderedTemplate;
-                 this.widgets.templateOutputText.innerHTML = $html(res.json.renderedTemplate);
-                 this.widgets.codeMirrorJSON.setValue(formatter.formatJson(res.json.renderedTemplate,"  "));
-                 this.widgets.codeMirrorJSON.focus();
-
-                 if (res.json.spaceNodeRef) {
-                     this.widgets.nodeField.value = res.json.spaceNodeRef;
-                     this.widgets.pathField.innerHTML = res.json.spacePath;
-                 }
-                 this.widgets.scriptOutput.disabled = false;
-                 this.widgets.templateOutputHtml.disabled = false;
-                 this.widgets.templateOutputText.disabled = false;
-                 this.widgets.executeButton.disabled = false;
-
-                 this.showResultTable(res.json.result);
-                 Dom.removeClass(this.widgets.scriptOutput, 'jserror');
-                 Dom.addClass(this.widgets.scriptOutput, 'jsgreen');
-
-                 this.runLikeCrazy();
-               },
-               scope: this
-            },
-            failureCallback:
-            {
-               fn: function(res) {
-                   if (res.serverResponse.status !== 408) {
-                     this.fetchResult();
-                     
-                     this.fetchResultTimer.cancel();
-                     this.fetchResultTimer = null;
-                     this.showLoadingAjaxSpinner(false);
-                     this.printExecutionStats();
-    
-                     var result = YAHOO.lang.JSON.parse(res.serverResponse.responseText);
-    
-                     this.markJSError(result);
-                     this.markFreemarkerError(result);
-    
-                     this.clearOutput();
-                     this.setOutputText(result.status.code + " " +
-                     result.status.name + "\nStacktrace-Details:\n"+result.callstack+"\n\n"+
-                     result.status.description + "\n" + result.message);
-    
-                     this.widgets.scriptOutput.disabled = false;
-                     this.widgets.executeButton.disabled = false;
-                     Dom.removeClass(this.widgets.scriptOutput, 'jsgreen');
-                     Dom.addClass(this.widgets.scriptOutput, 'jserror');
-                     this.widgets.outputTabs.selectTab(0); // show console tab
-    
-                     this.runLikeCrazy();
-                   }
-               },
-               scope: this
+            if (res.json.spaceNodeRef) {
+                this.widgets.nodeField.value = res.json.spaceNodeRef;
+                this.widgets.pathField.innerHTML = res.json.spacePath;
             }
-         });
+            this.widgets.scriptOutput.disabled = false;
+            this.widgets.templateOutputHtml.disabled = false;
+            this.widgets.templateOutputText.disabled = false;
+            this.widgets.executeButton.disabled = false;
+
+            this.showResultTable(res.json.result);
+            Dom.removeClass(this.widgets.scriptOutput, 'jserror');
+            Dom.addClass(this.widgets.scriptOutput, 'jsgreen');
+
+            this.runLikeCrazy();
+          };
+          
+        var failureCallback = function(res) {
+              if (res.serverResponse.status !== 408) {
+                  this.fetchResult();
+                  
+                  this.fetchResultTimer.cancel();
+                  this.fetchResultTimer = null;
+                  this.showLoadingAjaxSpinner(false);
+                  this.printExecutionStats();
+ 
+                  var result = YAHOO.lang.JSON.parse(res.serverResponse.responseText);
+ 
+                  this.markJSError(result);
+                  this.markFreemarkerError(result);
+ 
+                  this.clearOutput();
+                  this.setOutputText(result.status.code + " " +
+                  result.status.name + "\nStacktrace-Details:\n"+result.callstack+"\n\n"+
+                  result.status.description + "\n" + result.message);
+ 
+                  this.widgets.scriptOutput.disabled = false;
+                  this.widgets.executeButton.disabled = false;
+                  Dom.removeClass(this.widgets.scriptOutput, 'jsgreen');
+                  Dom.addClass(this.widgets.scriptOutput, 'jserror');
+                  this.widgets.outputTabs.selectTab(0); // show console tab
+ 
+                  this.runLikeCrazy();
+                }
+            };
+
+        var url = Alfresco.constants.PROXY_URI + "de/fme/jsconsole/execute";
+        if(input.requestType == "multipart/form-data") {
+            var formData = new FormData();
+
+            for(var key in input) 
+            {
+                formData.append(key, input[key]);
+            }
+            if (Alfresco.util.CSRFPolicy.isFilterEnabled())
+            {
+                url += "?" + Alfresco.util.CSRFPolicy.getParameter() + "=" + encodeURIComponent(Alfresco.util.CSRFPolicy.getToken());
+            }
+            var request = new XMLHttpRequest();
+            request.open("POST",  url, true);
+            request.send(formData);
+            var onResponse = function() {
+                    if (request.readyState == 4) {
+                           if(request.status == 200)
+                           {
+                                successCallback.call(this, { "json": YAHOO.lang.JSON.parse(request.responseText) });
+                           }
+                           else {
+                               failureCallback.call(this, {
+                                   "serverResponse" : request
+                               });
+                           }
+                       }
+    
+               };
+            request.onreadystatechange = onResponse.bind(this);
+        }
+        else {
+             Alfresco.util.Ajax.request(
+             {
+                url: url,
+                method: Alfresco.util.Ajax.POST,
+                dataObj: input,
+                requestContentType: Alfresco.util.Ajax.JSON,
+                successCallback:
+                {
+                   fn: successCallback,
+                   scope: this
+                },
+                failureCallback:
+                {
+                   fn: failureCallback,
+                   scope: this
+                }
+             });
+        }
         
         // remove any marking
         Dom.removeClass(this.widgets.scriptOutput, 'jserror');
@@ -2097,6 +2469,7 @@ if (typeof String.prototype.startsWith != 'function') {
            var theme = p_aArgs[1].value;
            self.widgets.codeMirrorScript.setOption("theme", theme);
            self.widgets.codeMirrorTemplate.setOption("theme", theme);
+           self.widgets.config.codeMirrorRequestContent.setOption("theme", theme);
       },
 
 
