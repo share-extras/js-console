@@ -5,7 +5,6 @@ package de.fme.jsconsole;
 
 import java.text.MessageFormat;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -20,7 +19,7 @@ import org.apache.commons.logging.LogFactory;
 public class PerfLog {
 
 	private static final int DEFAULT_ASSERT_PERFORMANCE = 2000;
-	private Log LOG = LogFactory.getLog(PerfLog.class);
+	private Log logger = LogFactory.getLog(PerfLog.class);
 	private long startTime;
 
 	/**
@@ -30,7 +29,7 @@ public class PerfLog {
 	 */
 	public PerfLog(Log logger) {
 		if (logger != null) {
-			LOG = logger;
+			this.logger = logger;
 		}
 	}
 
@@ -49,10 +48,8 @@ public class PerfLog {
 	 */
 	public PerfLog start(String message, Object... params) {
 		startTime = System.currentTimeMillis();
-		if (LOG.isInfoEnabled() || LOG.isWarnEnabled()) {
-			if (StringUtils.isNotEmpty(message)) {
-				LOG.info(MessageFormat.format(message, params));
-			}
+		if (logger.isInfoEnabled() && message != null && !message.trim().isEmpty()) {
+			logger.info(MessageFormat.format(message, params));
 		}
 		return this;
 	}
@@ -73,13 +70,11 @@ public class PerfLog {
 	public long stop(int assertPerformanceOf, String message, Object... params) {
 		long endTime = System.currentTimeMillis();
 		long neededTime = endTime - startTime;
-		if (LOG.isInfoEnabled() || LOG.isWarnEnabled()) {
-			if (neededTime < assertPerformanceOf) {
-				LOG.info("(OK) " + neededTime + " ms:" + MessageFormat.format(message, params));
-			} else {
-				LOG.warn("(WARNING) " + neededTime + " ms: " + MessageFormat.format(message, params));
-			}
-
+		boolean inTime = neededTime < assertPerformanceOf;
+        if (logger.isInfoEnabled() && inTime) {
+			logger.info("(OK) " + neededTime + " ms:" + MessageFormat.format(message, params));
+		} else if (logger.isWarnEnabled() && !inTime){
+			logger.warn("(WARNING) " + neededTime + " ms: " + MessageFormat.format(message, params));
 		}
 		return neededTime;
 
