@@ -1730,7 +1730,8 @@ if (typeof String.prototype.startsWith != 'function') {
           var rows = new Map();
 
           for ( var i = 0; i < json.length; i++) {
-              var dump = JSON.parse(json[i]);
+              var dumpData = (typeof json[i]!='object'?json[i]:json[i].json);
+              var dump = JSON.parse(dumpData);
               myColumnDefs.push({key:i+" "+dump.properties["cm:name"]+" ("+dump.nodeRef+")", resizeable: true, minWidth: 200, formatter:formatterDispatcher,editor:new YAHOO.widget.BaseCellEditor()});
               reponseFields.push(i+" "+dump.properties["cm:name"]+" ("+dump.nodeRef+")");
 
