@@ -1745,7 +1745,7 @@ if (typeof String.prototype.startsWith != 'function') {
                           row={Rows:prop};
                       }
 
-				 if (prop == "cm:title") {
+			if (prop == "cm:title" || prop == "cm:description") {
 		            row[rowId] = $html(dump.properties[prop]);
 			      } else {
 		            row[rowId] = dump.properties[prop];
