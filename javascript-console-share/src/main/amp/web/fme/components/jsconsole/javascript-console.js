@@ -1690,6 +1690,7 @@ if (typeof String.prototype.startsWith != 'function') {
       printDumpInfos : function(json) {
           var now  = new Date();
           var nowAsString = now.getFullYear() + "-"+ (parseInt(now.getMonth())+1) +"-"+now.getDate() + " " + now.getHours() +":"+now.getMinutes()+":"+now.getSeconds();
+	     svar $html = Alfresco.util.encodeHTML;
 
           var formatterDispatcher = function (elCell, oRecord, oColumn,oData) {
 //              var meta = oRecord.getData('meta_' + oColumn.key);
@@ -1743,6 +1744,14 @@ if (typeof String.prototype.startsWith != 'function') {
                       if(row==null){
                           row={Rows:prop};
                       }
+
+				 if (prop == "cm:title") {
+		            row[rowId] = $html(dump.properties[prop]);
+			      } else {
+		            row[rowId] = dump.properties[prop];
+        			}
+
+
                       row[rowId]=dump.properties[prop];
                       rows.put(prop, row);
                     }
