@@ -1690,7 +1690,7 @@ if (typeof String.prototype.startsWith != 'function') {
       printDumpInfos : function(json) {
           var now  = new Date();
           var nowAsString = now.getFullYear() + "-"+ (parseInt(now.getMonth())+1) +"-"+now.getDate() + " " + now.getHours() +":"+now.getMinutes()+":"+now.getSeconds();
-	     svar $html = Alfresco.util.encodeHTML;
+	     var $html = Alfresco.util.encodeHTML;
 
           var formatterDispatcher = function (elCell, oRecord, oColumn,oData) {
 //              var meta = oRecord.getData('meta_' + oColumn.key);
