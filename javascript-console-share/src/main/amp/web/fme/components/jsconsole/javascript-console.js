@@ -1750,9 +1750,6 @@ if (typeof String.prototype.startsWith != 'function') {
 			      } else {
 		            row[rowId] = dump.properties[prop];
         			}
-
-
-                      row[rowId]=dump.properties[prop];
                       rows.put(prop, row);
                     }
               }
