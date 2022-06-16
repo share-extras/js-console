@@ -1800,7 +1800,13 @@ if (typeof String.prototype.startsWith != 'function') {
                       if(row==null){
                           row={Rows:prop};
                       }
-                      row[rowId]=dump[prop];
+                      
+                      if (prop == "version count tooltip") {
+                        row[rowId] = $html(dump[prop]);
+                      }else{
+                        row[rowId]=dump[prop];
+                      }
+                      
                       rows.put(prop, row);
                   }
              }
