@@ -2131,7 +2131,7 @@ if (typeof String.prototype.startsWith != 'function') {
 
        saveAsExistingScript : function ACJC_saveAsExistingScript(filename, nodeRef) {
            Alfresco.util.Ajax.request({
-               url: Alfresco.constants.PROXY_URI + "de/fme/jsconsole/savescript.json?name="+encodeURIComponent(filename)+"&isUpdate=true",
+               url: Alfresco.constants.PROXY_URI + "de/fme/jsconsole/savescript.json?name="+encodeURIComponent(nodeRef)+"&isUpdate=true",
                method: Alfresco.util.Ajax.PUT,
                dataStr: YAHOO.lang.JSON.stringify({'jsScript':this.widgets.codeMirrorScript.getValue(), 'fmScript':this.widgets.codeMirrorTemplate.getValue()}),
                requestContentType: "application/json; charset=utf-8",
