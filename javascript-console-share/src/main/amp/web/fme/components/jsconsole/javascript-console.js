@@ -228,6 +228,8 @@ if (typeof String.prototype.startsWith != 'function') {
                    container: this.id + "-documentation"
              });
 
+              var menu = this.widgets.docsMenuButton.getMenu();
+              menu.cfg.setProperty("zindex", 10);
 
              this.widgets.docsMenuButton.getMenu().setItemGroupTitle("Javascript", 0);
              this.widgets.docsMenuButton.getMenu().setItemGroupTitle("Freemarker", 1);
@@ -236,13 +238,27 @@ if (typeof String.prototype.startsWith != 'function') {
           }
       },
 
+       initSubmenuIds: function (entry, suffix) {
+           if (entry.submenu) {
+               entry.submenu.id = entry.submenu.id + suffix;
+               entry.submenu.itemdata.forEach(function (f) {
+                   this.initSubmenuIds(f, suffix);
+               }.bind(this));
+           }
+       },
+
       createScriptsSaveMenu: function(listOfScripts){
           var saveMenuItems = [{
               text : this.msg("button.save.create.new"),
               value : "NEW"
           }];
 
-          saveMenuItems.push(listOfScripts);
+          var scripts = JSON.parse(JSON.stringify(listOfScripts));//copy
+          scripts.forEach(function(e) {
+              this.initSubmenuIds.call(this, e, "-scriptsave");
+          }.bind(this));
+
+          saveMenuItems.push(scripts);
 
           if(this.widgets.saveMenuButton){
               this.widgets.saveMenuButton.getMenu().clearContent();
@@ -257,7 +273,9 @@ if (typeof String.prototype.startsWith != 'function') {
                   menu: saveMenuItems,
                   container: this.id + "-scriptsave"
               });
-              this.widgets.saveMenuButton.getMenu().subscribe("click", this.onSaveScriptClick, this);
+              var menu = this.widgets.saveMenuButton.getMenu();
+              menu.cfg.setProperty("zindex", 10);
+              menu.subscribe("click", this.onSaveScriptClick, this);
           }
 
 
@@ -269,7 +287,12 @@ if (typeof String.prototype.startsWith != 'function') {
               value : "NEW"
           }];
 
-          loadMenuItems.push(listOfScripts);
+          var scripts = JSON.parse(JSON.stringify(listOfScripts));//copy
+          scripts.forEach(function(e) {
+              this.initSubmenuIds.call(this, e, "-scriptload");
+          }.bind(this));
+
+          loadMenuItems.push(scripts);
 
           if(this.widgets.loadMenuButton){
               this.widgets.loadMenuButton.getMenu().clearContent();
@@ -285,7 +308,9 @@ if (typeof String.prototype.startsWith != 'function') {
                   container: this.id + "-scriptload"
             });
 
-            this.widgets.loadMenuButton.getMenu().subscribe("click", this.onLoadScriptClick, this);
+            var menu = this.widgets.loadMenuButton.getMenu();
+            menu.cfg.setProperty("zindex", 10);
+            menu.subscribe("click", this.onLoadScriptClick, this);
           }
       },
 
@@ -331,7 +356,9 @@ if (typeof String.prototype.startsWith != 'function') {
                     }
                 }
 
-                this.widgets.themeMenuButton.getMenu().subscribe("click", this.onThemeSelection, this);
+                var menu = this.widgets.themeMenuButton.getMenu();
+                menu.cfg.setProperty("zindex", 10);
+                menu.subscribe("click", this.onThemeSelection, this);
             }
       },
 
@@ -2104,7 +2131,7 @@ if (typeof String.prototype.startsWith != 'function') {
 
        saveAsExistingScript : function ACJC_saveAsExistingScript(filename, nodeRef) {
            Alfresco.util.Ajax.request({
-               url: Alfresco.constants.PROXY_URI + "de/fme/jsconsole/savescript.json?name="+encodeURIComponent(filename)+"&isUpdate=true",
+               url: Alfresco.constants.PROXY_URI + "de/fme/jsconsole/savescript.json?name="+encodeURIComponent(nodeRef)+"&isUpdate=true",
                method: Alfresco.util.Ajax.PUT,
                dataStr: YAHOO.lang.JSON.stringify({'jsScript':this.widgets.codeMirrorScript.getValue(), 'fmScript':this.widgets.codeMirrorTemplate.getValue()}),
                requestContentType: "application/json; charset=utf-8",
